@@ -114,7 +114,7 @@
       <h1>카카오페이 결제 완료</h1>
       <p class="message">호텔 예약금 결제가 완료되었습니다.</p>
       <p class="order-number">주문번호: ${partnerOrderId}</p>
-      <a class="button" href="${pageContext.request.contextPath}/main.jsp">홈으로 돌아가기</a>
+      <a class="button" href="${pageContext.request.contextPath}/res/main.jsp">홈으로 돌아가기</a>
     </section>
   </main>
 </body>

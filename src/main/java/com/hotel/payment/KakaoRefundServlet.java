@@ -35,7 +35,7 @@ public class KakaoRefundServlet extends HttpServlet {
 
             if (reservationId == 0) {
                 request.setAttribute("errorMessage", "예약번호 정보가 올바르지 않습니다.");
-                request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
                 return;
             }
 
@@ -44,7 +44,7 @@ public class KakaoRefundServlet extends HttpServlet {
 
             if (payment == null) {
                 request.setAttribute("errorMessage", "환불 가능한 결제 내역을 찾을 수 없습니다.");
-                request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
                 return;
             }
 
@@ -69,7 +69,7 @@ public class KakaoRefundServlet extends HttpServlet {
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 request.setAttribute("errorMessage", "카카오페이 환불 실패: " + responseBody);
-                request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
                 return;
             }
 
@@ -84,7 +84,7 @@ public class KakaoRefundServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
         }
     }
 

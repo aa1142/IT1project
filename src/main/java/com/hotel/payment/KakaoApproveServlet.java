@@ -47,13 +47,13 @@ public class KakaoApproveServlet extends HttpServlet {
 
         if (pgToken == null || tid == null || partnerOrderId == null || partnerUserId == null) {
             request.setAttribute("errorMessage", "결제 승인 정보가 없습니다.");
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
         if (reservationIdObj == null) {
             request.setAttribute("errorMessage", "예약번호 정보가 없습니다. 다시 예약을 진행해주세요.");
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
@@ -65,7 +65,7 @@ public class KakaoApproveServlet extends HttpServlet {
 
         if (reservationId == 0) {
             request.setAttribute("errorMessage", "예약번호 정보가 올바르지 않습니다.");
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
@@ -91,7 +91,7 @@ public class KakaoApproveServlet extends HttpServlet {
 
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             request.setAttribute("errorMessage", responseBody);
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
@@ -113,7 +113,7 @@ public class KakaoApproveServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "DB 저장 오류: " + e.getMessage());
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 

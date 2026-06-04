@@ -511,7 +511,7 @@ input.error {
 
       <nav class="nav">
         <a href="#">호텔 검색</a>
-        <a href="${pageContext.request.contextPath}/reservationSearch.jsp">예약번호로 확인</a>
+        <a href="${pageContext.request.contextPath}/res/reservationSearch.jsp">예약번호로 확인</a>
         <a href="#">회원 서비스</a>
       </nav>
 
@@ -844,7 +844,7 @@ input.error {
             </div>
 
             <form id="paymentForm"
-                  action="${pageContext.request.contextPath}/reservationCreate"
+                  action="${pageContext.request.contextPath}/res/reservationCreate"
                   method="post"
                   onsubmit="return handleReserve();">
               <input type="hidden" name="itemName" value="스탠다드 더블 예약금">
