@@ -20,8 +20,8 @@ public class PaymentDAO {
     public int insertPayment(PaymentDTO payment) throws Exception {
         String sql =
             "INSERT INTO PAYMENT " +
-            "(payment_id, reservation_id, tid, partner_order_id, payment_method, amount, payment_status, created_at) " +
-            "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, SYSDATE)";
+            "(payment_id, reservation_id, tid, partner_order_id, payment_method, amount, payment_status) " +
+            "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -39,7 +39,7 @@ public class PaymentDAO {
 
     public PaymentDTO findPaidPaymentByReservationId(int reservationId) throws Exception {
         String sql =
-            "SELECT reservation_id, tid, partner_order_id, payment_method, amount, payment_status " +
+            "SELECT payment_id, reservation_id, tid, partner_order_id, payment_method, amount, payment_status " +
             "FROM PAYMENT " +
             "WHERE reservation_id = ? AND payment_status = 'PAID' " +
             "ORDER BY payment_id DESC";
@@ -53,6 +53,7 @@ public class PaymentDAO {
                 if (rs.next()) {
                     PaymentDTO payment = new PaymentDTO();
 
+                    payment.setPaymentId(rs.getInt("payment_id"));
                     payment.setReservationId(rs.getInt("reservation_id"));
                     payment.setTid(rs.getString("tid"));
                     payment.setPartnerOrderId(rs.getString("partner_order_id"));

@@ -1,6 +1,7 @@
 package com.hotel.payment;
 
 public class PaymentDTO {
+    private int paymentId;
     private int reservationId;
     private String tid;
     private String partnerOrderId;
@@ -8,8 +9,14 @@ public class PaymentDTO {
     private int amount;
     private String paymentStatus;
 
-    
-    
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
+    }
+
     public int getReservationId() {
         return reservationId;
     }
