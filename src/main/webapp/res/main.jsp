@@ -538,17 +538,17 @@ body {
     </div>
 
     <nav class="nav">
-      <a href="${pageContext.request.contextPath}/main.jsp">호텔</a>
-      <a href="${pageContext.request.contextPath}/hotelSearch.jsp">호텔 검색</a>
+      <a href="${pageContext.request.contextPath}/res/main.jsp">호텔</a>
+      <a href="${pageContext.request.contextPath}/res/hotelSearch.jsp">호텔 검색</a>
       <a href="#">상품</a>
       <a href="#">소식</a>
       <a href="#">자주 묻는 질문</a>
-      <a href="${pageContext.request.contextPath}/reservationSearch.jsp">예약 조회</a>
+      <a href="${pageContext.request.contextPath}/res/reservationSearch.jsp">예약 조회</a>
     </nav>
 
     <div class="header-actions">
       <button type="button" class="lang-btn">한국어</button>
-      <button type="button" class="reserve-btn" onclick="location.href='${pageContext.request.contextPath}/hotelSearch.jsp'">예약</button>
+      <button type="button" class="reserve-btn" onclick="location.href='${pageContext.request.contextPath}/res/hotelSearch.jsp'">예약</button>
     </div>
   </div>
 </header>
@@ -568,7 +568,7 @@ body {
       </p>
     </div>
 
-    <form class="search-box" action="${pageContext.request.contextPath}/hotelSearch.jsp" method="get">
+    <form class="search-box" action="${pageContext.request.contextPath}/res/hotelSearch.jsp" method="get">
       <div class="search-item">
         <i data-lucide="building-2"></i>
         <div style="width:100%;">

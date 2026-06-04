@@ -309,12 +309,6 @@ body {
   overflow: hidden;
 }
 
-.room-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .room-info h4 {
   font-size: 22px;
   margin-bottom: 8px;
@@ -468,7 +462,7 @@ body {
       <div class="counter-row">
         <div class="form-group">
           <label for="adults">성인</label>
-          <input type="number" id="adults" min="1" max="6" value="2">
+          <input type="number" id="adults" min="1" max="4" value="2">
         </div>
 
         <div class="form-group">
@@ -611,7 +605,7 @@ function formatDate(date) {
 
 function parseDate(value) {
   var parts = value.split('-');
-  return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
 }
 
 function getNights() {
@@ -636,6 +630,7 @@ function getSelectedHotel() {
       return hotels[i];
     }
   }
+
   return hotels[0];
 }
 
@@ -661,6 +656,7 @@ function selectHotel(companyNo) {
   selectedCompanyNo = companyNo;
   renderHotelList();
   updateSummary();
+  renderResults();
 }
 
 function updateSummary() {
@@ -682,6 +678,8 @@ function updateSummary() {
 function searchRooms() {
   var checkIn = document.getElementById('checkInDate').value;
   var checkOut = document.getElementById('checkOutDate').value;
+  var adults = parseInt(document.getElementById('adults').value, 10);
+  var children = parseInt(document.getElementById('children').value, 10);
 
   if (!checkIn) {
     alert('체크인 날짜를 선택해주세요.');
@@ -695,6 +693,16 @@ function searchRooms() {
 
   if (parseDate(checkOut).getTime() <= parseDate(checkIn).getTime()) {
     alert('체크아웃 날짜는 체크인 날짜보다 뒤여야 합니다.');
+    return;
+  }
+
+  if (adults + children < 1) {
+    alert('인원은 최소 1명 이상이어야 합니다.');
+    return;
+  }
+
+  if (adults + children > 4) {
+    alert('총 인원은 최대 4명까지 가능합니다.');
     return;
   }
 
@@ -774,6 +782,7 @@ function goRoomDetail(roomGrade) {
   var nights = getNights();
 
   var selectedRoom = null;
+
   for (var i = 0; i < roomTemplates.length; i++) {
     if (roomTemplates[i].gradeCode === roomGrade) {
       selectedRoom = roomTemplates[i];
@@ -788,7 +797,7 @@ function goRoomDetail(roomGrade) {
 
   var totalPrice = selectedRoom.price * nights;
 
-  var url = contextPath + '/roomDetail.jsp'
+  var url = contextPath + '/res/roomDetail.jsp'
     + '?companyNo=' + encodeURIComponent(hotel.companyNo)
     + '&hotelName=' + encodeURIComponent(hotel.name)
     + '&roomGrade=' + encodeURIComponent(selectedRoom.gradeName)
@@ -814,7 +823,7 @@ function applyParamsFromMain() {
   var rooms = params.get('rooms');
 
   if (companyNo) {
-    selectedCompanyNo = parseInt(companyNo);
+    selectedCompanyNo = parseInt(companyNo, 10);
   }
 
   document.getElementById('checkInDate').value = checkInDate || getTodayText();
@@ -830,8 +839,16 @@ document.addEventListener('DOMContentLoaded', function() {
   updateSummary();
   renderResults();
 
-  document.getElementById('checkInDate').addEventListener('change', updateSummary);
-  document.getElementById('checkOutDate').addEventListener('change', updateSummary);
+  document.getElementById('checkInDate').addEventListener('change', function() {
+    updateSummary();
+    renderResults();
+  });
+
+  document.getElementById('checkOutDate').addEventListener('change', function() {
+    updateSummary();
+    renderResults();
+  });
+
   document.getElementById('adults').addEventListener('change', updateSummary);
   document.getElementById('children').addEventListener('change', updateSummary);
   document.getElementById('rooms').addEventListener('change', updateSummary);

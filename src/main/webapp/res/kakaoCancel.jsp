@@ -7,6 +7,6 @@
 </head>
 <body>
   <h1>카카오페이 결제가 취소되었습니다.</h1>
-  <p><a href="${pageContext.request.contextPath}/reservation.jsp">예약 화면으로 돌아가기</a></p>
+  <p><a href="${pageContext.request.contextPath}/res/roomDetail.jsp">예약 화면으로 돌아가기</a></p>
 </body>
 </html>

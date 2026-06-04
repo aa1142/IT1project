@@ -25,7 +25,7 @@ public class ReservationLookupServlet extends HttpServlet {
             if (reservationNo == null || reservationNo.trim().isEmpty()
                     || bookerKeyword == null || bookerKeyword.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "예약번호와 전화번호 또는 이메일을 모두 입력해주세요.");
-                request.getRequestDispatcher("/reservationSearch.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/reservationSearch.jsp").forward(request, response);
                 return;
             }
 
@@ -38,17 +38,17 @@ public class ReservationLookupServlet extends HttpServlet {
 
             if (reservation == null) {
                 request.setAttribute("errorMessage", "예약 정보를 찾을 수 없습니다.");
-                request.getRequestDispatcher("/reservationSearch.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/reservationSearch.jsp").forward(request, response);
                 return;
             }
 
             request.setAttribute("reservation", reservation);
-            request.getRequestDispatcher("/reservationDetail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/reservationDetail.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "예약 조회 중 오류가 발생했습니다: " + e.getMessage());
-            request.getRequestDispatcher("/reservationSearch.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/reservationSearch.jsp").forward(request, response);
         }
     }
 }

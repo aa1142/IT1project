@@ -61,12 +61,12 @@ public class ReservationCreateServlet extends HttpServlet {
             request.setAttribute("reservationId", reservationId);
             request.setAttribute("reservationCode", reservationCode);
 
-            request.getRequestDispatcher("/reservation.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/reservation.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "예약 저장 오류: " + e.getMessage());
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
         }
     }
 

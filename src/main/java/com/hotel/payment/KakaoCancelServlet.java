@@ -14,6 +14,6 @@ public class KakaoCancelServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/kakaoCancel.jsp");
+        response.sendRedirect(request.getContextPath() + "/res/kakaoCancel.jsp");
     }
 }

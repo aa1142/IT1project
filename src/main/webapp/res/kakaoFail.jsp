@@ -115,7 +115,7 @@
       <h1>카카오페이 결제에 실패했습니다.</h1>
       <p class="message">${errorMessage}</p>
       <p class="guide">다시 결제 해주세요</p>
-      <a class="button" href="${pageContext.request.contextPath}/reservation.jsp">예약 화면으로 돌아가기</a>
+      <a class="button" href="${pageContext.request.contextPath}/res/roomDetail.jsp">예약 화면으로 돌아가기</a>
     </section>
   </main>
 </body>

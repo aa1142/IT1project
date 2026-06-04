@@ -124,7 +124,7 @@
 
   <div class="divider"></div>
 
-  <form action="${pageContext.request.contextPath}/reservationSearch" method="post">
+  <form action="${pageContext.request.contextPath}/res/reservationSearch" method="post">
     <label for="reservationNo">예약번호</label>
     <input type="text" id="reservationNo" name="reservationNo" placeholder="JYP-A1B2C3D4E5">
 

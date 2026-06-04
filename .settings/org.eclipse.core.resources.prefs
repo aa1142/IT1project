@@ -1,4 +1,7 @@
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=branch 'main' of https\://github.com/aa1142/IT1project.git
 eclipse.preferences.version=1
 encoding//src/main/java/com/hotel/mail/Admin/bootmng.jsp=UTF-8
-encoding//src/main/webapp/roomDetail.jsp=UTF-8
+encoding//src/main/webapp/res/roomDetail.jsp=UTF-8
 encoding/<project>=UTF-8

@@ -66,7 +66,7 @@ public class KakaoReadyServlet extends HttpServlet {
 
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             request.setAttribute("errorMessage", responseBody);
-            request.getRequestDispatcher("/kakaoFail.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
