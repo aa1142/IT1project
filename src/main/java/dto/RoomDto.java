@@ -1,4 +1,4 @@
-package adminDto;
+package dto;
 
 	public class RoomDto {
 	    

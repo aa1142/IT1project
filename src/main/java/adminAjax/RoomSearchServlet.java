@@ -5,8 +5,8 @@ import java.io.*;
 import java.util.*;
 import com.google.gson.Gson; // JSON 변환을 위해 GSON 라이브러리 사용 권장
 
-import adminDao.RoomDao;
-import adminDto.RoomDto;
+import dao.RoomDao;
+import dto.RoomDto;
 
 @WebServlet("/admin/getAvailableRooms")
 public class RoomSearchServlet extends HttpServlet {

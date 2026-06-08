@@ -1,7 +1,7 @@
-package adminDao;
+package dao;
 
-import adminDto.AdminDto;
 import db.SqlSet;
+import dto.AdminDto;
 
 public class AdminDao {
     SqlSet sql = new SqlSet();
@@ -23,7 +23,6 @@ public class AdminDao {
 
         // 2. 관리자 조회 로직 수행
         String sqlQuery = "SELECT * FROM admin WHERE admin_id = ?";
-        System.out.println(adminId);
         AdminDto resultDto = sql.selectTemplate(sqlQuery, new Object[]{ adminId }, rs -> {
             AdminDto adminDto = new AdminDto();
             // ★ 여기가 핵심입니다. DB에서 데이터를 한 행 읽어오는지 확인합니다.

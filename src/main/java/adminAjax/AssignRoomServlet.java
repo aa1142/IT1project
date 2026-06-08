@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import adminDao.BootDao;
+import dao.BootDao;
 
 @WebServlet("/admin/assignRoom.do")
 public class AssignRoomServlet extends HttpServlet {

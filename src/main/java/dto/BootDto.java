@@ -1,4 +1,4 @@
-package adminDto; // 패키지 경로는 환경에 맞게 수정해서 사용하세요.
+package dto; // 패키지 경로는 환경에 맞게 수정해서 사용하세요.
 
 public class BootDto {
     

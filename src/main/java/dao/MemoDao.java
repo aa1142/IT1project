@@ -1,9 +1,10 @@
-package adminDao;
+package dao;
 
 import java.util.ArrayList;
-import adminDto.MemoDto;
+
+import adminVo.HistoryMemoVo;
 import db.SqlSet;
-import vo.HistoryMemoVo;
+import dto.MemoDto;
 
 public class MemoDao {
     // 💡 MemoDto 인스턴스 변수는 메소드 내부에서 매번 새로 생성하므로 클래스 레벨 필드에서는 지워주는 것이 좋습니다.

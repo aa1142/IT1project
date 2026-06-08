@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import adminDao.MemoDao;
+import dao.MemoDao;
 
 @WebServlet("/admin/insertMemo.do")
 public class MemoInsertServlet extends HttpServlet {

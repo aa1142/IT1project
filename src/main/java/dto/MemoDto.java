@@ -1,4 +1,4 @@
-package adminDto;
+package dto;
 
 import java.util.Date;
 

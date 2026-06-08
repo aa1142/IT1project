@@ -1,9 +1,7 @@
 package adminController;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,13 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import adminDao.AdminDao;
-import adminDto.AdminDto;
-import adminDao.BootDao;
-import adminDto.BootDto;
+import dao.AdminDao;
+import dao.BootDao;
+import dto.AdminDto;
+import dto.BootDto;
 
-// 🎯 주소 매핑 URL 확인 필수 (현재 톰캣 환경에 맞게 주석 해제하여 사용하세요)
-//@WebServlet("/Admin/bootmng")
+@WebServlet("/Admin/bootmng")
 public class Bootmng extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
@@ -31,14 +28,10 @@ public class Bootmng extends HttpServlet {
         // =========================================================================
         // 일반 페이지 로딩 (HTML / 테이블 리스트 출력) 로직 영역
         // =========================================================================
-        HttpSession session = request.getSession();
-        String adminId = "admin01";
+
         
-        AdminDao adminDao = new AdminDao(); 
-        AdminDto adminDto = new AdminDto();
-        adminDto.setAdminId(adminId);
-        AdminDto resultAdmin = adminDao.selectAdmin(adminId); 
-        request.setAttribute("adminData", resultAdmin);
+        String bootTime = request.getParameter("bootTime");
+        if(bootTime == null) bootTime = "upcoming";
         
         BootDao bootDao = new BootDao();
         int companyNo = 1;
@@ -55,48 +48,25 @@ public class Bootmng extends HttpServlet {
             }
         }
 
-        // 날짜 범위 파라미터 제어
-        String dateRange = request.getParameter("dateRange");
-        String startDateStr = "";
-        String endDateStr = "";
-        SimpleDateFormat paramSdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        if (dateRange == null || dateRange.trim().isEmpty()) {
-            Date today = new Date();
-            Date nextWeek = new Date(today.getTime() + (1000L * 60 * 60 * 24 * 7));
-            startDateStr = paramSdf.format(today);
-            endDateStr = paramSdf.format(nextWeek);
-            dateRange = startDateStr + " ~ " + endDateStr;
-        } else if (dateRange.contains(" ~ ")) {
-            String[] dates = dateRange.split(" ~ ");
-            if (dates.length == 2) {
-                startDateStr = dates[0].trim();
-                endDateStr = dates[1].trim();
-            }
-        }
+        // 🎯 [수정] 날짜 범위 파라미터 제어 영역(Flatpickr 연동 코드)을 완전히 제거했습니다.
 
         // 예약 상태 파라미터 수신
         String bootStatus = request.getParameter("bootStatus");
         if (bootStatus == null) {
             bootStatus = "전체"; 
         }
-
+        
+        int payCheck=0;
+        
         // DB에서 원본 데이터 추출
-        List<BootDto> allBootList = bootDao.selectAllBoot(companyNo, 99999, 0); 
+        List<BootDto> allBootList = bootDao.selectAllBoot(companyNo, 99999, 0, bootTime, payCheck); 
         List<BootDto> filteredList = new ArrayList<>();
 
-        // 날짜와 예약 상태 복합 필터링 시스템
+        // 🎯 [수정] 예약 상태로만 깔끔하게 복합 필터링 시스템 가동
         if (allBootList != null) {
             for (BootDto boot : allBootList) {
-                // A. 날짜 필터링
-                if (!startDateStr.isEmpty() && !endDateStr.isEmpty()) {
-                    String checkInDate = boot.getBootCheckin(); 
-                    if (checkInDate == null || checkInDate.trim().isEmpty()) continue; 
-                    if (checkInDate.length() >= 10) checkInDate = checkInDate.substring(0, 10);
-                    if (checkInDate.compareTo(startDateStr) < 0 || checkInDate.compareTo(endDateStr) > 0) continue; 
-                }
                 
-                // B. 예약 상태 필터링 (bootConfirm 매칭)
+                // A. 예약 상태 필터링 (bootConfirm 매칭)
                 if (!"전체".equals(bootStatus)) {
                     int confirmVal = boot.getBootConfirm();
                     if ("결제완료".equals(bootStatus) && confirmVal != 0) {
@@ -107,6 +77,7 @@ public class Bootmng extends HttpServlet {
                     }
                 }
                 
+                // 상태 조건에 생존한 데이터만 리스트에 담기
                 filteredList.add(boot);
             }
         }
@@ -129,14 +100,15 @@ public class Bootmng extends HttpServlet {
         }
         
         // =========================================================================
-        // ⭐ [핵심 복구 영역] JSP로 데이터 바인딩 및 화면 포워딩
+        // ⭐ JSP로 데이터 바인딩 및 화면 포워딩 (dateRange 제거)
         // =========================================================================
         request.setAttribute("bootList", finalBootList);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPage", totalPage);
         request.setAttribute("bootStatus", bootStatus);
+        request.setAttribute("bootTime", bootTime);
 
-        // JSP 경로가 맞는지 프로젝트 구조를 꼭 확인하세요 (/Admin/ 혹은 /admin/)
+        // JSP 경로로 포워딩
         request.getRequestDispatcher("/Admin/bootmng.jsp").forward(request, response);
     }
 
