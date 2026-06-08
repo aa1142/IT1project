@@ -77,24 +77,11 @@ public class BootDao {
     
     public int assignRoom(int bootNo, int roomNo, int companyNo) {
     	int result = 0;
-    	String assignRoomSql = "update boot set room_no = ? where boot_no = ? and company_no = ?";
+    	String assignRoomSql = "update boot set room_no = ?, boot_confirm=1 where boot_no = ? and company_no = ?";
     	Object[] changRoomParams = {roomNo, bootNo, companyNo};
     	result = db.updateTemplate(assignRoomSql, changRoomParams);
     	
-    	if(result>0) {
-        	String changeConfirm = "update boot set boot_confirm=1 where boot_no=? and company_no = ?";
-        	Object[] bootNoParam = {bootNo, companyNo};
-        	result=db.updateTemplate(changeConfirm, bootNoParam);
-    	}
 
-    	if(result>0) {
-		System.out.println("roomNo= "+roomNo);
-		System.out.println("companyNo= "+companyNo);
-    	String changeRoomNow = "update room set room_now = '예약중' where room_no = ? and company_no = ?";
-    	Object[] roonNoParam = {roomNo, companyNo};
-    	result=db.updateTemplate(changeRoomNow, roonNoParam);
-    	System.out.println(result);
-    	}
     	return result;
     }
     

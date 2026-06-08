@@ -3,11 +3,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.*;
 import java.util.*;
-import com.google.gson.Gson; // JSON 변환을 위해 GSON 라이브러리 사용 권장
 
 import dao.RoomDao;
 import dto.RoomDto;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 @WebServlet("/admin/getAvailableRooms")
 public class RoomSearchServlet extends HttpServlet {
     

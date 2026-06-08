@@ -54,7 +54,7 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto" id="dynamic-menu-list">
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">룸 지정/현황</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">룸 배정/현황</a></li>
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomList">방 예약현황</a></li>
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/onsitePayment">현장결제</a></li>
             </ul>

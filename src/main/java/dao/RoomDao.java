@@ -19,7 +19,7 @@ public class RoomDao {
         String sql = "SELECT * FROM room "
                    + "WHERE room_grade = ? "
                    + "  AND room_type = ? "
-                   + "  AND room_now = '사용가능' "
+                   + "  AND room_now = '사용 가능' "
                    + "  AND company_no = ? "
                    + "  AND room_no NOT IN ("
                    + "      SELECT room_no FROM boot "
