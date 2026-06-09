@@ -33,6 +33,9 @@ public class AssignRoomServlet extends HttpServlet {
         String bootNoStr = request.getParameter("bootNo");
         String roomNoStr = request.getParameter("roomNo");
         
+        
+        
+        
         int bootNo = 0;
         int roomNo = 0;
         try {

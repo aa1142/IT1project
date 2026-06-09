@@ -60,7 +60,13 @@
         document.getElementById('modalCheckOut').innerText = checkOutDate;
         
         document.getElementById('modalRoomType').innerText = grade + " (" + typeText + ")";
-        document.getElementById('modalBootPlease').innerText = element.getAttribute('data-please') || "없음";
+        
+        
+        const pleaseText = element.getAttribute('data-please');
+
+     // 값이 없거나, 문자열 "null"이거나, 공백만 있는 경우 "없음"으로 처리
+     document.getElementById('modalBootPlease').innerText = 
+         (pleaseText && pleaseText !== "null" && pleaseText.trim() !== "") ? pleaseText : "없음";
 
         // 빈 객실 실시간 비동기 조회 Ajax
         $.ajax({
