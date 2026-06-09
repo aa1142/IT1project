@@ -31,7 +31,6 @@ public class RoomDao {
         
         // 물음표가 4개(grade, roomType, checkOut, checkIn)로 늘어났으니 순서 주의!
         db.selectTemplate(sql, new Object[] {grade, roomType, companyNo, checkIn, checkOut}, rs -> {
-        	int count = 0;
         	while (rs.next()) {
                 RoomDto roomDto = new RoomDto();
                 roomDto.setRoomNo(rs.getInt("room_no"));
