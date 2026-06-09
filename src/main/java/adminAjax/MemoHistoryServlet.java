@@ -14,9 +14,9 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import adminDao.MemoDao;
-import adminDto.MemoDto;
-import vo.HistoryMemoVo;
+import adminVo.HistoryMemoVo;
+import dao.MemoDao;
+import dto.MemoDto;
 
 @WebServlet("/admin/getMemoList.do")
 public class MemoHistoryServlet extends HttpServlet {

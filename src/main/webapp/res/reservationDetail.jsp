@@ -1,10 +1,12 @@
 ﻿<%@ page import="com.hotel.reservation.ReservationDTO" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
+    request.setCharacterEncoding("UTF-8");
     ReservationDTO reservation = (ReservationDTO) request.getAttribute("reservation");
 
+    // [경로 점검] 잘못된 루트 리다이렉트를 request.getContextPath() 연동으로 완벽 방어
     if (reservation == null) {
-        response.sendRedirect(request.getContextPath() + "/reservationSearch.jsp");
+        response.sendRedirect(request.getContextPath() + "/res/reservationSearch.jsp");
         return;
     }
 
@@ -19,12 +21,17 @@
     String reservationStatus = reservation.getReservationStatus();
     String displayStatus = "";
 
+    // [요구사항 점검] 이전 턴에 확장하기로 약속했던 다중 상태값 세분화 매핑 선반영
     if ("PAYMENT_READY".equals(reservationStatus)) {
         displayStatus = "결제 대기";
     } else if ("PAID".equals(reservationStatus)) {
         displayStatus = "예약 완료";
-    } else if ("CANCEL".equals(reservationStatus)) {
+    } else if ("CANCELLED".equals(reservationStatus) || "CANCEL".equals(reservationStatus)) {
+        displayStatus = "취소 완료";
+    } else if ("REFUNDED".equals(reservationStatus)) {
         displayStatus = "환불 완료";
+    } else if ("FAILED".equals(reservationStatus)) {
+        displayStatus = "결제 실패";
     } else {
         displayStatus = reservationStatus;
     }
@@ -34,267 +41,9 @@
 <head>
 <meta charset="UTF-8">
 <title>예약 내역</title>
-<style>
-* {
-    box-sizing: border-box;
-}
 
-body {
-    margin: 0;
-    font-family: Arial, 'Noto Sans KR', sans-serif;
-    background: #050505;
-    color: #f8fafc;
-}
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/reservationDetail.css">
 
-.header {
-    height: 92px;
-    padding: 0 46px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.35);
-    background: #0d0d0d;
-}
-
-.logo {
-    font-size: 28px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    color: #f6d36b;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.header-button {
-    padding: 12px 22px;
-    border: 1px solid rgba(212, 175, 55, 0.45);
-    border-radius: 4px;
-    background: #1a1a1a;
-    color: #f8fafc;
-    font-weight: 800;
-    text-decoration: none;
-}
-
-.layout {
-    display: grid;
-    grid-template-columns: 275px 1fr;
-    min-height: calc(100vh - 92px);
-}
-
-.sidebar {
-    padding: 48px 0 0 64px;
-    border-right: 1px solid rgba(212, 175, 55, 0.2);
-    background: #080808;
-}
-
-.sidebar h2 {
-    margin: 0 0 38px;
-    font-size: 22px;
-    color: #f8fafc;
-}
-
-.side-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-}
-
-.side-menu a {
-    color: #f8fafc;
-    font-weight: 800;
-    text-decoration: none;
-}
-
-.side-menu a.active {
-    color: #ff4545;
-}
-
-.content {
-    padding: 50px 70px;
-}
-
-.page-title {
-    margin: 0 0 70px;
-    font-size: 34px;
-    font-weight: 900;
-    color: #f8fafc;
-}
-
-.reservation-card {
-    display: grid;
-    grid-template-columns: 225px 1fr 190px;
-    gap: 42px;
-    align-items: center;
-    max-width: 1120px;
-    padding: 38px 36px;
-    border: 1px solid rgba(212, 175, 55, 0.65);
-    border-radius: 8px;
-    background: #111;
-}
-
-.room-image {
-    height: 148px;
-    border: 1px solid rgba(212, 175, 55, 0.65);
-    border-radius: 8px;
-    background: #191919;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f6d36b;
-    font-weight: 900;
-}
-
-.hotel-name {
-    margin: 0 0 22px;
-    font-size: 24px;
-    font-weight: 900;
-    color: #f6d36b;
-}
-
-.info-line {
-    margin: 10px 0;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-.status-badge {
-    display: inline-block;
-    margin-top: 14px;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: rgba(212, 175, 55, 0.2);
-    color: #f6d36b;
-    font-size: 20px;
-    font-weight: 900;
-}
-
-.card-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-}
-
-.detail-link {
-    border: 0;
-    background: none;
-    color: #f6d36b;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-.refund-form {
-    margin: 0;
-}
-
-.refund-button {
-    border: 0;
-    background: none;
-    color: #ff6b6b;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-.detail-link:hover,
-.refund-button:hover {
-    text-decoration: underline;
-}
-
-.modal-bg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.72);
-    z-index: 10;
-}
-
-.modal {
-    width: 620px;
-    max-width: calc(100% - 40px);
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    margin: 70px auto;
-    padding: 34px;
-    border: 1px solid rgba(212, 175, 55, 0.7);
-    border-radius: 10px;
-    background: #111;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.modal-title {
-    margin: 0;
-    color: #f6d36b;
-    font-size: 26px;
-    font-weight: 900;
-}
-
-.close-button {
-    border: 0;
-    background: none;
-    color: #f8fafc;
-    font-size: 28px;
-    cursor: pointer;
-}
-
-.detail-row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 18px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.18);
-}
-
-.detail-label {
-    color: #a8b0bd;
-    font-weight: 800;
-}
-
-.detail-value {
-    color: #f8fafc;
-    font-weight: 800;
-}
-
-.back-link {
-    display: inline-block;
-    margin-top: 36px;
-    color: #f6d36b;
-    font-weight: 900;
-    text-decoration: none;
-}
-
-@media (max-width: 900px) {
-    .layout {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        padding: 24px;
-        border-right: 0;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    }
-
-    .content {
-        padding: 34px 22px;
-    }
-
-    .reservation-card {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 </head>
 <body>
 
@@ -346,7 +95,7 @@ body {
             </div>
         </section>
 
-        <a href="${pageContext.request.contextPath}/reservationSearch.jsp" class="back-link">다시 조회하기</a>
+        <a href="${pageContext.request.contextPath}/res/reservationSearch.jsp" class="back-link">다시 조회하기</a>
     </main>
 </div>
 

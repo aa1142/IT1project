@@ -39,6 +39,10 @@ public class KakaoReadyServlet extends HttpServlet {
         int taxFreeAmount = parseInt(request.getParameter("taxFreeAmount"), 0);
         int reservationId = parseInt(request.getParameter("reservationId"), 1);
 
+        String bookerEmail = request.getParameter("bookerEmail");
+        String bookerName = request.getParameter("bookerName");
+        String reservationCode = request.getParameter("reservationCode");
+        
         String json = "{"
                 + "\"cid\":\"" + CID + "\","
                 + "\"partner_order_id\":\"" + partnerOrderId + "\","
@@ -48,8 +52,8 @@ public class KakaoReadyServlet extends HttpServlet {
                 + "\"total_amount\":" + totalAmount + ","
                 + "\"tax_free_amount\":" + taxFreeAmount + ","
                 + "\"approval_url\":\"" + baseUrl + "/kakaoApprove?orderId=" + urlEncode(partnerOrderId) + "\","
-                + "\"cancel_url\":\"" + baseUrl + "/kakaoCancel.jsp\","
-                + "\"fail_url\":\"" + baseUrl + "/kakaoFail.jsp\""
+                + "\"cancel_url\":\"" + baseUrl + "/kakaoCancel\","
+                + "\"fail_url\":\"" + baseUrl + "/kakaoFail\""
                 + "}";
 
         HttpURLConnection connection = (HttpURLConnection) new URL(KAKAO_READY_URL).openConnection();
@@ -80,12 +84,13 @@ public class KakaoReadyServlet extends HttpServlet {
         session.setAttribute("tid", tid);
         session.setAttribute("partnerOrderId", partnerOrderId);
         session.setAttribute("partnerUserId", partnerUserId);
-
-        // 결제 승인 후 DB 저장용 값
         session.setAttribute("reservationId", reservationId); // 테스트용 예약번호
         session.setAttribute("amount", totalAmount);
         session.setAttribute("itemName", itemName);
-
+        session.setAttribute("bookerEmail", bookerEmail);
+        session.setAttribute("bookerName", bookerName);
+        session.setAttribute("reservationCode", reservationCode); 
+       
         response.sendRedirect(redirectUrl);
 
     }

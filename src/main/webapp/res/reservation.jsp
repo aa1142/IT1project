@@ -2,90 +2,48 @@
 <%
 request.setCharacterEncoding("UTF-8");
 
-String itemName = request.getParameter("itemName");
+// ReservationCreateServlet에서 request.setAttribute("reservation", dto)로 넘겨준 객체 수신
+Object repoObj = request.getAttribute("reservation");
+com.hotel.reservation.ReservationDTO rDto = (repoObj instanceof com.hotel.reservation.ReservationDTO) ? (com.hotel.reservation.ReservationDTO)repoObj : null;
+
+// 객체가 있으면 객체에서, 없으면 parameter/attribute에서 백업 데이터 가져오기
+String reservationId = (rDto != null) ? String.valueOf(rDto.getReservationId()) : request.getParameter("reservationId");
+String reservationCode = (rDto != null) ? rDto.getReservationCode() : request.getParameter("reservationCode");
+String itemName = (rDto != null) ? rDto.getRoomName() : request.getParameter("itemName");
+String totalAmount = (rDto != null) ? String.valueOf(rDto.getTotalAmount()) : request.getParameter("totalAmount");
+String bookerName = (rDto != null) ? rDto.getBookerName() : request.getParameter("bookerName");
+String bookerEmail = (rDto != null) ? rDto.getBookerEmail() : request.getParameter("bookerEmail");
 String quantity = request.getParameter("quantity");
-String totalAmount = request.getParameter("totalAmount");
 String taxFreeAmount = request.getParameter("taxFreeAmount");
-String reservationId = request.getParameter("reservationId");
 
-if (itemName == null) {
-  Object attr = request.getAttribute("itemName");
-  itemName = attr == null ? null : String.valueOf(attr);
-}
-
-if (quantity == null) {
-  Object attr = request.getAttribute("quantity");
-  quantity = attr == null ? null : String.valueOf(attr);
-}
-
-if (totalAmount == null) {
-  Object attr = request.getAttribute("totalAmount");
-  totalAmount = attr == null ? null : String.valueOf(attr);
-}
-
-if (taxFreeAmount == null) {
-  Object attr = request.getAttribute("taxFreeAmount");
-  taxFreeAmount = attr == null ? null : String.valueOf(attr);
-}
-
-if (reservationId == null) {
-  Object attr = request.getAttribute("reservationId");
-  reservationId = attr == null ? null : String.valueOf(attr);
-}
-
-if (itemName == null || itemName.trim().isEmpty()) {
-  itemName = "스탠다드 더블 예약금";
-}
-
-if (quantity == null || quantity.trim().isEmpty()) {
-  quantity = "1";
-}
-
-if (totalAmount == null || totalAmount.trim().isEmpty()) {
-  totalAmount = "50000";
-}
-
-if (taxFreeAmount == null || taxFreeAmount.trim().isEmpty()) {
-  taxFreeAmount = "0";
-}
-
-if (reservationId == null || reservationId.trim().isEmpty()) {
-  reservationId = "1";
-}
+// Null 및 공백 방어 처리 기본값 설정
+if (reservationId == null || reservationId.trim().isEmpty()) reservationId = "1";
+if (reservationCode == null || reservationCode.trim().isEmpty()) reservationCode = "ORD-UNKNOWN";
+if (itemName == null || itemName.trim().isEmpty()) itemName = "스탠다드 더블 예약금";
+if (totalAmount == null || totalAmount.trim().isEmpty()) totalAmount = "50000";
+if (quantity == null || quantity.trim().isEmpty()) quantity = "1";
+if (taxFreeAmount == null || taxFreeAmount.trim().isEmpty()) taxFreeAmount = "0";
+if (bookerName == null || bookerName.trim().isEmpty()) bookerName = "고객";
+if (bookerEmail == null || bookerEmail.trim().isEmpty()) bookerEmail = "";
 
 int displayAmount = 0;
-int displayReservationId = 0;
 try {
-  displayAmount = Integer.parseInt(totalAmount);
+    displayAmount = Integer.parseInt(totalAmount);
 } catch (Exception e) {
-  displayAmount = 50000;
-  totalAmount = "50000";
+    displayAmount = 50000;
 }
 
-try {
-  displayReservationId = Integer.parseInt(reservationId);
-} catch (Exception e) {
-  displayReservationId = 1;
-  reservationId = "1";
-}
-
-String displayAmountText = "¥" + String.format("%,d", displayAmount);
-String displayReservationNo = String.format("JYP-%06d", displayReservationId);
+// 원화 포맷팅 표기
+String displayAmountText = String.format("%,d", displayAmount) + "원";
 %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <title>호텔 예약 결제</title>
-<style>
-  body { margin: 0; font-family: Arial, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #222; }
-  main { max-width: 720px; margin: 60px auto; padding: 32px; background: #fff; border: 1px solid #ddd; }
-  h1 { margin-top: 0; }
-  .summary { display: grid; gap: 10px; margin: 24px 0; padding: 20px; background: #fafafa; border: 1px solid #e4e4e4; }
-  .row { display: flex; justify-content: space-between; gap: 18px; }
-  .pay-button { width: 100%; height: 54px; border: 0; background: #ffeb00; color: #111; font-weight: 900; cursor: pointer; }
-  .notice { color: #666; line-height: 1.6; }
-</style>
+
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/reservation.css">
+
 </head>
 <body>
 <main>
@@ -93,18 +51,23 @@ String displayReservationNo = String.format("JYP-%06d", displayReservationId);
   <p class="notice">카카오페이 결제를 실행합니다. 결제 버튼을 누르면 카카오페이 결제 화면으로 이동합니다.</p>
 
   <div class="summary">
-    <div class="row"><strong>예약번호</strong><span><%= displayReservationNo %></span></div>
+    <div class="row"><strong>예약 고유코드</strong><span><%= reservationCode %></span></div>
+    <div class="row"><strong>예약자명</strong><span><%= bookerName %></span></div>
     <div class="row"><strong>상품명</strong><span><%= itemName %></span></div>
     <div class="row"><strong>수량</strong><span><%= quantity %></span></div>
-    <div class="row"><strong>결제금액</strong><span><%= displayAmountText %></span></div>
+    <div class="row"><strong>결제금액</strong><span style="color: #d9383a; font-weight: bold;"><%= displayAmountText %></span></div>
   </div>
 
   <form action="${pageContext.request.contextPath}/kakaoReady" method="post">
+    <input type="hidden" name="reservationId" value="<%= reservationId %>">
+    <input type="hidden" name="reservationCode" value="<%= reservationCode %>">
     <input type="hidden" name="itemName" value="<%= itemName %>">
     <input type="hidden" name="quantity" value="<%= quantity %>">
     <input type="hidden" name="totalAmount" value="<%= totalAmount %>">
     <input type="hidden" name="taxFreeAmount" value="<%= taxFreeAmount %>">
-    <input type="hidden" name="reservationId" value="<%= reservationId %>">
+    <input type="hidden" name="bookerName" value="<%= bookerName %>">
+    <input type="hidden" name="bookerEmail" value="<%= bookerEmail %>">
+    
     <button class="pay-button" type="submit">카카오페이 결제하기</button>
   </form>
 </main>
