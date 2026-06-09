@@ -141,8 +141,9 @@
       </div>
       <ul class="menu-list">
         <li><a href="myPage.jsp" class="active">내 정보 관리</a></li>
-        <!-- 💡 변경: 회원정보 수정 버튼 링크를 직접 연결했습니다. -->
         <li><a href="memberModify.jsp">회원정보 수정</a></li>
+      
+        <li><a href="changePassword.jsp">비밀번호 변경</a></li>
         <li><a href="#">예약 내역 조회</a></li>
       </ul>
     </aside>

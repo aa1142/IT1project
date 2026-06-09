@@ -182,12 +182,13 @@ footer{
     
     <button type="submit" class="btn-submit">로그인</button>
     
-    <div class="find-wrap">
-      <a href="#">아이디 찾기</a>
+     <div class="find-wrap">
+     
+      <a href="findAccount.jsp">아이디 찾기</a>
       <span>|</span>
-      <a href="#">비밀번호 찾기</a>
+      <a href="findAccount.jsp">비밀번호 찾기</a>
       <span>|</span>
-      <a href="signup.jsp">회원가입</a> <!-- 💡 본인의 회원가입 파일명으로 수정하세요 -->
+      <a href="signup.jsp">회원가입</a>
     </div>
   </form>
 </div>
