@@ -14,8 +14,15 @@ public class ReservationDTO {
     private int totalAmount;
     private String reservationStatus;
     private String reservationCode;
+    private String roomname;
 
-    public String getReservationCode() {
+    public String getRoomName() {
+		return roomname;
+	}
+	public void setRoomName(String roomname) {
+		this.roomname = roomname;
+	}
+	public String getReservationCode() {
 		return reservationCode;
 	}
 	public void setReservationCode(String reservationCode) {
