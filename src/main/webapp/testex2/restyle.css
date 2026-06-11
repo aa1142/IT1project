@@ -1,0 +1,554 @@
+@charset "UTF-8";
+ /* ── 디자인 토큰 (색상·크기 변수) ── */
+    :root {
+      --background:          #f8f9fa;
+      --foreground:          #111111;
+      --card:                #ffffff;
+      --card-foreground:     #111111;
+      --primary:             #d4af37; /* 클래식 골드 */
+      --primary-dark:        #b89020; /* 딥 골드 */
+      --primary-foreground:  #ffffff;
+      --secondary:           #1a1a1a; /* 리치 블랙 */
+      --secondary-foreground:#ffffff;
+      --muted:               #f4f4f5;
+      --muted-foreground:    #71717a;
+      --border:              #e4e4e7;
+      --input:               #ffffff;
+      --destructive:         #7f1d1d;
+      --radius:              0.375rem;
+    }
+
+    /* ── 전역 리셋 ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--background);
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    /* ════════════════════════════
+       헤더
+    ════════════════════════════ */
+    .header {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .header-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      height: 72px;
+    }
+
+    /* 로고 영역 */
+    .logo { display: flex; align-items: center; gap: 12px; }
+
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: var(--primary);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--secondary);
+      overflow: hidden;
+    }
+
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+    .logo-text h1 {
+      font-size: 20px; font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--primary);
+    }
+
+    .logo-text p {
+      font-size: 11px;
+      color: #a1a1aa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── 예약 단계 진행 바 ── */
+    .progress-bar {
+      background: #111111;
+      border-top: 1px solid #2a2a2a;
+      padding: 12px 0;
+    }
+
+    .progress-bar-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .progress-bar span      { color: #71717a; }
+    .progress-bar .active   { font-weight: 600; color: var(--primary); }
+    .progress-bar .arrow    { color: #3f3f46; }
+
+    /* ════════════════════════════
+       메인 레이아웃 (2컬럼)
+    ════════════════════════════ */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 2rem;
+    }
+
+    .main-content { display: flex; gap: 32px; }
+
+    /* 왼쪽: 입력 폼 영역 */
+    .form-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 오른쪽: 예약 요약 사이드바 */
+    .sidebar { width: 380px; flex-shrink: 0; }
+
+    .sidebar-inner {
+      position: sticky;
+      top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ════════════════════════════
+       카드 컴포넌트
+    ════════════════════════════ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--muted);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .card-title-icon {
+      width: 32px; height: 32px;
+      background: #1a1a1a;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary);
+    }
+
+    .card-description {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-top: 6px;
+    }
+
+    .card-content { padding: 24px; }
+
+    /* ── 사이드바 카드 헤더 ── */
+    .sidebar-header {
+      background: var(--secondary);
+      padding: 18px 24px;
+      border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .sidebar-header h2 {
+      font-size: 16px; font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    /* ════════════════════════════
+       폼 요소
+    ════════════════════════════ */
+    .form-group  { margin-bottom: 18px; }
+
+    /* 2컬럼 그리드 (성/이름, 우편번호/주소 등) */
+    .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+
+    label {
+      display: block;
+      font-size: 13px; font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--secondary);
+    }
+
+    label .required { color: #b91c1c; } /* 필수 항목 빨간 별표 */
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+      background: var(--input);
+      color: var(--foreground);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.08);
+    }
+
+    /* 유효성 검사 실패 시 빨간 테두리 */
+    input.error {
+      border-color: #b91c1c;
+      background-color: #fef2f2;
+    }
+
+    input:disabled {
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: not-allowed;
+    }
+
+    .input-hint {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin-top: 6px;
+    }
+
+    /* ── 체크박스 ── */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 18px; height: 18px;
+      margin: 0;
+      accent-color: var(--secondary);
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper label {
+      margin-bottom: 0;
+      font-weight: 400;
+      cursor: pointer;
+      color: #444444;
+    }
+
+    .checkbox-wrapper a {
+      color: var(--primary-dark);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .checkbox-wrapper a:hover { text-decoration: underline; }
+
+    /* ════════════════════════════
+       추가 옵션 카드 (조식·빠른 체크인)
+    ════════════════════════════ */
+    .option-card {
+      width: 100%;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .option-card:hover { border-color: var(--primary); }
+
+    /* 선택된 옵션 강조 스타일 */
+    .option-card.selected {
+      border-color: var(--secondary);
+      background: #fafafa;
+      box-shadow: inset 0 0 0 1px var(--secondary);
+    }
+
+    .option-card-content { display: flex; align-items: flex-start; gap: 16px; }
+
+    .option-icon {
+      width: 40px; height: 40px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--muted);
+      color: var(--secondary);
+      flex-shrink: 0;
+    }
+
+    .option-card.selected .option-icon {
+      background: var(--secondary);
+      color: var(--primary);
+    }
+
+    .option-info { flex: 1; }
+
+    .option-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .option-title { font-weight: 600; color: var(--secondary); font-size: 14px; }
+
+    /* 원형 체크 아이콘 */
+    .option-check {
+      width: 20px; height: 20px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: #ffffff;
+    }
+
+    .option-card.selected .option-check {
+      background: var(--secondary);
+      border-color: var(--secondary);
+      color: var(--primary);
+    }
+
+    .option-description { font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+
+    .option-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .option-unit-price  { font-size: 12px; color: var(--muted-foreground); }
+    .option-total-price { font-size: 14px; font-weight: 600; color: var(--primary-dark); }
+
+    /* ════════════════════════════
+       결제 방법 라디오 카드
+    ════════════════════════════ */
+    .radio-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .radio-card:hover { border-color: var(--primary); }
+
+    .radio-card.selected {
+      border-color: var(--secondary);
+      background: #fafafa;
+      box-shadow: inset 0 0 0 1px var(--secondary);
+    }
+
+    .radio-card input[type="radio"] {
+      width: 18px; height: 18px;
+      accent-color: var(--secondary);
+      cursor: pointer;
+    }
+
+    .radio-card-content { display: flex; align-items: center; gap: 14px; flex: 1; }
+
+    .radio-card-text p:first-child { font-weight: 600; color: var(--secondary); font-size: 14px; }
+    .radio-card-text p:last-child  { font-size: 13px; color: var(--muted-foreground); }
+
+    /* 현장 결제 선택 시 표시되는 안내 메시지 */
+    .payment-note {
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--muted);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--muted-foreground);
+      border-left: 3px solid var(--secondary);
+    }
+
+    /* ════════════════════════════
+       이용약관 박스
+    ════════════════════════════ */
+    .terms-box {
+      padding: 16px;
+      background: var(--muted);
+      border-radius: var(--radius);
+      max-height: 160px;
+      overflow-y: auto;
+      font-size: 13px;
+      color: #444444;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+    }
+
+    .terms-box p.title    { font-weight: 600; color: var(--secondary); margin-bottom: 12px; }
+    .terms-box p          { margin-bottom: 8px; }
+    .terms-box ul         { margin-left: 16px; margin-bottom: 8px; }
+    .terms-box li         { margin-bottom: 4px; }
+
+    /* ════════════════════════════
+       사이드바 예약 정보 영역
+    ════════════════════════════ */
+    .sidebar-info { padding: 24px; }
+
+    .sidebar-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-row i { color: var(--primary-dark); width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+
+    .sidebar-row-content h3 { font-weight: 600; font-size: 15px; color: var(--secondary); }
+    .sidebar-row-content p  { font-size: 12px; color: var(--muted-foreground); }
+
+    .sidebar-label { font-size: 12px; color: var(--muted-foreground); margin-bottom: 4px; }
+    .sidebar-value { font-size: 14px; font-weight: 600; color: var(--secondary); }
+    .sidebar-value-small { font-size: 12px; color: var(--muted-foreground); }
+
+    /* 체크인/체크아웃 날짜 2컬럼 */
+    .sidebar-dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-date-item i { width: 14px; height: 14px; }
+
+    .sidebar-date-value {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .sidebar-date-time {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin-top: 4px;
+    }
+
+    /* 박수/인원 정보 행 */
+    .sidebar-stay-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-stay-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500;
+    }
+
+    .sidebar-stay-item i { color: var(--secondary); width: 16px; height: 16px; }
+
+    /* 구분선 */
+    .separator { height: 1px; background: var(--border); margin: 18px 0; }
+
+    /* ── 요금 요약 ── */
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .price-row .label { color: var(--muted-foreground); }
+
+    .price-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .price-total-row .label { font-weight: 600; color: var(--secondary); }
+    .price-total-row .value { font-size: 22px; font-weight: 700; color: var(--primary-dark); }
+
+    /* ════════════════════════════
+       예약하기 버튼
+    ════════════════════════════ */
+    .btn-primary {
+      width: 100%; height: 50px;
+      background: var(--secondary);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius);
+      font-size: 15px; font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary:hover {
+      background: #2a2a2a;
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .btn-primary:disabled {
+      background: #e4e4e7;
+      color: #a1a1aa;
+      border-color: #e4e4e7;
+      cursor: not-allowed;
+    }
+
+    /* 처리 중 스피너 회전 애니메이션 */
+    .btn-primary .spinner { animation: spin 1s linear infinite; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .btn-note {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted-foreground);
+      margin-top: 12px;
+    }
+
+    /* ════════════════════════════
+       반응형 (태블릿 이하)
+    ════════════════════════════ */
+    @media (max-width: 1024px) {
+      .main-content { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .sidebar-inner { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .header-container, main { padding: 0 16px; }
+      .form-row, .form-row-3  { grid-template-columns: 1fr; }
+      .sidebar-dates          { grid-template-columns: 1fr; }
+    }
