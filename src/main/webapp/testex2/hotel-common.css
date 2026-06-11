@@ -1,0 +1,22 @@
+/* testex2 공통 — 상단 네비게이션 */
+.site-nav {
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 13px;
+}
+.site-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.site-nav a {
+  color: #f5f5f5;
+  text-decoration: none;
+  margin-left: 14px;
+}
+.site-nav a:hover { color: #d4af37; }
+.site-nav .point { color: #d4af37; font-weight: 600; }
