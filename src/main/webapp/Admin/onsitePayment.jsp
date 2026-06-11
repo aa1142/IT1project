@@ -2,7 +2,6 @@
 <%@ include file="/adminTem/headTem.jsp" %>
 <%@ page import="java.util.List, java.util.ArrayList" %>
 <%@ page import="dto.BootDto" %>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <%
     // 서블릿에서 보낸 동적 데이터 수신

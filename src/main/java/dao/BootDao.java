@@ -51,7 +51,7 @@ public class BootDao {
             while (rs.next()) {
                 BootDto bootDto = new BootDto();
                 
-                bootDto.setBootNo(rs.getInt("boot_no"));
+                bootDto.setBootNo(rs.getString("boot_no"));
                 bootDto.setRoomGrade(rs.getString("room_grade"));
                 bootDto.setRoomType(rs.getInt("room_type"));
                 bootDto.setRoomNo(rs.getInt("room_no"));
@@ -75,10 +75,23 @@ public class BootDao {
         return (bootList != null) ? bootList : new ArrayList<>(); 
     }
     
+    //예약정보 방 지정하기
     public int assignRoom(int bootNo, int roomNo, int companyNo) {
     	int result = 0;
     	String assignRoomSql = "update boot set room_no = ?, boot_confirm=1 where boot_no = ? and company_no = ?";
     	Object[] changRoomParams = {roomNo, bootNo, companyNo};
+    	result = db.updateTemplate(assignRoomSql, changRoomParams);
+    	
+
+    	return result;
+    }
+    
+    //예약을 안한 고객 방 지정 및 boot 생성
+    public int assignRoom(BootDto bootDto) {
+    	int result = 0;
+    	String assignRoomSql = "INSERT INTO boot (boot_no, room_grade, room_type, room_no, company_no, boot_phone, boot_name, boot_checkin, boot_checkout, boot_adult, boot_child, boot_pay_check, boot_please, boot_confirm) "
+    			+ "VALUES (?, ?, ?, ?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), TO_DATE(?, 'YYYY-MM-DD'), ?, ?, 1, NULL, 1)";
+    	Object[] changRoomParams = {bootDto.getBootNo(), bootDto.getRoomGrade(), bootDto.getRoomType(), bootDto.getRoomNo(), bootDto.getCompanyNo(), bootDto.getBootPhone(), bootDto.getBootName(), bootDto.getBootCheckin(), bootDto.getBootCheckout(), bootDto.getBootAdult(), bootDto.getBootChild()};
     	result = db.updateTemplate(assignRoomSql, changRoomParams);
     	
 
@@ -94,7 +107,7 @@ public class BootDao {
     		if (rs.next()) {
 	            
 		    //출력값저장
-	        	bootDto.setBootNo(rs.getInt("boot_no"));
+	        	bootDto.setBootNo(rs.getString("boot_no"));
                 bootDto.setRoomGrade(rs.getString("room_grade"));
                 bootDto.setRoomType(rs.getInt("room_type"));
                 bootDto.setBootPhone(rs.getString("boot_phone"));
@@ -139,7 +152,6 @@ public class BootDao {
         	return firstCheckIn; //최종반환
         }
 
-    
     
     	
 }
