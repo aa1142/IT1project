@@ -344,7 +344,7 @@
     </section>
 
     <div class="booking-container">
-      <form action="roomList.jsp" method="get" class="booking-wrapper" onsubmit="return checkBookingForm()">
+      <form action="<%=ctx%>/testex2/keywordProc.jsp" method="post" class="booking-wrapper" onsubmit="return checkBookingForm()">
         <div class="input-group">
           <label>지점명</label>
           <select name="dest" id="dest">
@@ -388,6 +388,9 @@
             </div>
           </div>
         </div>
+
+        <input type="hidden" name="rooms" value="1">
+        <input type="hidden" name="room_grade" value="스탠다드">
 
         <button type="submit" class="btn-search">호텔 검색</button>
       </form>
