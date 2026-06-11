@@ -10,7 +10,7 @@
     if (request.getAttribute("companyList") != null) {
         companyList = (Vector<CompanyVO>) request.getAttribute("companyList");
     } else {
-        companyList = dao.getCompanyList("");
+    	companyList = dao.selectActiveBranchList("");
     }
 
     int company_no = 0;

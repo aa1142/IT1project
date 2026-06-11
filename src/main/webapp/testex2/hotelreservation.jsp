@@ -16,8 +16,11 @@
     int boot_child = HotelPriceUtil.toInt(request.getParameter("boot_child"), 0);
     String boot_checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
 
-    RoomVO room = dao.getOneRoom(company_no, room_grade, room_type, boot_checkin, boot_checkout);
-    CompanyVO company = dao.getCompany(company_no);
+    // 🚨 [변경 1] getOneRoom -> selectSingleRoomTypePriceInfo 개명 반영
+    RoomVO room = dao.selectSingleRoomTypePriceInfo(company_no, room_grade, room_type, boot_checkin, boot_checkout);
+    
+    // 🚨 [변경 2] getCompany -> selectBranchDetailByNo 개명 반영
+    CompanyVO company = dao.selectBranchDetailByNo(company_no);
 
     if (room == null || company == null) {
         response.sendRedirect("hotelsearch.jsp");
@@ -31,7 +34,8 @@
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     MemberVO member = null;
     if (sessionUserId != null) {
-        member = dao.getMember(sessionUserId);
+        // 🚨 [변경 3] getMember -> selectClientProfile 개명 반영
+        member = dao.selectClientProfile(sessionUserId);
     }
 
     String mLast = "", mFirst = "", mPhone = "", mEmail = "", mAddr = "";
@@ -130,7 +134,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>전화번호호 *</label>
+                <label>전화번호 *</label>
                 <input type="tel" id="boot_phone" name="boot_phone" placeholder="010-1234-5678">
               </div>
               <div class="form-group">
