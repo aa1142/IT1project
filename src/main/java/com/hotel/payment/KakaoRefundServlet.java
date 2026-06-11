@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hotel.reservation.ReservationDAO;
+import com.hotel.reservation.BootDAO; // [수정] 새 부트 DAO 임포트
 
 @WebServlet("/kakaoRefund")
 public class KakaoRefundServlet extends HttpServlet {
@@ -31,16 +31,18 @@ public class KakaoRefundServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         try {
-            int reservationId = parseInt(request.getParameter("reservationId"), 0);
+            // 1. [수정] 파라미터를 숫자가 아닌 고유 문자열 PK인 bootNo로 수집
+            String bootNo = request.getParameter("bootNo");
 
-            if (reservationId == 0) {
-                request.setAttribute("errorMessage", "예약번호 정보가 올바르지 않습니다.");
+            if (bootNo == null || bootNo.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "예약 식별 번호(bootNo) 정보가 올바르지 않습니다.");
                 request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
                 return;
             }
 
+            // 2. [수정] PaymentDAO에 bootNo(문자열)를 넘겨 환불 대상 영수증 낚아채기
             PaymentDAO paymentDAO = new PaymentDAO();
-            PaymentDTO payment = paymentDAO.findPaidPaymentByReservationId(reservationId);
+            PaymentDTO payment = paymentDAO.findPaidPaymentByBootNo(bootNo); 
 
             if (payment == null) {
                 request.setAttribute("errorMessage", "환불 가능한 결제 내역을 찾을 수 없습니다.");
@@ -48,6 +50,7 @@ public class KakaoRefundServlet extends HttpServlet {
                 return;
             }
 
+            // 3. 카카오페이 환불(Cancel) API 통신용 JSON 데이터 구성
             String json = "{"
                     + "\"cid\":\"" + CID + "\","
                     + "\"tid\":\"" + payment.getTid() + "\","
@@ -67,41 +70,35 @@ public class KakaoRefundServlet extends HttpServlet {
 
             String responseBody = readBody(connection);
 
+            // 카카오측 환불 거절 또는 통신 장애 시 차단
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 request.setAttribute("errorMessage", "카카오페이 환불 실패: " + responseBody);
                 request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
                 return;
             }
 
-            paymentDAO.updatePaymentStatus(reservationId, "REFUNDED");
+            // 4. 카카오 환불 컨펌 확인 완료 후 우리 DB 정비 작업
+            // [수정] PAYMENT 테이블의 결제 상태를 REFUNDED로 업데이트 (bootNo 기준)
+            paymentDAO.updatePaymentStatus(bootNo, "REFUNDED");
 
-            ReservationDAO reservationDAO = new ReservationDAO();
-            reservationDAO.updateReservationStatus(reservationId, "CANCEL");
+            // [수정] BOOT 테이블의 예약 승인 코드를 '2'(취소/환불완료) 숫자로 리셋
+            BootDAO bootDAO = new BootDAO();
+            bootDAO.updateReservationStatus(bootNo, 2);
 
-            request.setAttribute("message", "환불이 완료되었습니다.");
-            response.sendRedirect(request.getContextPath() + "/reservationSearch.jsp");
+            request.setAttribute("message", "환불 및 예약 취소가 완전히 처리되었습니다.");
+            
+            // [수정] 최종 리다이렉트 파일명을 통합 선언된 bootSearch.jsp로 정비
+            response.sendRedirect(request.getContextPath() + "/bootSearch.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
+            request.setAttribute("errorMessage", "환불 처리 중 백엔드 내부 오류 발생: " + e.getMessage());
             request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-        }
-    }
-
-    private static int parseInt(String value, int defaultValue) {
-        try {
-            if (value == null || value.trim().isEmpty()) {
-                return defaultValue;
-            }
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            return defaultValue;
         }
     }
 
     private static String readBody(HttpURLConnection connection) throws IOException {
         BufferedReader reader;
-
         if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
         } else {
@@ -110,11 +107,9 @@ public class KakaoRefundServlet extends HttpServlet {
 
         StringBuilder body = new StringBuilder();
         String line;
-
         while ((line = reader.readLine()) != null) {
             body.append(line);
         }
-
         reader.close();
         return body.toString();
     }

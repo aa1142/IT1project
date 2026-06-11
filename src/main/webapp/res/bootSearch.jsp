@@ -4,36 +4,33 @@ request.setCharacterEncoding("UTF-8");
 
 // ReservationCreateServlet에서 request.setAttribute("reservation", dto)로 넘겨준 객체 수신
 Object repoObj = request.getAttribute("reservation");
-com.hotel.reservation.ReservationDTO rDto = (repoObj instanceof com.hotel.reservation.ReservationDTO) ? (com.hotel.reservation.ReservationDTO)repoObj : null;
+com.hotel.reservation.BootDTO rDto = (repoObj instanceof com.hotel.reservation.BootDTO) ? (com.hotel.reservation.BootDTO)repoObj : null;
 
 // 객체가 있으면 객체에서, 없으면 parameter/attribute에서 백업 데이터 가져오기
-String reservationId = (rDto != null) ? String.valueOf(rDto.getReservationId()) : request.getParameter("reservationId");
+String reservationId = (rDto != null) ? String.valueOf(rDto.getReservationCode()) : request.getParameter("reservationId");
 String reservationCode = (rDto != null) ? rDto.getReservationCode() : request.getParameter("reservationCode");
-String itemName = (rDto != null) ? rDto.getRoomName() : request.getParameter("itemName");
-String totalAmount = (rDto != null) ? String.valueOf(rDto.getTotalAmount()) : request.getParameter("totalAmount");
-String bookerName = (rDto != null) ? rDto.getBookerName() : request.getParameter("bookerName");
-String bookerEmail = (rDto != null) ? rDto.getBookerEmail() : request.getParameter("bookerEmail");
+String itemName = (rDto != null) ? rDto.getRoomGrade() : request.getParameter("itemName");
+/* String totalAmount = (rDto != null) ? String.valueOf(rDto.getTotalAmount()) : request.getParameter("totalAmount"); */
+String bookerName = (rDto != null) ? rDto.getBootName() : request.getParameter("bookerName");
+String bookerEmail = (rDto != null) ? rDto.getBootEmail() : request.getParameter("bookerEmail");
 String quantity = request.getParameter("quantity");
 String taxFreeAmount = request.getParameter("taxFreeAmount");
 
-// Null 및 공백 방어 처리 기본값 설정
 if (reservationId == null || reservationId.trim().isEmpty()) reservationId = "1";
 if (reservationCode == null || reservationCode.trim().isEmpty()) reservationCode = "ORD-UNKNOWN";
 if (itemName == null || itemName.trim().isEmpty()) itemName = "스탠다드 더블 예약금";
-if (totalAmount == null || totalAmount.trim().isEmpty()) totalAmount = "50000";
+/* if (totalAmount == null || totalAmount.trim().isEmpty()) totalAmount = "50000"; */
 if (quantity == null || quantity.trim().isEmpty()) quantity = "1";
 if (taxFreeAmount == null || taxFreeAmount.trim().isEmpty()) taxFreeAmount = "0";
 if (bookerName == null || bookerName.trim().isEmpty()) bookerName = "고객";
 if (bookerEmail == null || bookerEmail.trim().isEmpty()) bookerEmail = "";
 
 int displayAmount = 0;
-try {
+/* try {
     displayAmount = Integer.parseInt(totalAmount);
 } catch (Exception e) {
     displayAmount = 50000;
-}
-
-// 원화 포맷팅 표기
+} */
 String displayAmountText = String.format("%,d", displayAmount) + "원";
 %>
 <!DOCTYPE html>
@@ -63,7 +60,7 @@ String displayAmountText = String.format("%,d", displayAmount) + "원";
     <input type="hidden" name="reservationCode" value="<%= reservationCode %>">
     <input type="hidden" name="itemName" value="<%= itemName %>">
     <input type="hidden" name="quantity" value="<%= quantity %>">
-    <input type="hidden" name="totalAmount" value="<%= totalAmount %>">
+    <%-- <input type="hidden" name="totalAmount" value="<%= totalAmount %>"> --%>
     <input type="hidden" name="taxFreeAmount" value="<%= taxFreeAmount %>">
     <input type="hidden" name="bookerName" value="<%= bookerName %>">
     <input type="hidden" name="bookerEmail" value="<%= bookerEmail %>">

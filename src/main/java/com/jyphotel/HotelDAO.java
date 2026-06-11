@@ -1,6 +1,7 @@
 package com.jyphotel;
 
 import java.sql.Connection;
+import java.sql.DriverManager; // 🚨 DriverManager 사용을 위해 임포트 추가
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,35 +10,25 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-/**
- * 호텔 예약 DB 처리 (memberone의 StudentDAO 와 같은 방식)
- * company, room, boot, member 테이블
- */
 public class HotelDAO {
 
     private static final String ROOM_OK =
             " AND (r.room_now IS NULL OR TRIM(r.room_now) IN ('사용 가능', '사용가능')) ";
 
-    private Connection getConnection() {
-        Connection con = null;
-        try {
-            Context initContext = new InitialContext();
-            Context envContext = (Context) initContext.lookup("java:/comp/env");
-            DataSource ds = (DataSource) envContext.lookup("jdbc/oracle");
-            con = ds.getConnection();
-        } catch (Exception e) {
-            System.out.println("Connection 생성 실패 !!!");
-            e.printStackTrace();
-        }
-        return con;
+    /**
+     * [변경] 톰캣 서버 장부(context.xml)를 쓰지 않고, 오라클 DB로 직접 전화를 거는 직통 연결 메소드
+     */
+    private Connection dbDirectConnect() throws Exception {
+        Class.forName("oracle.jdbc.OracleDriver");
+        return java.sql.DriverManager.getConnection(
+            "jdbc:oracle:thin:@localhost:1521:orcl", // 팀원 공용 SID인 orcl 지정
+            "scott",
+            "tiger"
+        );
     }
 
-    /** 한글 지점명 → DB 검색어 (신주쿠→新宿, 요코하마→横浜) */
-    private String mapKeyword(String keyword) {
+    /** 한글 지점명 → DB 검색어 변환기 */
+    private String convertBranchKeyword(String keyword) {
         if (keyword == null) {
             return "";
         }
@@ -54,16 +45,19 @@ public class HotelDAO {
         return k;
     }
 
-    // 지점 목록 (company)
-    public Vector<CompanyVO> getCompanyList(String keyword) {
+    /**
+     * [메소드명 변경] getCompanyList → selectActiveBranchList
+     * 지점 목록 조회
+     */
+    public Vector<CompanyVO> selectActiveBranchList(String keyword) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Vector<CompanyVO> list = new Vector<CompanyVO>();
 
         try {
-            con = getConnection();
-            String searchWord = mapKeyword(keyword);
+            con = dbDirectConnect(); // 직통 주소 키 가동
+            String searchWord = convertBranchKeyword(keyword);
             String sql = "SELECT c.company_no, c.company_name, "
                     + "(SELECT COUNT(DISTINCT r.room_grade || '-' || r.room_type) "
                     + " FROM room r WHERE r.company_no = c.company_no) AS type_cnt "
@@ -88,8 +82,8 @@ public class HotelDAO {
                 HotelDisplay.setCompanyInfo(vo);
                 list.addElement(vo);
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) { // throws Exception에 대응하기 위해 상위 Exception으로 포괄 처리
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -98,14 +92,18 @@ public class HotelDAO {
         return list;
     }
 
-    public CompanyVO getCompany(int company_no) {
+    /**
+     * [메소드명 변경] getCompany → selectBranchDetail ByNo
+     * 특정 지점 단건 정보 조회
+     */
+    public CompanyVO selectBranchDetailByNo(int company_no) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         CompanyVO vo = null;
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT company_no, company_name FROM company WHERE company_no = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, company_no);
@@ -117,8 +115,8 @@ public class HotelDAO {
                 vo.setCompany_name(rs.getString("company_name"));
                 HotelDisplay.setCompanyInfo(vo);
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -127,8 +125,11 @@ public class HotelDAO {
         return vo;
     }
 
-    // 객실 목록 (room) — 인원·방 수에 따라 싱글룸 노출 여부 적용
-    public Vector<RoomVO> getRoomList(int company_no, String ui_room_grade,
+    /**
+     * [메소드명 변경] getRoomList → selectAvailableRoomTypeList
+     * 조건에 맞는 객실 타입 목록 인출
+     */
+    public Vector<RoomVO> selectAvailableRoomTypeList(int company_no, String ui_room_grade,
             String boot_checkin, String boot_checkout,
             int boot_adult, int boot_child, int rooms) {
 
@@ -139,7 +140,7 @@ public class HotelDAO {
         String db_grade = RoomTypeUtil.toDbGrade(ui_room_grade);
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT r.room_grade, r.room_type, MIN(r.room_price) AS room_price, COUNT(*) AS cnt "
                     + "FROM room r "
                     + "WHERE r.company_no = ? AND r.room_grade = ? "
@@ -175,8 +176,8 @@ public class HotelDAO {
                 vo.setRemain_count(rs.getInt("cnt"));
                 list.addElement(vo);
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -185,7 +186,11 @@ public class HotelDAO {
         return list;
     }
 
-    public RoomVO getOneRoom(int company_no, String room_grade, int room_type,
+    /**
+     * [메소드명 변경] getOneRoom → selectSingleRoomTypePriceInfo
+     * 최종 예약을 위한 단건 객실 요금 산출 검증기
+     */
+    public RoomVO selectSingleRoomTypePriceInfo(int company_no, String room_grade, int room_type,
             String boot_checkin, String boot_checkout) {
 
         Connection con = null;
@@ -194,7 +199,7 @@ public class HotelDAO {
         RoomVO vo = null;
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT MIN(r.room_price) AS room_price, COUNT(*) AS cnt "
                     + "FROM room r "
                     + "WHERE r.company_no = ? AND r.room_grade = ? AND r.room_type = ? "
@@ -222,8 +227,8 @@ public class HotelDAO {
                 vo.setRoom_price(rs.getInt("room_price"));
                 vo.setRemain_count(rs.getInt("cnt"));
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -232,7 +237,11 @@ public class HotelDAO {
         return vo;
     }
 
-    public int getEmptyRoomNo(int company_no, String room_grade, int room_type,
+    /**
+     * [메소드명 변경] getEmptyRoomNo → assignEmptyRoomNumber
+     * 매칭되는 빈 방 호수(Room_No)를 실시간으로 자동 배정
+     */
+    public int assignEmptyRoomNumber(int company_no, String room_grade, int room_type,
             String boot_checkin, String boot_checkout) {
 
         Connection con = null;
@@ -241,7 +250,7 @@ public class HotelDAO {
         int room_no = 0;
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT MIN(r.room_no) AS room_no "
                     + "FROM room r "
                     + "WHERE r.company_no = ? AND r.room_grade = ? AND r.room_type = ? "
@@ -264,8 +273,8 @@ public class HotelDAO {
             if (rs.next()) {
                 room_no = rs.getInt("room_no");
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -274,8 +283,11 @@ public class HotelDAO {
         return room_no;
     }
 
-    // 예약 저장 (boot)
-    public boolean insertBoot(BootVO vo) {
+    /**
+     * [메소드명 변경] insertBoot → executeInsertReservation
+     * 신규 예약 건수 오라클에 원자적 적재
+     */
+    public boolean executeInsertReservation(BootVO vo) {
         Connection con = null;
         PreparedStatement pstmt = null;
         boolean flag = false;
@@ -284,7 +296,7 @@ public class HotelDAO {
         String reservation_code = "JYP" + (100000 + new Random().nextInt(900000));
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             con.setAutoCommit(false);
 
             String sql = "INSERT INTO boot ("
@@ -333,8 +345,8 @@ public class HotelDAO {
                 vo.setReservation_code(reservation_code);
                 flag = true;
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             try {
                 if (con != null) con.rollback();
             } catch (SQLException ex) {
@@ -347,14 +359,18 @@ public class HotelDAO {
         return flag;
     }
 
-    public BootVO getBoot(String boot_no) {
+    /**
+     * [메소드명 변경] getBoot → selectReservationReceipt
+     * 영수증 단건 정밀 인출
+     */
+    public BootVO selectReservationReceipt(String boot_no) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         BootVO vo = null;
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT b.*, c.company_name, "
                     + "TO_CHAR(b.boot_checkin, 'YYYY-MM-DD') AS ci, "
                     + "TO_CHAR(b.boot_checkout, 'YYYY-MM-DD') AS co "
@@ -365,10 +381,10 @@ public class HotelDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                vo = mapBoot(rs);
+                vo = parseReceiptData(rs);
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -377,14 +393,18 @@ public class HotelDAO {
         return vo;
     }
 
-    public Vector<BootVO> getBootListByMemberId(String member_id) {
+    /**
+     * [메소드명 변경] getBootListByMemberId → selectReservationHistoryByMember
+     * 특정 회원의 과거 전체 투숙 이력 리스트업
+     */
+    public Vector<BootVO> selectReservationHistoryByMember(String member_id) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Vector<BootVO> list = new Vector<BootVO>();
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT b.*, c.company_name, "
                     + "TO_CHAR(b.boot_checkin, 'YYYY-MM-DD') AS ci, "
                     + "TO_CHAR(b.boot_checkout, 'YYYY-MM-DD') AS co "
@@ -395,10 +415,10 @@ public class HotelDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                list.addElement(mapBoot(rs));
+                list.addElement(parseReceiptData(rs));
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -407,15 +427,18 @@ public class HotelDAO {
         return list;
     }
 
-    // 회원 조회 (member)
-    public MemberVO getMember(String member_id) {
+    /**
+     * [메소드명 변경] getMember → selectClientProfile
+     * 가입된 유저 프로필 인출기
+     */
+    public MemberVO selectClientProfile(String member_id) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         MemberVO vo = null;
 
         try {
-            con = getConnection();
+            con = dbDirectConnect();
             String sql = "SELECT member_id, member_name, member_phone, member_email, member_address "
                     + "FROM member WHERE member_id = ?";
             pstmt = con.prepareStatement(sql);
@@ -423,7 +446,7 @@ public class HotelDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                vo = mapMember(rs);
+                vo = parseClientData(rs);
             } else {
                 rs.close();
                 pstmt.close();
@@ -434,11 +457,11 @@ public class HotelDAO {
                 pstmt.setString(1, member_id);
                 rs = pstmt.executeQuery();
                 if (rs.next()) {
-                    vo = mapMember(rs);
+                    vo = parseClientData(rs);
                 }
             }
-        } catch (SQLException se) {
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
             if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
@@ -447,7 +470,8 @@ public class HotelDAO {
         return vo;
     }
 
-    private BootVO mapBoot(ResultSet rs) throws SQLException {
+    /** [메소드명 변경] mapBoot → parseReceiptData */
+    private BootVO parseReceiptData(ResultSet rs) throws SQLException {
         BootVO vo = new BootVO();
         vo.setBoot_no(rs.getString("boot_no"));
         vo.setRoom_grade(rs.getString("room_grade"));
@@ -470,7 +494,8 @@ public class HotelDAO {
         return vo;
     }
 
-    private MemberVO mapMember(ResultSet rs) throws SQLException {
+    /** [메소드명 변경] mapMember → parseClientData */
+    private MemberVO parseClientData(ResultSet rs) throws SQLException {
         MemberVO vo = new MemberVO();
         vo.setMember_id(rs.getString("member_id"));
         vo.setMember_name(rs.getString("member_name"));
