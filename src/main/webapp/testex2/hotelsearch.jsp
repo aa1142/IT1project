@@ -1,155 +1,183 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.Vector" %>
+<%@ page import="com.jyphotel.CompanyVO" %>
+<%@ page import="com.jyphotel.HotelPriceUtil" %>
+<jsp:useBean id="dao" class="com.jyphotel.HotelDAO" />
+<%
+    request.setCharacterEncoding("UTF-8");
+
+    Vector<CompanyVO> companyList;
+    if (request.getAttribute("companyList") != null) {
+        companyList = (Vector<CompanyVO>) request.getAttribute("companyList");
+    } else {
+        companyList = dao.getCompanyList("");
+    }
+
+    int company_no = 0;
+    if (request.getAttribute("company_no") != null) {
+        company_no = (Integer) request.getAttribute("company_no");
+    }
+    String room_grade = (String) request.getAttribute("room_grade");
+    if (room_grade == null || room_grade.equals("")) room_grade = "스탠다드";
+
+    String boot_checkin = (String) request.getAttribute("boot_checkin");
+    if (boot_checkin == null) boot_checkin = "";
+    String boot_checkout = (String) request.getAttribute("boot_checkout");
+    if (boot_checkout == null) boot_checkout = "";
+
+    int nights = 1, rooms = 1, boot_adult = 1, boot_child = 0;
+    if (request.getAttribute("nights") != null) nights = (Integer) request.getAttribute("nights");
+    if (request.getAttribute("rooms") != null) rooms = (Integer) request.getAttribute("rooms");
+    if (request.getAttribute("boot_adult") != null) boot_adult = (Integer) request.getAttribute("boot_adult");
+    if (request.getAttribute("boot_child") != null) boot_child = (Integer) request.getAttribute("boot_child");
+
+    CompanyVO selectedCompany = (CompanyVO) request.getAttribute("company");
+    String searchDone = (String) request.getAttribute("searchDone");
+    String hotelNameInfo = "-";
+    if (selectedCompany != null) {
+        hotelNameInfo = selectedCompany.getCompany_name();
+    }
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>호텔 예약 사이트</title>
-    <%-- 서버 사이드 JSP 로직은 여기에 추가 --%>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="sescript.js"></script>
+    <link href="hotel-common.css" type="text/css" rel="stylesheet">
     <link href="sestyle.css" type="text/css" rel="stylesheet">
-    <!--<style></style>-->
+    <script type="text/javascript">
+        var initRoomGrade = '<%= room_grade %>';
+        var initCheckin = '<%= boot_checkin %>';
+    </script>
+    <script type="text/javascript" src="sescript.js"></script>
 </head>
 <body>
-    <!-- 이미지 업로드 입력 (숨김 — 이미지 클릭 시 활용 가능) -->
-    <input type="file" id="imgUploadInput" accept="image/*" style="display:none">
+    <jsp:include page="siteNav.jsp" />
 
-    <!-- 라이트박스: 이미지 클릭 시 전체화면으로 표시 -->
     <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
         <span class="lightbox-close" onclick="closeLightbox()">✕</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
     </div>
 
-    <!-- 헤더 -->
     <header>
         <h1>호텔 예약 사이트</h1>
         <p>호텔을 선택하고 방을 예약하세요</p>
     </header>
 
-    <!-- 메인 레이아웃 -->
     <div class="main-container">
-
-        <!-- 왼쪽 사이드바: 검색 조건 입력 -->
         <div class="sidebar-left">
             <h2>예약 검색</h2>
 
-            <!-- 호텔 지점 검색 -->
-            <div class="hotel-search-section sidebar-section">
-                <h3>호텔 지점 검색</h3>
-                <div class="hotel-search-input">
-                    <input type="text" id="hotelSearchInput" placeholder="지점명 검색...">
-                    <button type="button" onclick="searchHotels()">검색</button>
-                    <button type="button" onclick="clearHotelSearch()">초기화</button>
-                </div>
-                <!-- 호텔 목록이 JS로 렌더링됨 -->
-                <div id="hotelList" class="hotel-list"></div>
-            </div>
-
-            <!-- 객실 등급 선택 -->
-            <div class="sidebar-section">
-                <h3>객실 등급</h3>
-                <div class="room-class-selector">
-                    <div class="room-class-buttons">
-                        <button type="button" class="room-class-btn selected" data-class="스탠다드" onclick="selectRoomClass('스탠다드')">스탠다드</button>
-                        <button type="button" class="room-class-btn" data-class="디럭스" onclick="selectRoomClass('디럭스')">디럭스</button>
-                        <button type="button" class="room-class-btn" data-class="스위트" onclick="selectRoomClass('스위트')">스위트</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 날짜 / 인원 선택 -->
-            <div class="sidebar-section">
-                <h3>날짜 및 인원</h3>
-
-                <!-- 체크인 날짜 (커스텀 달력) -->
-                <div class="form-group date-picker-container">
-                    <label for="checkinDate">체크인 날짜</label>
-                    <input type="text" id="checkinDate" class="date-input" placeholder="YYYY-MM-DD" readonly>
-                    <div class="calendar" id="checkinCalendar"></div>
-                </div>
-
-                <!-- 숙박 일수 -->
-                <div class="form-group">
-                    <label for="nights">숙박 일수</label>
-                    <div class="counter-input">
-                        <button type="button" onclick="changeCount('nights', -1, 1, 30)">−</button>
-                        <input type="number" id="nights" value="1" min="1" max="30" readonly>
-                        <button type="button" onclick="changeCount('nights', 1, 1, 30)">+</button>
+            <form method="post" action="searchProc.jsp" id="searchForm">
+                <div class="hotel-search-section sidebar-section">
+                    <h3>호텔 지점 선택</h3>
+                    <div class="hotel-list">
+                        <% if (companyList.isEmpty()) { %>
+                            <div style="padding:10px;color:#999;text-align:center;font-size:13px;">등록된 지점이 없습니다</div>
+                        <% } else {
+                            for (int i = 0; i < companyList.size(); i++) {
+                                CompanyVO c = companyList.get(i);
+                                int cno = c.getCompany_no();
+                                boolean checked = (cno == company_no);
+                                if (company_no == 0 && i == 0) checked = true;
+                        %>
+                        <label class="hotel-option<%= checked ? " selected" : "" %>" style="display:block;cursor:pointer;">
+                            <input type="radio" name="company_no" value="<%= cno %>"<%= checked ? " checked" : "" %>
+                                   style="display:none;" onchange="selectCompanyRadio(this)">
+                            <div class="hotel-option-name"><%= c.getCompany_name() %></div>
+                            <div class="hotel-option-info">
+                                <span>⭐ <%= c.getRating() %>/5.0</span>
+                                <span>🏨 <%= c.getRoom_type_count() %>가지 객실</span>
+                            </div>
+                        </label>
+                        <%   }
+                           } %>
                     </div>
                 </div>
 
-                <!-- 방 수 -->
-                <div class="form-group">
-                    <label for="rooms">방 수</label>
-                    <div class="counter-input">
-                        <button type="button" onclick="changeCount('rooms', -1, 1, 10)">−</button>
-                        <input type="number" id="rooms" value="1" min="1" max="10" readonly>
-                        <button type="button" onclick="changeCount('rooms', 1, 1, 10)">+</button>
-                    </div>
-                </div>
-
-                <!-- 성인 인원 -->
-                <div class="counter-group">
-                    <div class="counter">
-                        <label for="adults">성인</label>
-                        <div class="counter-input">
-                            <button type="button" onclick="changeCount('adults', -1, 1, 20)">−</button>
-                            <input type="number" id="adults" value="1" min="1" max="20" readonly>
-                            <button type="button" onclick="changeCount('adults', 1, 1, 20)">+</button>
+                <div class="sidebar-section">
+                    <h3>객실 등급</h3>
+                    <input type="hidden" name="room_grade" id="room_grade" value="<%= room_grade %>">
+                    <div class="room-class-selector">
+                        <div class="room-class-buttons">
+                            <button type="button" class="room-class-btn<%= "스탠다드".equals(room_grade)?" selected":"" %>" data-class="스탠다드" onclick="selectRoomClass('스탠다드')">스탠다드</button>
+                            <button type="button" class="room-class-btn<%= "디럭스".equals(room_grade)?" selected":"" %>" data-class="디럭스" onclick="selectRoomClass('디럭스')">디럭스</button>
+                            <button type="button" class="room-class-btn<%= "스위트".equals(room_grade)?" selected":"" %>" data-class="스위트" onclick="selectRoomClass('스위트')">스위트</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 어린이 인원 -->
-                <div class="counter-group">
-                    <div class="counter">
-                        <label for="children">어린이</label>
+                <div class="sidebar-section">
+                    <h3>날짜 및 인원</h3>
+                    <div class="form-group date-picker-container">
+                        <label for="checkinDate">체크인 날짜</label>
+                        <input type="text" name="boot_checkin" id="checkinDate" class="date-input" readonly value="<%= boot_checkin %>">
+                        <div class="calendar" id="checkinCalendar"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>숙박 일수</label>
                         <div class="counter-input">
-                            <button type="button" onclick="changeCount('children', -1, 0, 20)">−</button>
-                            <input type="number" id="children" value="0" min="0" max="20" readonly>
-                            <button type="button" onclick="changeCount('children', 1, 0, 20)">+</button>
+                            <button type="button" onclick="changeCount('nights',-1,1,30)">−</button>
+                            <input type="number" name="nights" id="nights" value="<%= nights %>" min="1" max="30" readonly>
+                            <button type="button" onclick="changeCount('nights',1,1,30)">+</button>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label>방 수</label>
+                        <div class="counter-input">
+                            <button type="button" onclick="changeCount('rooms',-1,1,10)">−</button>
+                            <input type="number" name="rooms" id="rooms" value="<%= rooms %>" min="1" max="10" readonly>
+                            <button type="button" onclick="changeCount('rooms',1,1,10)">+</button>
+                        </div>
+                    </div>
+                    <div class="counter-group">
+                        <div class="counter">
+                            <label>성인</label>
+                            <div class="counter-input">
+                                <button type="button" onclick="changeCount('adults',-1,1,20)">−</button>
+                                <input type="number" name="boot_adult" id="adults" value="<%= boot_adult %>" min="1" max="20" readonly>
+                                <button type="button" onclick="changeCount('adults',1,1,20)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="counter-group">
+                        <div class="counter">
+                            <label>어린이</label>
+                            <div class="counter-input">
+                                <button type="button" onclick="changeCount('children',-1,0,20)">−</button>
+                                <input type="number" name="boot_child" id="children" value="<%= boot_child %>" min="0" max="20" readonly>
+                                <button type="button" onclick="changeCount('children',1,0,20)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>예약 정보:</strong><br>
+                        호텔: <span id="infoHotelName"><%= hotelNameInfo %></span><br>
+                        체크인: <span id="infoCheckin"><%= boot_checkin.equals("")?"-":boot_checkin %></span><br>
+                        체크아웃: <span id="infoCheckout"><%= boot_checkout.equals("")?"-":boot_checkout %></span><br>
+                        숙박: <span id="infoNights"><%= nights %></span>박<br>
+                        방: <span id="infoRooms"><%= rooms %></span>개<br>
+                        인원: 성인 <span id="infoAdults"><%= boot_adult %></span>명, 어린이 <span id="infoChildren"><%= boot_child %></span>명<br>
+                        객실 등급: <span id="infoRoomClass"><%= room_grade %></span>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-search">검색</button>
+                    </div>
                 </div>
+            </form>
+        </div>
 
-                <!-- 현재 선택된 예약 정보 요약 -->
-                <div class="info-box">
-                    <strong>예약 정보:</strong><br>
-                    호텔: <span id="infoHotelName">-</span><br>
-                    체크인: <span id="infoCheckin">-</span><br>
-                    체크아웃: <span id="infoCheckout">-</span><br>
-                    숙박: <span id="infoNights">-</span>박<br>
-                    방: <span id="infoRooms">-</span>개<br>
-                    인원: 성인 <span id="infoAdults">1</span>명, 어린이 <span id="infoChildren">0</span>명<br>
-                    객실 등급: <span id="infoRoomClass">스탠다드</span>
-                </div>
-
-                <div class="button-group">
-                    <button type="button" class="btn-search" id="btnSearch">검색</button>
-                </div>
-            </div>
-        </div><!-- /sidebar-left -->
-
-        <!-- 오른쪽 콘텐츠: 검색 결과 -->
         <div class="content" id="mainContent">
-            <!-- 검색 결과 (초기엔 숨김) -->
-            <div id="resultsContainer" style="display:none;">
-                <div class="results-header">
-                    <h2>예약 정보</h2>
-                    <div class="result-count" id="resultCount"></div>
-                </div>
-                <div id="results"></div>
-            </div>
-            <!-- 검색 전 안내 메시지 -->
-            <div id="initialMessage" class="no-results">
-                왼쪽에서 호텔 지점을 검색하고 선택하세요
-            </div>
-        </div><!-- /content -->
-
-    </div><!-- /main-container -->
-
-
-   <!-- <script></script> -->
+            <% if ("Y".equals(searchDone) && selectedCompany != null) { %>
+                <jsp:include page="searchResult.jsp" />
+            <% } else if ("Y".equals(searchDone)) { %>
+                <div class="no-results">DB에 호텔(company) 데이터가 없습니다. seed_data.sql 을 실행해 주세요.</div>
+            <% } else { %>
+                <div class="no-results">왼쪽에서 호텔 지점을 선택하고 검색하세요</div>
+            <% } %>
+        </div>
+    </div>
 </body>
 </html>
