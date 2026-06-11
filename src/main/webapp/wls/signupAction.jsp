@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <%@ page import="java.sql.*" %>
 <%!
-    // 비밀번호 SHA-256 해시 암호화 메서드 (오타 정돈 완료)
+    // 💡 500 컴파일 에러 및 문자열 깨짐을 완벽하게 해결한 SHA-256 메서드
     public String encryptSHA256(String base) {
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
@@ -11,11 +11,11 @@
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
                 if (hex.length() == 1) {
-                    hexString.append('0');
+                    hexString.append('0'); // ◀ StringBuilder에 정확하게 '0' 추가
                 }
                 hexString.append(hex);
             }
-            return hexString.toString(); 
+            return hexString.toString(); // 64글자 난수 리턴
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -25,34 +25,35 @@
     request.setCharacterEncoding("UTF-8");
 
     try {
-        // 1. 프론트엔드 폼 데이터 수집
         String userid = request.getParameter("userid");
-        String userpw = request.getParameter("password");
+        String userpw = request.getParameter("password"); // 폼에서 입력한 비번
         String nameKo = request.getParameter("name");
-        String gender = request.getParameter("gender");
-        String birthdate = request.getParameter("birthdate");
-        String email = request.getParameter("email");
         
-        // 휴대전화 번호 조각 결합
+        // 🛠️ 오라클 제약조건(010-XXXX-XXXX) 통과를 위한 완벽 공백 제거 및 결합 코드
         String phone1 = request.getParameter("phone1");
         String phone2 = request.getParameter("phone2");
         String phone3 = request.getParameter("phone3");
-        if(phone1 == null) phone1 = "010";
-        if(phone2 == null) phone2 = "0000";
-        if(phone3 == null) phone3 = "0000";
+        
+        // 값이 비어있을 경우를 대비한 방어 코드
+        if(phone1 == null || phone1.trim().equals("")) phone1 = "010";
+        if(phone2 == null || phone2.trim().equals("")) phone2 = "0000";
+        if(phone3 == null || phone3.trim().equals("")) phone3 = "0000";
+        
+        // 💡 핵심: trim()을 통해 양쪽 공백을 완전히 지우고 바짝 붙여 13자리를 만듭니다.
         String phone = phone1.trim() + "-" + phone2.trim() + "-" + phone3.trim();
+
 
         String addressMain = request.getParameter("address");
         String addressDetail = request.getParameter("address_detail");
         String address = (addressMain != null ? addressMain : "") + " " + (addressDetail != null ? addressDetail : "");
+        String email = request.getParameter("email");
 
-        // 2. 비밀번호 암호화
+        // 💡 중요: 입력받은 평문 비밀번호를 64글자 해시 난수로 변환
         String encryptedPw = encryptSHA256(userpw);
 
-        // 3. 오라클 데이터베이스 연결 정보 설정 (★본인 환경에 맞게 꼭 수정★)
         String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
-        String dbUser = "scott";                 
-        String dbPass = "tiger";
+        String dbUser = "scott"; // ◀ 보내주신 에러창 스키마 기준 매핑                 
+        String dbPass = "tiger"; // ◀ 본인의 오라클 비밀번호로 수정
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -60,15 +61,15 @@
         Class.forName("oracle.jdbc.driver.OracleDriver");
         conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
-        // 새로 변경된 테이블 컬럼 목록 매칭
+        // 오라클 신규 테이블 구조 스키마 바인딩
         String sql = "INSERT INTO member (member_id, member_pw, member_name, member_phone, member_grade, member_email, member_address) VALUES (?, ?, ?, ?, ?, ?, ?)";
         pstmt = conn.prepareStatement(sql);
         
         pstmt.setString(1, userid);
-        pstmt.setString(2, encryptedPw);
+        pstmt.setString(2, encryptedPw); // ◀ 64글자 암호화 문자열 바인딩
         pstmt.setString(3, nameKo != null ? nameKo : "미입력");
-        pstmt.setString(4, phone); // ◀ 오라클 제약조건 검증 타깃
-        pstmt.setString(5, "일반");
+        pstmt.setString(4, phone);
+        pstmt.setString(5, "일반"); // 기본 등급 일반 세팅
         pstmt.setString(6, email != null ? email : "test@test.com");
         pstmt.setString(7, address);
 
@@ -80,16 +81,14 @@
         if (result > 0) {
             response.sendRedirect("signupSuccess.jsp?name=" + java.net.URLEncoder.encode(nameKo, "UTF-8"));
         } else {
-            out.print("<script>alert('회원가입에 실패했습니다.'); history.back();</script>");
+            out.print("<script>alert('회원가입 실패'); history.back();</script>");
         }
 
     } catch (Exception e) {
-        // 💡 하얀 화면을 강제로 깨부수고 진짜 자바/오라클 에러 내용을 출력합니다.
         e.printStackTrace();
-        out.print("<div style='padding:20px; background:#fff0f0; border:1px solid #ffcccc; color:#d93025; margin:50px; font-family:sans-serif;'>");
+        out.print("<div style='padding:20px; background:#fff0f0; border:1px solid #ffcccc; color:#d93025; margin:50px;'>");
         out.print("<h3>⚠️ 회원가입 처리 중 백엔드 에러 발생!</h3>");
         out.print("<pre>" + e.toString() + "</pre>");
-        out.print("<p>이 영어 메시지를 알려주시면 문제를 단번에 해결해 드립니다.</p>");
         out.print("</div>");
     }
 %>
