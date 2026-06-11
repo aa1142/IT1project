@@ -5,7 +5,7 @@ public class BootDto {
     // ========================================================
     // [1] 필드 변수 정의 (테이블 컬럼 매핑)
     // ========================================================
-    private int bootNo;            // boot_no NUMBER(4)
+    private String bootNo;            // boot_no NUMBER(4)
     private String roomGrade;      // room_grade VARCHAR2(20)
     private int roomType;
     private int roomNo;            // room_no NUMBER
@@ -54,11 +54,11 @@ public class BootDto {
     // ========================================================
     // [3] Getter / Setter 메서드
     // ========================================================
-    public int getBootNo() {
+    public String getBootNo() {
         return bootNo;
     }
 
-    public void setBootNo(int bootNo) {
+    public void setBootNo(String bootNo) {
         this.bootNo = bootNo;
     }
 

@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <style>
         body {
@@ -55,7 +57,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto" id="dynamic-menu-list">
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">룸 배정/현황</a></li>
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomList">방 예약현황</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/bootStatus">예약현황</a></li>
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/onsitePayment">현장결제</a></li>
             </ul>
             <span class="navbar-text text-white">

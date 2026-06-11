@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import dao.BootDao;
 import dao.RoomDao;
+import dto.BootDto;
 
 @WebServlet("/Admin/updateRoomStatus")
 public class ChangeRoomNowServlet extends HttpServlet {
@@ -24,23 +26,58 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	    
 	    HttpSession session = request.getSession();
 	    RoomDao roomDao = new RoomDao();
+	    BootDao bootDao = new BootDao();
+	    
+	    
 	    
 	    // 파라미터 수신
-	    String roomNoStr = request.getParameter("roomNo");
-	    int roomNo = 0;
-	    if (roomNoStr != null && !roomNoStr.equals("")) {
-	        roomNo = Integer.parseInt(roomNoStr);
-	    }
+	 // 1. 공통 필수 데이터 받기
+	    int roomNo = Integer.parseInt(request.getParameter("roomNo"));
 	    String roomNow = request.getParameter("roomNow");
+
+	    // 2. 워크인(현장결제) 모드인지 확인하기 ("Y" 혹은 null이 들어옴)
+	    String isWalkIn = request.getParameter("isWalkIn");
 	    
 	    // 세션 및 더미데이터
 	    Integer companyObj = (Integer) session.getAttribute("companyNo");
 	    int company = (companyObj != null) ? companyObj : 0;
 	    company = 1; // 테스트용 더미
 	    
-	    // DB 업데이트
-	    int result = roomDao.updateRoomNow(roomNow, roomNo, company);
+	    int result = 0;//성공 여부
 	    
+	    // 3. 조건문으로 현장 결제 데이터 처리 분기하기
+	    if ("Y".equals(isWalkIn)) {
+	        // 워크인 모드일 때만 전송되는 데이터 수집
+	        String bootName = request.getParameter("bootName");
+	        String bootPhone = request.getParameter("bootPhone");
+	        int bootAdult = Integer.parseInt(request.getParameter("bootAdult"));
+	        int bootChild = Integer.parseInt(request.getParameter("bootChild"));
+	        String bootCheckin = request.getParameter("bootCheckin");
+	        String bootCheckout = request.getParameter("bootCheckout");
+	        String roomGrade = request.getParameter("roomGrade");
+	        int roomType = Integer.parseInt(request.getParameter("roomType"));
+	        
+	        // 4. 수집한 데이터 DTO에 세팅하기
+	        BootDto bootDto = new BootDto();
+	        bootDto.setBootNo("Hotel-"+System.currentTimeMillis());
+	        bootDto.setRoomNo(roomNo);
+	        bootDto.setBootName(bootName);
+	        bootDto.setCompanyNo(company);
+	        bootDto.setBootPhone(bootPhone);
+	        bootDto.setBootAdult(bootAdult);
+	        bootDto.setBootChild(bootChild);
+	        bootDto.setBootCheckin(bootCheckin);
+	        bootDto.setBootCheckout(bootCheckout);
+	        bootDto.setRoomGrade(roomGrade);
+	        bootDto.setRoomType(roomType);
+	        result = bootDao.assignRoom(bootDto);
+	    }
+	    System.out.println("주문 넣기"+result);
+	    if(result>0) {
+	    	result = roomDao.updateRoomNow(roomNow, roomNo, company);
+	    }
+
+	    System.out.println("방 업데이트"+result);
 	    // AJAX 응답
 	    PrintWriter out = response.getWriter();
 	    if (result > 0) {

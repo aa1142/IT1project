@@ -2,7 +2,6 @@
 <%@ include file="/adminTem/headTem.jsp" %>
 <%@ page import="java.util.List, java.util.ArrayList, java.util.Map, java.util.HashMap" %>
 <%@ page import="dto.BootDto,dto.RoomDto" %>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <%
     List<BootDto> bootList = (List<BootDto>) request.getAttribute("bootList");
     if (bootList == null) bootList = new ArrayList<>();
@@ -97,7 +96,16 @@
                     <td><%= (boot.getRoomType()==1?"싱글":boot.getRoomType()==2?"트윈":"패밀리") %></td>
                     <td><%= (boot.getBootConfirm()==1?"예약확정":"결제완료") %></td>
                     <td>
-                        <button class="btn btn-info btn-sm" onclick="openManageModal(this, '<%= boot.getBootNo() %>')" data-room-grade="<%= boot.getRoomGrade() %>" data-please="<%= boot.getBootPlease() %>">관리</button>
+                        <button type="button" 
+						        class="btn btn-info btn-sm" 
+						        onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
+						        data-room-grade="<%= boot.getRoomGrade() != null ? boot.getRoomGrade() : "" %>" 
+						        data-please="<%= boot.getBootPlease() != null ? boot.getBootPlease().replace("\"", "&quot;").replace("\r\n", " ") : "" %>" 
+						        data-checkin="<%= cleanCheckIn %>" 
+						        data-checkout="<%= cleanCheckOut %>" 
+						        data-room-type-text="<%= boot.getRoomType() == 1 ? "싱글" : boot.getRoomType() == 2 ? "트윈" : "패밀리" %>">
+						    관리
+						</button>
                     </td>
                 </tr>
                 <% } %>

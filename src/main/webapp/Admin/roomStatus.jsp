@@ -3,12 +3,10 @@
 <%@page import="dto.RoomDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, java.util.ArrayList, java.util.Map, java.util.HashMap, java.util.Iterator" %>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; font-family: 'Malgun Gothic', sans-serif; }
         
@@ -41,7 +39,7 @@
     <jsp:include page="/adminTem/headTem.jsp" />
 
     <%
-        // 🌟 오늘 날짜 구하기 (예: "2026-06-08")
+        // 🌟 오늘 날짜 구하기 (예: "2026-06-09")
         String todayStr = java.time.LocalDate.now().toString();
 
         Map<String, Integer> roomCounts = (Map<String, Integer>) request.getAttribute("roomCounts");
@@ -130,6 +128,19 @@
                         String roomNow   = room.getRoomNow() != null ? room.getRoomNow() : "";
                         String roomNo    = String.valueOf(room.getRoomNo());
                         String roomGrade = room.getRoomGrade() != null ? room.getRoomGrade() : "";
+                        int roomType = room.getRoomType();
+                        String roomTypeName = "";
+                        switch(roomType){
+                        case 1:
+                        	roomTypeName = "싱글";
+                        	break;
+                        case 2:
+                        	roomTypeName = "트윈";
+                        	break;
+                        case 5:
+                        	roomTypeName = "패밀리";
+                        	break;	
+                        }
                         
                         System.out.println("jsp RoomNo = "+room.getRoomNo());
                         String firstCheckin = bootDao.SelectOneFirstBootDate(room.getRoomNo(), room.getCompanyNo());
@@ -174,10 +185,10 @@
                                 break;
                         }
                 %>
-                        <div class="room-card <%= cardClass %>" onclick="openRoomModal('<%= roomNo %>', '<%= roomGrade %>', '<%= statusText %>', '<%= firstCheckin %>')">
+                        <div class="room-card <%= cardClass %>" onclick="openRoomModal('<%= roomNo %>', '<%= roomGrade %>', '<%= statusText %>', '<%= firstCheckin %>', '<%= roomType %>')">
                             <div class="small text-muted fw-normal" style="font-size: 11px;"><%= roomNo %>호</div>
                             <div><%= roomGrade %></div>
-                            <div><%= statusText %></div>
+                            <div><%= roomTypeName %></div>
                         </div>
                 <% 
                     } 
@@ -225,29 +236,45 @@
                                     </select>
                                 </td>
                             </tr>
+                            
                             <tr id="rowName" class="status-dependent-row">
                                 <th class="table-light text-secondary">이름</th>
-                                <td id="modalRoomName" class="text-dark fw-medium">-</td> 
+                                <td>
+                                    <span id="modalRoomName" class="text-dark fw-medium">-</span>
+                                    <input type="text" id="inputRoomName" class="form-control form-control-sm d-none mx-auto" style="width: 80%;" placeholder="현장 투숙객 이름">
+                                </td> 
                             </tr>
                             <tr id="rowPhone" class="status-dependent-row">
                                 <th class="table-light text-secondary">전화번호</th>
                                 <td>
-                                    <span id="modalRoomPhone" class="memo-trigger" style="cursor: pointer; text-decoration: underline; color: #007bff;">
-                                        -
-                                    </span>
+                                    <span id="modalRoomPhone" class="memo-trigger" style="cursor: pointer; text-decoration: underline; color: #007bff;">-</span>
+                                    <input type="text" id="inputRoomPhone" class="form-control form-control-sm d-none mx-auto" style="width: 80%;" placeholder="010-0000-0000" maxlength="13">
                                 </td>
                             </tr>
                             <tr id="rowAdult" class="status-dependent-row">
                                 <th class="table-light text-secondary">성인</th>
-                                <td id="modalRoomAdult" class="text-dark fw-medium">-</td>
+                                <td>
+                                    <span id="modalRoomAdult" class="text-dark fw-medium">-</span>
+                                    <input type="number" id="inputRoomAdult" class="form-control form-control-sm d-none mx-auto" style="width: 50%;" min="0" value="0">
+                                </td>
                             </tr>
                             <tr id="rowChild" class="status-dependent-row">
                                 <th class="table-light text-secondary">어린이</th>
-                                <td id="modalRoomChild" class="text-dark fw-medium">-</td>
+                                <td>
+                                    <span id="modalRoomChild" class="text-dark fw-medium">-</span>
+                                    <input type="number" id="inputRoomChild" class="form-control form-control-sm d-none mx-auto" style="width: 50%;" min="0" value="0">
+                                </td>
                             </tr>
                             <tr id="rowCheckInOut" class="status-dependent-row">
                                 <th class="table-light text-secondary">예약기간</th>
-                                <td id="modalRoomCheckInOut" class="text-dark fw-medium">-</td> 
+                                <td>
+                                    <span id="modalRoomCheckInOut" class="text-dark fw-medium">-</span>
+                                    <div id="inputCheckInOutGroup" class="d-flex gap-1 justify-content-center d-none">
+                                        <input type="date" id="inputCheckin" class="form-control form-control-sm">
+                                        <span class="align-self-center">~</span>
+                                        <input type="date" id="inputCheckout" class="form-control form-control-sm">
+                                    </div>
+                                </td> 
                             </tr>
                             <tr id="rowNextReservation" class="status-dependent-row">
 							    <th class="table-light text-secondary">다음 예약일</th>
@@ -265,10 +292,39 @@
     </div>
 
     <%@ include file="/adminTem/memoModal.jsp" %>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-function openRoomModal(roomNo, roomGrade, statusText, firstCheckin) {
+ <script>
+// 전역 변수로 모달에 필요한 데이터 백업 관리
+var currentFirstCheckin = "";
+var currentRoomGrade = "";
+var currentRoomType = "";
+
+// 전화번호 자동 하이픈 생성 로직
+$(document).on('input', '#inputRoomPhone', function() {
+    let val = $(this).val().replace(/[^0-9]/g, ''); // 숫자만 남기기
+    let formatted = '';
+
+    if (val.length < 4) {
+        formatted = val;
+    } else if (val.length < 8) {
+        formatted = val.substr(0, 3) + '-' + val.substr(3);
+    } else if (val.length < 11) {
+        formatted = val.substr(0, 3) + '-' + val.substr(3, 3) + '-' + val.substr(6);
+    } else {
+        formatted = val.substr(0, 3) + '-' + val.substr(3, 4) + '-' + val.substr(7, 4);
+    }
+    $(this).val(formatted);
+});
+
+// 모달 열기 함수 (roomType 파라미터 추가 수신)
+function openRoomModal(roomNo, roomGrade, statusText, firstCheckin, roomType) {
+    console.log("방 모달 오픈:", roomNo);
+    
+    // 전역 변수에 데이터 백업 (나중에 전송할 때 사용)
+    currentFirstCheckin = firstCheckin; 
+    currentRoomGrade = roomGrade;
+    currentRoomType = roomType;
+    
     document.getElementById('modalRoomNo').innerText = roomNo + "호";
     document.getElementById('modalRoomGrade').innerText = roomGrade;
     
@@ -290,6 +346,7 @@ function openRoomModal(roomNo, roomGrade, statusText, firstCheckin) {
     
     toggleConditionalRows(statusText);
     clearReservationFields();
+    toggleWalkInInputs(false); 
 
     if (firstCheckin && firstCheckin !== "null" && firstCheckin.trim() !== "") {
         document.getElementById('modalNextReservation').innerText = firstCheckin;
@@ -333,82 +390,127 @@ function openRoomModal(roomNo, roomGrade, statusText, firstCheckin) {
     myModal.show();
 }
 
-    function clearReservationFields() {
-        document.getElementById('modalRoomName').innerText = "-";
-        
-        const phoneSpan = document.getElementById('modalRoomPhone');
-        phoneSpan.innerText = "-";
-        phoneSpan.onclick = null; 
-        
-        document.getElementById('modalRoomAdult').innerText = "-";
-        document.getElementById('modalRoomChild').innerText = "-";
-        document.getElementById('modalRoomCheckInOut').innerText = "-";
-        document.getElementById('modalNextReservation').innerText = "-"; 
-	}
+function clearReservationFields() {
+    document.getElementById('modalRoomName').innerText = "-";
+    
+    const phoneSpan = document.getElementById('modalRoomPhone');
+    phoneSpan.innerText = "-";
+    phoneSpan.onclick = null; 
+    
+    document.getElementById('modalRoomAdult').innerText = "-";
+    document.getElementById('modalRoomChild').innerText = "-";
+    document.getElementById('modalRoomCheckInOut').innerText = "-";
+    document.getElementById('modalNextReservation').innerText = "-"; 
+    
+    document.getElementById('inputRoomName').value = "";
+    document.getElementById('inputRoomPhone').value = "";
+    document.getElementById('inputRoomAdult').value = "0";
+    document.getElementById('inputRoomChild').value = "0";
+    document.getElementById('inputCheckin').value = "";
+    document.getElementById('inputCheckout').value = "";
+}
 
-    function toggleStatusEdit() {
-        document.getElementById('modalRoomStatus').classList.add('d-none');
-        document.getElementById('modalStatusSelect').classList.remove('d-none');
-        document.getElementById('modalStatusSelect').focus();
+function toggleStatusEdit() {
+    document.getElementById('modalRoomStatus').classList.add('d-none');
+    document.getElementById('modalStatusSelect').classList.remove('d-none');
+    document.getElementById('modalStatusSelect').focus();
+}
+
+function changeStatusBadge(newStatus) {
+    updateBadgeDesign(newStatus); 
+    toggleConditionalRows(newStatus);
+    
+    const todayStr = '<%= todayStr %>'; 
+    const hasReservationToday = currentFirstCheckin && currentFirstCheckin.includes(todayStr);
+    
+    if (newStatus === '투숙 중' && !hasReservationToday) {
+        toggleWalkInInputs(true); 
+    } else {
+        toggleWalkInInputs(false); 
     }
+    
+    document.getElementById('modalStatusSelect').classList.add('d-none');
+    document.getElementById('modalRoomStatus').classList.remove('d-none');
+}
 
-    function changeStatusBadge(newStatus) {
-        updateBadgeDesign(newStatus); 
-        toggleConditionalRows(newStatus);
-        
-        document.getElementById('modalStatusSelect').classList.add('d-none');
-        document.getElementById('modalRoomStatus').classList.remove('d-none');
-    }
-
-    // 🎯 행 일괄 show/hide 토글 함수 수정
-    function toggleConditionalRows(status) {
-	    const rowName = document.getElementById('rowName');     
-	    const rowPhone = document.getElementById('rowPhone');
-	    const rowAdult = document.getElementById('rowAdult');
-	    const rowChild = document.getElementById('rowChild');
-	    const rowCheckInOut = document.getElementById('rowCheckInOut');
-	    const rowNextReservation = document.getElementById('rowNextReservation'); 
-	    
-	    // 우선 모든 조건부 행을 숨김 처리
-	    rowName.classList.add('d-none');     
-	    rowPhone.classList.add('d-none');     
-	    rowAdult.classList.add('d-none');    
-	    rowChild.classList.add('d-none');    
-	    rowCheckInOut.classList.add('d-none');
-	    rowNextReservation.classList.add('d-none'); 
-	    
-	    // '투숙 중', '금일 예약있음', '체크인 예정'일 때 예약 기간 및 투숙객 정보 노출
-	    if (status === '투숙 중' || status === '금일 예약있음' || status === '체크인 예정') {
-	        rowName.classList.remove('d-none');   
-	        rowPhone.classList.remove('d-none');  
-	        rowAdult.classList.remove('d-none'); 
-	        rowChild.classList.remove('d-none'); 
-	        rowCheckInOut.classList.remove('d-none');
-	    }
-	    
-	    // 🌟 [수정]: 오직 '사용 가능' 상태일 때만 다음 예약일 노출 ('금일 예약있음', '체크인 예정' 제외)
-	    if (status === '사용 가능') {
-	        rowNextReservation.classList.remove('d-none');
-	    }
-	}
-
-    function updateBadgeDesign(statusText) {
-        const statusSpan = document.getElementById('modalRoomStatus');
-        statusSpan.innerText = statusText;
-        statusSpan.className = "fw-bold fs-5 "; 
-        
-        if (statusText === '사용 가능') {
-            statusSpan.classList.add('text-success');
-        } else if (statusText === '투숙 중') {
-            statusSpan.classList.add('text-primary');
-        } else if (statusText === '금일 예약있음' || statusText === '체크인 예정') {
-            statusSpan.style.color = "#8e24aa"; 
-        } else if (statusText === '청소 중') {
-            statusSpan.classList.add('text-warning');
-        } else {
-            statusSpan.classList.add('text-danger');
+function toggleWalkInInputs(isWalkIn) {
+    const spanIds = ['modalRoomName', 'modalRoomPhone', 'modalRoomAdult', 'modalRoomChild', 'modalRoomCheckInOut'];
+    const inputIds = ['inputRoomName', 'inputRoomPhone', 'inputRoomAdult', 'inputRoomChild', 'inputCheckInOutGroup'];
+    
+    spanIds.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            if(isWalkIn) el.classList.add('d-none');
+            else el.classList.remove('d-none');
         }
+    });
+    
+    inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            if(isWalkIn) el.classList.remove('d-none');
+            else el.classList.add('d-none');
+        }
+    });
+
+    if (isWalkIn) {
+        const today = '<%= todayStr %>';
+        document.getElementById('inputCheckin').value = today;
+        
+        let tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        let yyyy = tomorrow.getFullYear();
+        let mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        let dd = String(tomorrow.getDate()).padStart(2, '0');
+        document.getElementById('inputCheckout').value = `${yyyy}-${mm}-${dd}`;
     }
+}
+
+function toggleConditionalRows(status) {
+    const rowName = document.getElementById('rowName');     
+    const rowPhone = document.getElementById('rowPhone');
+    const rowAdult = document.getElementById('rowAdult');
+    const rowChild = document.getElementById('rowChild');
+    const rowCheckInOut = document.getElementById('rowCheckInOut');
+    const rowNextReservation = document.getElementById('rowNextReservation'); 
+    
+    rowName.classList.add('d-none');     
+    rowPhone.classList.add('d-none');     
+    rowAdult.classList.add('d-none');    
+    rowChild.classList.add('d-none');    
+    rowCheckInOut.classList.add('d-none');
+    rowNextReservation.classList.add('d-none'); 
+    
+    if (status === '투숙 중' || status === '금일 예약있음' || status === '체크인 예정') {
+        rowName.classList.remove('d-none');   
+        rowPhone.classList.remove('d-none');  
+        rowAdult.classList.remove('d-none'); 
+        rowChild.classList.remove('d-none'); 
+        rowCheckInOut.classList.remove('d-none');
+    }
+    
+    if (status === '사용 가능') {
+        rowNextReservation.classList.remove('d-none');
+    }
+}
+
+function updateBadgeDesign(statusText) {
+    const statusSpan = document.getElementById('modalRoomStatus');
+    statusSpan.innerText = statusText;
+    statusSpan.className = "fw-bold fs-5 "; 
+    
+    if (statusText === '사용 가능') {
+        statusSpan.classList.add('text-success');
+    } else if (statusText === '투숙 중') {
+        statusSpan.classList.add('text-primary');
+    } else if (statusText === '금일 예약있음' || statusText === '체크인 예정') {
+        statusSpan.style.color = "#8e24aa"; 
+    } else if (statusText === '청소 중') {
+        statusSpan.classList.add('text-warning');
+    } else {
+        statusSpan.classList.add('text-danger');
+    }
+}
     
 function submitStatusLetter() {
     const roomNoRaw = document.getElementById('modalRoomNo').innerText;
@@ -420,13 +522,43 @@ function submitStatusLetter() {
         return;
     }
 
+    const isWalkInMode = !document.getElementById('inputRoomName').classList.contains('d-none');
+    
+    // 🌟 쉼표(,) 추가 완료 및 전역 변수를 활용한 셋팅 매핑 완료!
+    let ajaxData = { 
+        roomNo: roomNo, 
+        roomNow: roomNow, 
+        roomGrade: currentRoomGrade,
+        roomType : currentRoomType
+    };
+
+    if (isWalkInMode) {
+        const bootName = document.getElementById('inputRoomName').value.trim();
+        const bootPhone = document.getElementById('inputRoomPhone').value.trim();
+        const bootAdult = document.getElementById('inputRoomAdult').value;
+        const bootChild = document.getElementById('inputRoomChild').value;
+        const bootCheckin = document.getElementById('inputCheckin').value;
+        const bootCheckout = document.getElementById('inputCheckout').value;
+
+        if (!bootName) {
+            alert("현장 결제 고객의 이름을 입력해 주세요.");
+            document.getElementById('inputRoomName').focus();
+            return;
+        }
+
+        ajaxData.bootName = bootName;
+        ajaxData.bootPhone = bootPhone;
+        ajaxData.bootAdult = bootAdult;
+        ajaxData.bootChild = bootChild;
+        ajaxData.bootCheckin = bootCheckin;
+        ajaxData.bootCheckout = bootCheckout;
+        ajaxData.isWalkIn = "Y"; 
+    }
+
     $.ajax({
         url: "${pageContext.request.contextPath}/Admin/updateRoomStatus",
-        type: "Get", 
-        data: { 
-            roomNo: roomNo, 
-            roomNow: roomNow 
-        },
+        type: "Post", // 👈 지난번에 말씀드린 대로 보안/표준을 위해 Post로 매핑 변경해 드렸습니다.
+        data: ajaxData, 
         success: function(response) {
             if (response.trim() === "SUCCESS") {
                 alert(roomNo + "호 객실 상태가 [" + roomNow + "]으로 변경되었습니다.");
@@ -441,6 +573,6 @@ function submitStatusLetter() {
         }
     });
 }
-    </script>
+</script>
 </body>
 </html>

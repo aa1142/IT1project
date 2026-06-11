@@ -71,9 +71,9 @@
   background-position: center;  /* ◀ 이미지의 중심을 기준으로 배치 */
 }
 
-      .slide:nth-child(1) { animation-delay: 0s; background-image: url("<%=ctx%>/img/tokyo.png"); }
-      .slide:nth-child(2) { animation-delay: 6s; background-image: url("<%=ctx%>/img/shinjuku.png"); }
-      .slide:nth-child(3) { animation-delay: 12s; background-image: url("<%=ctx%>/img/yokohama.png"); }
+      .slide:nth-child(1) { animation-delay: 0s; background-image: url("<%=ctx%>/images/tokyo.png"); }
+      .slide:nth-child(2) { animation-delay: 6s; background-image: url("<%=ctx%>/images/shinjuku.png"); }
+      .slide:nth-child(3) { animation-delay: 12s; background-image: url("<%=ctx%>/images/yokohama.png"); }
 
       @keyframes fade {
         0% { opacity: 0; }
@@ -315,7 +315,7 @@
 
     <section class="detail-section" id="tokyo-section">
       <div class="detail-box">
-        <img src="<%=ctx%>/img/tokyo.png" class="detail-image" alt="도쿄">
+        <img src="<%=ctx%>/images/tokyo.png" class="detail-image" alt="도쿄">
         <div class="detail-text">
           <h2>도쿄 지점</h2>
           <p>도쿄역 인근에 위치하여 관광과 비즈니스 모두에 최적의 접근성을 제공합니다.</p>
@@ -325,7 +325,7 @@
 
     <section class="detail-section" id="shinjuku-section">
       <div class="detail-box">
-        <img src="<%=ctx%>/img/shinjuku.png" class="detail-image" alt="신주쿠">
+        <img src="<%=ctx%>/images/shinjuku.png" class="detail-image" alt="신주쿠">
         <div class="detail-text">
           <h2>신주쿠 지점</h2>
           <p>신주쿠역에서 가까워 쇼핑, 식사, 관광을 편리하게 즐길 수 있습니다.</p>
@@ -335,7 +335,7 @@
 
     <section class="detail-section" id="yokohama-section">
       <div class="detail-box">
-        <img src="<%=ctx%>/img/yokohama.png" class="detail-image" alt="요코하마">
+        <img src="<%=ctx%>/images/yokohama.png" class="detail-image" alt="요코하마">
         <div class="detail-text">
           <h2>요코하마 지점</h2>
           <p>아름다운 항구 전망과 편안한 객실을 제공하는 프리미엄 지점입니다.</p>
