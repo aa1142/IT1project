@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 public class PaymentDAO {
 
-    // 데이터베이스 연결 커넥션 획득 메소드
+    // 데이터베이스 연결 커넥션 획득 메소드 (SCOTT / tiger 정품 엔진 탑재)
     private Connection getConnection() throws Exception {
         Class.forName("oracle.jdbc.OracleDriver");
         return DriverManager.getConnection(
@@ -18,12 +18,32 @@ public class PaymentDAO {
     }
 
     /**
+     * [사용자 전용 정품 메서드]
+     * 앞단 흐름 상관없이 오직 오라클 테이블에서 예약번호 하나로 진짜 적재된 AMOUNT 금액을 직접 긁어옵니다.
+     */
+    public int getRoomTotalAmountFromDB(String bootNo) throws Exception {
+        // 컬럼명 모순을 해결하기 위해 실제 오라클 컬럼명인 RESERVATION_ID로 타격합니다.
+        String sql = "SELECT AMOUNT FROM PAYMENT WHERE RESERVATION_ID = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, bootNo);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("AMOUNT"); // 정품 AMOUNT 추출 완료!
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
      * 1. [등록] 카카오페이 최종 승인 완료된 결제 영수증 내역을 PAYMENT 테이블에 적재합니다.
      */
     public int insertPayment(PaymentDTO dto) throws Exception {
-        String sql = "INSERT INTO PAYMENT " +
-                     "(PAYMENT_ID, BOOT_NO, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) " +
-                     "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -40,13 +60,13 @@ public class PaymentDAO {
     }
 
     /**
-     * 2. [조회] 환불 처리를 위해 BOOT_NO(예약번호)를 기준으로 정상 결제('PAID')된 영수증 내역을 찾아옵니다.
-     * KakaoRefundServlet의 findPaidPaymentByBootNo 빨간 줄을 없애주는 핵심 메서드입니다.
+     * 2. [조회] 환불 처리를 위해 RESERVATION_ID를 기준으로 정상 결제('PAID')된 영수증 내역을 찾아옵니다.
      */
     public PaymentDTO findPaidPaymentByBootNo(String bootNo) throws Exception {
-        String sql = "SELECT PAYMENT_ID, BOOT_NO, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, CREATED_AT " +
+        // 부적합한 식별자 에러 방지를 위해 BOOT_NO 컬럼명을 RESERVATION_ID로 전면 수정 고정
+        String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, CREATED_AT " +
                      "FROM PAYMENT " +
-                     "WHERE BOOT_NO = ? AND PAYMENT_STATUS = 'PAID'";
+                     "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -57,7 +77,7 @@ public class PaymentDAO {
                 if (rs.next()) {
                     PaymentDTO dto = new PaymentDTO();
                     dto.setPaymentId(rs.getInt("PAYMENT_ID"));
-                    dto.setBootNo(rs.getString("BOOT_NO"));
+                    dto.setBootNo(rs.getString("RESERVATION_ID"));
                     dto.setTid(rs.getString("TID"));
                     dto.setPartnerOrderId(rs.getString("PARTNER_ORDER_ID"));
                     dto.setPaymentMethod(rs.getString("PAYMENT_METHOD"));
@@ -73,18 +93,20 @@ public class PaymentDAO {
 
     /**
      * 3. [수정] 환불 성공 시 결제 내역의 상태를 전면 변경합니다. (ex: PAID -> REFUNDED)
-     * KakaoRefundServlet의 updatePaymentStatus 빨간 줄을 없애주는 핵심 메서드입니다.
+     */
+    /**
+     * 3. [수정] 결제 성공 시 상태를 'PAID'로 바꾸고, 빈칸이던 APPROVED_AT에 오라클 현재 시각(SYSDATE)을 쾅 박아버립니다.
      */
     public int updatePaymentStatus(String bootNo, String status) throws Exception {
-        String sql = "UPDATE PAYMENT SET PAYMENT_STATUS = ? WHERE BOOT_NO = ?";
+        // 🎯 STATUS뿐만 아니라 APPROVED_AT 컬럼까지 실시간 동기화 처리
+        String sql = "UPDATE PAYMENT SET PAYMENT_STATUS = ?, APPROVED_AT = SYSDATE WHERE RESERVATION_ID = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, status); // 'REFUNDED' 등이 전달됨
+            pstmt.setString(1, status); 
             pstmt.setString(2, bootNo);
 
             return pstmt.executeUpdate();
         }
-    }
-}
+    }}

@@ -118,6 +118,7 @@
         vo.setMember_id(sessionUserId);
     }
 
+    // 1. DB 적재 실행
     boolean flag = dao.executeInsertReservation(vo);
 
     if (!flag) {
@@ -131,24 +132,28 @@
     }
 
     if (isOnlinePay) {
+        // 2. 🌟 [유지보수 핵심] 성공하자마자 예약 번호를 세션 금고에 확실하게 박아버립니다.
         session.setAttribute("bootNo", vo.getBoot_no());
-        session.setAttribute("bootEmail", vo.getBoot_email());
-        session.setAttribute("bootName", vo.getBoot_name());
-        session.setAttribute("reservationCode", vo.getReservation_code());
         session.setAttribute("amount", grandTotal);
 
-        String itemName = companyName + " " + RoomTypeUtil.toUiGrade(room_grade) + " 예약금";
+        // 3. PAYMENT 테이블 선적재 ('READY' 상태)
+        try {
+            com.hotel.payment.PaymentDTO prePayment = new com.hotel.payment.PaymentDTO();
+            prePayment.setBootNo(vo.getBoot_no()); 
+            prePayment.setTid("PENDING_TID");       
+            prePayment.setPartnerOrderId(vo.getBoot_no());
+            prePayment.setPaymentMethod("KAKAOPAY");
+            prePayment.setAmount(grandTotal);        
+            prePayment.setPaymentStatus("READY");    
 
-        request.setAttribute("bootNo", vo.getBoot_no());
-        request.setAttribute("reservationCode", vo.getReservation_code());
-        request.setAttribute("bootPayCheck", String.valueOf(grandTotal));
-        request.setAttribute("bootName", vo.getBoot_name());
-        request.setAttribute("bootEmail", vo.getBoot_email());
-        request.setAttribute("itemName", itemName);
-        request.setAttribute("quantity", "1");
-        request.setAttribute("taxFreeAmount", "0");
+            com.hotel.payment.PaymentDAO paymentDAO = new com.hotel.payment.PaymentDAO();
+            paymentDAO.insertPayment(prePayment);    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        request.getRequestDispatcher("/res/boot.jsp").forward(request, response);
+        // 4. 경로가 찢어져도 배달사고가 안 나는 절대 경로 리다이렉트 강제 실행
+        response.sendRedirect(request.getContextPath() + "/res/boot.jsp");
         return;
     }
 

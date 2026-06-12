@@ -1,15 +1,15 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.Connection" %>
+<%@ page import="java.sql.DriverManager" %>
+<%@ page import="java.sql.PreparedStatement" %>
+<%@ page import="java.sql.ResultSet" %>
 <%
     request.setCharacterEncoding("UTF-8");
 
-    // 1. KakaoApproveServlet이 최종 승인 후 세션에 바인딩해 준 BOOT 정보 인출
-    String partnerOrderId = (String) session.getAttribute("partnerOrderId");
-    String bootNo = (String) session.getAttribute("bootNo"); // [수정] String형 bootNo 수집
-    String reservationCode = (String) session.getAttribute("reservationCode");
+    String bootNo = (String) session.getAttribute("bootNo"); 
     Object amountObj = session.getAttribute("amount");
     String mailStatus = (String) session.getAttribute("mailStatus");
 
-    // 방어벽: 정상적인 결제 승인 단계를 거치지 않고 다이렉트로 주소창에 쳐서 들어온 경우 차단
     if (bootNo == null) {
 %>
     <script>
@@ -25,6 +25,37 @@
         amount = Integer.parseInt(String.valueOf(amountObj));
     }
     String displayAmountText = String.format("%,d", amount) + "원";
+
+    String partnerOrderId = bootNo; 
+    String reservationCode = "";
+
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    String sql = "SELECT RESERVATION_CODE FROM BOOT WHERE BOOT_NO = ?";
+
+    try {
+        Class.forName("oracle.jdbc.OracleDriver");
+        conn = DriverManager.getConnection(
+            "jdbc:oracle:thin:@localhost:1521:orcl",
+            "SCOTT",
+            "tiger"
+        );
+        
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, bootNo);
+        rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            reservationCode = rs.getString("RESERVATION_CODE");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (rs != null) try { rs.close(); } catch(Exception e) {}
+        if (pstmt != null) try { pstmt.close(); } catch(Exception e) {}
+        if (conn != null) try { conn.close(); } catch(Exception e) {}
+    }
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -118,7 +149,6 @@
         <strong>안내:</strong> <%= mailStatus %>
     </div>
   <% 
-      // 안내 문구를 보여준 후 세션에서 제거하여 일회성으로 유지
       session.removeAttribute("mailStatus");
      } 
   %>
