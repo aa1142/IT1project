@@ -53,11 +53,11 @@ public class OnSitePaymentServlet extends HttpServlet {
             for (BootDto boot : allBootList) {
                 if (!"전체".equals(bootStatus)) {
                     int confirmVal = boot.getBootConfirm();
-                    if ("결제완료".equals(bootStatus) && confirmVal != 0) {
-                        continue; 
+                    if (confirmVal == 0) {
+                        bootStatus = "예약대기"; 
                     }
-                    if ("예약확정".equals(bootStatus) && confirmVal != 1) {
-                        continue; 
+                    if (confirmVal == 1) {
+                    	bootStatus = "예약확정"; 
                     }
                 }
                 filteredList.add(boot);

@@ -21,7 +21,7 @@ public class BootDto {
     private int bootPayCheck;      // boot_pay_check NUMBER
     private String bootPlease;     // boot_please VARCHAR2(400)
     private int bootConfirm;       // boot_confirm NUMBER
-
+    private String reservationCode;
     // ========================================================
     // [2] 생성자 (Constructor)
     // ========================================================
@@ -51,7 +51,15 @@ public class BootDto {
 //        this.bootConfirm = bootConfirm;
 //    }
 
-    // ========================================================
+    public String getReservationCode() {
+		return reservationCode;
+	}
+
+	public void setReservationCode(String reservationCode) {
+		this.reservationCode = reservationCode;
+	}
+
+	// ========================================================
     // [3] Getter / Setter 메서드
     // ========================================================
     public String getBootNo() {
