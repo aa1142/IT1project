@@ -7,27 +7,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-@WebServlet("/review/reviewInsert")
-public class ReviewInsertServlet extends HttpServlet {
+@WebServlet("/review/reviewUpdate")
+public class ReviewUpdateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
-    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        HttpSession httpSession = request.getSession();
-        String memberId = (String) httpSession.getAttribute("userId");
-        if (memberId == null) {
-            memberId = "testUser";
-        }
-
-        String title = request.getParameter("title");
-        String content = request.getParameter("content");
+        int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
         int branch = Integer.parseInt(request.getParameter("branch"));
         String roomGrade = request.getParameter("roomgrade");
         int roomType = Integer.parseInt(request.getParameter("roomtype"));
@@ -37,24 +25,24 @@ public class ReviewInsertServlet extends HttpServlet {
         int scoreService = Integer.parseInt(request.getParameter("score_service"));
         int scorePrice = Integer.parseInt(request.getParameter("score_price"));
         int scoreFacilities = Integer.parseInt(request.getParameter("score_facilities"));
+        String content = request.getParameter("content");
 
         ReviewDto reviewDto = new ReviewDto();
-        reviewDto.setMemberid(memberId);
+        reviewDto.setReviewNo(reviewNo);
         reviewDto.setCompanyNo(branch);
-        reviewDto.setTitle(title);
-        reviewDto.setContent(content);
         reviewDto.setBranch(branch);
-        reviewDto.setRoomType(roomType);
         reviewDto.setRoomgrade(roomGrade);
+        reviewDto.setRoomType(roomType);
         reviewDto.setRating(rating);
         reviewDto.setScore_location(scoreLocation);
         reviewDto.setScore_cleanliness(scoreCleanliness);
         reviewDto.setScore_service(scoreService);
         reviewDto.setScore_price(scorePrice);
         reviewDto.setScore_facilities(scoreFacilities);
+        reviewDto.setContent(content);
 
         ReviewDao reviewDao = new ReviewDao();
-        reviewDao.insertReview(reviewDto);
+        reviewDao.updateReview(reviewDto);
 
         response.sendRedirect(request.getContextPath() + "/review/reviewList");
     }
