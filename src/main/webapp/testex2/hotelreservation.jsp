@@ -67,6 +67,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JYP 호텔 | 예약</title>
+  <script type="text/javascript" src="${pageContext.request.contextPath}/testex2/reservation.js?v=3"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="hotel-common.css" type="text/css" rel="stylesheet">
