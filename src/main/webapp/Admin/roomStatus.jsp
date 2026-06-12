@@ -143,13 +143,20 @@
                         }
                         
                         System.out.println("jsp RoomNo = "+room.getRoomNo());
-                        String firstCheckin = bootDao.SelectOneFirstBootDate(room.getRoomNo(), room.getCompanyNo());
-                        System.out.println("jsp 다음 예약일 = "+firstCheckin);
-                        if (firstCheckin == null) firstCheckin = "";
-                        
-                        if (!firstCheckin.equals("") && firstCheckin.contains(todayStr)) {
-                            if (roomNow.equals("사용 가능") || roomNow.equals("예약 중") || roomNow.equals("체크인 예정")) {
-                                roomNow = "금일 예약있음";
+                        String[] firstCheckInOut = bootDao.SelectOneFirstBootDate(room.getRoomNo(), room.getCompanyNo());
+                        String firstCheckIn = "";
+                        String firstCheckOut = "";
+                        String reservationDisplay = "예약없음"; // 🌟 화면에 보여줄 기본 텍스트
+                        if (firstCheckInOut != null && firstCheckInOut[0] != null && !firstCheckInOut[0].trim().equals("")) {
+                            firstCheckIn = firstCheckInOut[0];
+                            firstCheckOut = firstCheckInOut[1];
+                            reservationDisplay = firstCheckIn + " ~ " + firstCheckOut; // 날짜가 있으면 "2026-06-10 ~ 2026-06-11" 형태로 변경
+                            
+                            // 오늘 날짜에 예약이 있는지 비교
+                            if (firstCheckIn.contains(todayStr)) {
+                                if (roomNow.equals("사용 가능") || roomNow.equals("예약 중") || roomNow.equals("체크인 예정")) {
+                                    roomNow = "금일 예약있음";
+                                }
                             }
                         }
                         
@@ -184,12 +191,26 @@
                                 statusText = "점검 중";
                                 break;
                         }
+                        
                 %>
-                        <div class="room-card <%= cardClass %>" onclick="openRoomModal('<%= roomNo %>', '<%= roomGrade %>', '<%= statusText %>', '<%= firstCheckin %>', '<%= roomType %>')">
-                            <div class="small text-muted fw-normal" style="font-size: 11px;"><%= roomNo %>호</div>
-                            <div><%= roomGrade %></div>
-                            <div><%= roomTypeName %></div>
-                        </div>
+                <div class="room-card <%= cardClass %>" onclick="openRoomModal('<%= roomNo %>', '<%= roomGrade %>', '<%= statusText %>', '<%= firstCheckIn %>', '<%= roomType %>')">
+				    <div class="small text-muted fw-normal" style="font-size: 11px;"><%= roomNo %>호</div>
+				    
+				    <div class="my-1"><%= roomGrade %>(<%= roomTypeName %>)</div>
+				    
+				    <div style="font-size: 11px; font-weight: normal; opacity: 0.8;">
+				        <% if (statusText.equals("금일 예약있음")) { %>
+				            <span class="fw-bold" style="color: #8e24aa;">⏰ 입실 예정</span>
+				        <% } else if (!roomNow.equals("투숙 중")&&firstCheckInOut != null && firstCheckInOut[0] != null && !firstCheckInOut[0].trim().equals("")) { 
+				            // 오늘 이후 미래에 예약이 있는 경우 월-일(MM/DD)만 컴팩트하게 표시
+				            String shortDate = (firstCheckIn.length() >= 10) ? firstCheckIn.substring(5, 10).replace("-", "/") : "";
+				        %>
+				            <span class="text-secondary">📅 <%= shortDate %> 예정</span>
+				        <% } else { %>
+				            <span><%= statusText %></span>
+				        <% } %>
+				    </div>
+				</div>
                 <% 
                     } 
                     
@@ -531,7 +552,7 @@ function submitStatusLetter() {
         roomGrade: currentRoomGrade,
         roomType : currentRoomType
     };
-
+	console.log(isWalkInMode);
     if (isWalkInMode) {
         const bootName = document.getElementById('inputRoomName').value.trim();
         const bootPhone = document.getElementById('inputRoomPhone').value.trim();

@@ -15,6 +15,12 @@ public class MemoDao {
         String sql = "INSERT INTO memo (memo_phone, admin_id, memo_content, memo_name, memo_date) "
                    + "VALUES (?, ?, ?, ?, SYSDATE)";
         
+        System.out.println("phone"+phone);
+        System.out.println("adminId"+adminId);
+        System.out.println("content"+content);
+        System.out.println("name"+name);
+        
+        
         // 2. ? 순서에 맞게 파라미터 배열 생성 (Object[])
         Object[] params = { phone, adminId, content, name };
         

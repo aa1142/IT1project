@@ -8,7 +8,7 @@ public class NoticeDto {
     private String content;     // 공지 내용
     private int hit;            // 조회수
     private Date regDate;       // 등록일
-    private String imageFile;   // 📸 추가: 서버 컴퓨터 폴더에 저장된 이미지 파일 이름
+    private String imageFile;   // 서버 컴퓨터 폴더에 저장된 이미지 파일 이름
 
     // 기본 생성자
     public NoticeDto() {}
@@ -53,13 +53,11 @@ public class NoticeDto {
     public void setRegDate(Date regDate) { 
         this.regDate = regDate; 
     }
-
-    // 📸 이미지 파일 이름 가로채기용 Getter
+  
     public String getImageFile() { 
         return imageFile; 
     }
 
-    // 📸 이미지 파일 이름 세팅용 Setter
     public void setImageFile(String imageFile) { 
         this.imageFile = imageFile; 
     }

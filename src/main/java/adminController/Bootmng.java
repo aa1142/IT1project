@@ -60,13 +60,14 @@ public class Bootmng extends HttpServlet {
         
         // DB에서 원본 데이터 추출
         List<BootDto> allBootList = bootDao.selectAllBoot(companyNo, 99999, 0, bootTime, payCheck); 
+        
         List<BootDto> filteredList = new ArrayList<>();
 
         // 🎯 [수정] 예약 상태로만 깔끔하게 복합 필터링 시스템 가동
         if (allBootList != null) {
             for (BootDto boot : allBootList) {
                 
-                // A. 예약 상태 필터링 (bootConfirm 매칭)
+//                 A. 예약 상태 필터링 (bootConfirm 매칭)
                 if (!"전체".equals(bootStatus)) {
                     int confirmVal = boot.getBootConfirm();
                     if ("결제완료".equals(bootStatus) && confirmVal != 0) {
