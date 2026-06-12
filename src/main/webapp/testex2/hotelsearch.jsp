@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.Vector" %>
 <%@ page import="com.jyphotel.CompanyVO" %>
+<%@ page import="com.jyphotel.RoomVO" %>
 <%@ page import="com.jyphotel.HotelPriceUtil" %>
+<%@ page import="com.jyphotel.RoomTypeUtil" %>
 <jsp:useBean id="dao" class="com.jyphotel.HotelDAO" />
 <%
     request.setCharacterEncoding("UTF-8");
@@ -16,27 +18,96 @@
     int company_no = 0;
     if (request.getAttribute("company_no") != null) {
         company_no = (Integer) request.getAttribute("company_no");
+    } else {
+        company_no = HotelPriceUtil.toInt(request.getParameter("company_no"), 0);
     }
-    String room_grade = (String) request.getAttribute("room_grade");
-    if (room_grade == null || room_grade.equals("")) room_grade = "스탠다드";
+
+    String room_grade;
+    if (request.getAttribute("room_grade") != null) {
+        room_grade = (String) request.getAttribute("room_grade");
+    } else {
+        room_grade = request.getParameter("room_grade");
+    }
+    room_grade = RoomTypeUtil.normalizeUiGrade(room_grade);
 
     String boot_checkin = (String) request.getAttribute("boot_checkin");
+    if (boot_checkin == null) boot_checkin = request.getParameter("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
+
     String boot_checkout = (String) request.getAttribute("boot_checkout");
+    if (boot_checkout == null) boot_checkout = request.getParameter("boot_checkout");
     if (boot_checkout == null) boot_checkout = "";
 
     int nights = 1, rooms = 1, boot_adult = 1, boot_child = 0;
-    if (request.getAttribute("nights") != null) nights = (Integer) request.getAttribute("nights");
-    if (request.getAttribute("rooms") != null) rooms = (Integer) request.getAttribute("rooms");
-    if (request.getAttribute("boot_adult") != null) boot_adult = (Integer) request.getAttribute("boot_adult");
-    if (request.getAttribute("boot_child") != null) boot_child = (Integer) request.getAttribute("boot_child");
+    if (request.getAttribute("nights") != null) {
+        nights = (Integer) request.getAttribute("nights");
+    } else {
+        nights = HotelPriceUtil.toInt(request.getParameter("nights"), 1);
+    }
+    if (request.getAttribute("rooms") != null) {
+        rooms = (Integer) request.getAttribute("rooms");
+    } else {
+        rooms = HotelPriceUtil.toInt(request.getParameter("rooms"), 1);
+    }
+    if (request.getAttribute("boot_adult") != null) {
+        boot_adult = (Integer) request.getAttribute("boot_adult");
+    } else {
+        boot_adult = HotelPriceUtil.toInt(request.getParameter("boot_adult"), 1);
+    }
+    if (request.getAttribute("boot_child") != null) {
+        boot_child = (Integer) request.getAttribute("boot_child");
+    } else {
+        boot_child = HotelPriceUtil.toInt(request.getParameter("boot_child"), 0);
+    }
+
+    if (boot_checkout.equals("") && !boot_checkin.equals("")) {
+        boot_checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
+    }
 
     CompanyVO selectedCompany = (CompanyVO) request.getAttribute("company");
     String searchDone = (String) request.getAttribute("searchDone");
+
+    if (!"Y".equals(searchDone) && "Y".equals(request.getParameter("autoSearch"))
+            && company_no > 0 && !boot_checkin.equals("")) {
+        selectedCompany = dao.selectBranchDetailByNo(company_no);
+        if (selectedCompany == null && companyList.size() > 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                CompanyVO c = companyList.elementAt(i);
+                if (c.getCompany_no() == company_no) {
+                    selectedCompany = c;
+                    break;
+                }
+            }
+            if (selectedCompany == null) {
+                selectedCompany = companyList.elementAt(0);
+                company_no = selectedCompany.getCompany_no();
+            }
+        }
+        if (selectedCompany != null) {
+            Vector<RoomVO> roomList = dao.selectAvailableRoomTypeList(company_no, room_grade,
+                    boot_checkin, boot_checkout, boot_adult, boot_child, rooms);
+            searchDone = "Y";
+            request.setAttribute("company", selectedCompany);
+            request.setAttribute("roomList", roomList);
+            request.setAttribute("searchDone", searchDone);
+            request.setAttribute("company_no", company_no);
+            request.setAttribute("room_grade", room_grade);
+            request.setAttribute("boot_checkin", boot_checkin);
+            request.setAttribute("boot_checkout", boot_checkout);
+            request.setAttribute("nights", nights);
+            request.setAttribute("rooms", rooms);
+            request.setAttribute("boot_adult", boot_adult);
+            request.setAttribute("boot_child", boot_child);
+        }
+    }
+
     String hotelNameInfo = "-";
     if (selectedCompany != null) {
         hotelNameInfo = selectedCompany.getCompany_name();
     }
+
+    String dbError = dao.getLastDbError();
+    if (dbError == null) dbError = "";
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -51,7 +122,7 @@
         var initRoomGrade = '<%= room_grade %>';
         var initCheckin = '<%= boot_checkin %>';
     </script>
-    <script type="text/javascript" src="sescript.js"></script>
+    <script type="text/javascript" src="sescript.js?v=3"></script>
 </head>
 <body>
     <jsp:include page="siteNav.jsp" />
@@ -70,12 +141,18 @@
         <div class="sidebar-left">
             <h2>예약 검색</h2>
 
-            <form method="post" action="searchProc.jsp" id="searchForm">
+            <form method="post" action="searchProc.jsp" id="searchForm" onsubmit="return validateSearchForm()">
                 <div class="hotel-search-section sidebar-section">
                     <h3>호텔 지점 선택</h3>
                     <div class="hotel-list">
                         <% if (companyList.isEmpty()) { %>
-                            <div style="padding:10px;color:#999;text-align:center;font-size:13px;">등록된 지점이 없습니다</div>
+                            <div style="padding:12px;color:#71717a;text-align:center;font-size:13px;line-height:1.6;">
+                                등록된 지점이 없습니다.<br>
+                                <span style="font-size:12px;">proid 계정에 company 데이터가 있는지, Tomcat을 재시작했는지 확인해 주세요.</span>
+                                <% if (!dbError.isEmpty()) { %>
+                                <br><span style="font-size:11px;color:#b91c1c;margin-top:6px;display:inline-block;">DB 오류: <%= dbError %></span>
+                                <% } %>
+                            </div>
                         <% } else {
                             for (int i = 0; i < companyList.size(); i++) {
                                 CompanyVO c = companyList.get(i);

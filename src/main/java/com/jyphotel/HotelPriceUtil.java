@@ -244,5 +244,21 @@ public class HotelPriceUtil {
 
     }
 
+    /** boot / member 전화번호 — DB CHECK(010-0000-0000) 형식으로 변환 */
+    public static String normalizeBootPhone(String phone) {
+        if (phone == null) {
+            return "";
+        }
+        String digits = phone.replaceAll("[^0-9]", "");
+        if (digits.length() == 11 && digits.startsWith("010")) {
+            return digits.substring(0, 3) + "-" + digits.substring(3, 7) + "-" + digits.substring(7);
+        }
+        return phone.trim();
+    }
+
+    public static boolean isValidBootPhone(String phone) {
+        return phone != null && phone.matches("^010-[0-9]{4}-[0-9]{4}$");
+    }
+
 }
 

@@ -1,9 +1,48 @@
-/* hotelreservation.jsp — 옵션·요금·검증 */
+/* hotelreservation.jsp — 옵션·요금·검증·결제 */
 
 var selectedPlans = [];
 
 function isOptionSelected(id) {
     return selectedPlans.indexOf(id) !== -1;
+}
+
+function getSelectedPaymentMethod() {
+    var online = document.querySelector('input[name="payment_method"][value="online"]');
+    if (online && online.checked) {
+        return 'online';
+    }
+    return 'onsite';
+}
+
+function handlePaymentMethodChange() {
+    var method = getSelectedPaymentMethod();
+    var noteOnline = document.getElementById('paymentNoteOnline');
+    var noteOnsite = document.getElementById('paymentNoteOnsite');
+    var btnNote = document.getElementById('reserveBtnNote');
+    var btn = document.getElementById('reserveBtn');
+    var cardOnline = document.getElementById('payCardOnline');
+    var cardOnsite = document.getElementById('payCardOnsite');
+
+    if (cardOnline) {
+        cardOnline.classList.toggle('selected', method === 'online');
+    }
+    if (cardOnsite) {
+        cardOnsite.classList.toggle('selected', method === 'onsite');
+    }
+    if (noteOnline) {
+        noteOnline.style.display = method === 'online' ? 'block' : 'none';
+    }
+    if (noteOnsite) {
+        noteOnsite.style.display = method === 'onsite' ? 'block' : 'none';
+    }
+    if (btnNote) {
+        btnNote.textContent = method === 'online'
+            ? '카카오페이 결제 화면으로 이동합니다.'
+            : '현장 결제로 예약을 신청을 합니다.';
+    }
+    if (btn) {
+        btn.textContent = method === 'online' ? '카카오페이 결제하기' : '현장 결제 예약하기';
+    }
 }
 
 function getPriceData() {
@@ -99,25 +138,59 @@ function handleSameAsBooker() {
     });
 }
 
+function hasMemberProfile(cfg) {
+    return !!(cfg.memberLastName || cfg.memberFirstName || cfg.memberPhone || cfg.memberEmail || cfg.memberAddress);
+}
+
+function fillBookerFromMember(cfg) {
+    document.getElementById('booker_last_name').value = cfg.memberLastName || '';
+    document.getElementById('booker_first_name').value = cfg.memberFirstName || '';
+    document.getElementById('boot_phone').value = cfg.memberPhone || '';
+    document.getElementById('boot_email').value = cfg.memberEmail || '';
+    document.getElementById('boot_email_confirm').value = cfg.memberEmail || '';
+    document.getElementById('member_address').value = cfg.memberAddress || '';
+}
+
+function clearBookerFields() {
+    document.getElementById('booker_last_name').value = '';
+    document.getElementById('booker_first_name').value = '';
+    document.getElementById('boot_phone').value = '';
+    document.getElementById('boot_email').value = '';
+    document.getElementById('boot_email_confirm').value = '';
+    document.getElementById('member_address').value = '';
+}
+
 function handleLoadMemberInfo() {
-    var checked = document.getElementById('loadMemberInfo').checked;
+    var cb = document.getElementById('loadMemberInfo');
+    if (!cb) return;
+
+    var checked = cb.checked;
     var cfg = window.resConfig || {};
-    if (checked) {
-        document.getElementById('booker_last_name').value = cfg.memberLastName || '';
-        document.getElementById('booker_first_name').value = cfg.memberFirstName || '';
-        document.getElementById('boot_phone').value = cfg.memberPhone || '';
-        document.getElementById('boot_email').value = cfg.memberEmail || '';
-        document.getElementById('boot_email_confirm').value = cfg.memberEmail || '';
-        document.getElementById('member_address').value = cfg.memberAddress || '';
-    } else {
-        document.getElementById('booker_last_name').value = '';
-        document.getElementById('booker_first_name').value = '';
-        document.getElementById('boot_phone').value = '';
-        document.getElementById('boot_email').value = '';
-        document.getElementById('boot_email_confirm').value = '';
-        document.getElementById('member_address').value = '';
+
+    if (checked && !cfg.isLoggedIn) {
+        alert('회원 정보 불러오기는 로그인 후 이용할 수 있습니다.');
+        cb.checked = false;
+        if (cfg.loginUrl) {
+            if (confirm('로그인 페이지로 이동할까요?')) {
+                location.href = cfg.loginUrl;
+            }
+        }
+        return;
     }
-    if (document.getElementById('sameAsBooker').checked) {
+
+    if (checked && !hasMemberProfile(cfg)) {
+        alert('불러올 회원 정보가 없습니다.\n회원가입·마이페이지에서 정보를 등록했는지 확인해 주세요.');
+        cb.checked = false;
+        return;
+    }
+
+    if (checked) {
+        fillBookerFromMember(cfg);
+    } else {
+        clearBookerFields();
+    }
+
+    if (document.getElementById('sameAsBooker') && document.getElementById('sameAsBooker').checked) {
         handleSameAsBooker();
     }
 }
@@ -144,8 +217,10 @@ function submitReserveForm() {
         alert('숙박약관에 동의해주세요.');
         return false;
     }
-    document.getElementById('reserveBtn').disabled = true;
-    document.getElementById('reserveBtn').textContent = '처리 중...';
+
+    var btn = document.getElementById('reserveBtn');
+    btn.disabled = true;
+    btn.textContent = getSelectedPaymentMethod() === 'online' ? '결제창으로 이동 중...' : '예약 처리 중...';
     return true;
 }
 
@@ -158,6 +233,11 @@ function initReservationPage() {
     if (fastBtn) {
         fastBtn.addEventListener('click', function() { toggleOption('fastCheckin'); });
     }
+
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(el) {
+        el.addEventListener('change', handlePaymentMethodChange);
+    });
+    handlePaymentMethodChange();
 
     if (window.lucide) {
         lucide.createIcons();

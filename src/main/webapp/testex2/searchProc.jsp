@@ -8,8 +8,7 @@
     if (keyword == null) keyword = "";
 
     int company_no = HotelPriceUtil.toInt(request.getParameter("company_no"), 0);
-    String room_grade = request.getParameter("room_grade");
-    if (room_grade == null || room_grade.equals("")) room_grade = "스탠다드";
+    String room_grade = RoomTypeUtil.normalizeUiGrade(request.getParameter("room_grade"));
 
     String boot_checkin = request.getParameter("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
@@ -20,7 +19,7 @@
     int boot_child = HotelPriceUtil.toInt(request.getParameter("boot_child"), 0);
 
     String boot_checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
-    Vector<CompanyVO> companyList = dao.getCompanyList(keyword);
+    Vector<CompanyVO> companyList = dao.selectActiveBranchList(keyword);
 
     request.setAttribute("companyList", companyList);
     request.setAttribute("keyword", keyword);
@@ -34,8 +33,8 @@
     request.setAttribute("boot_child", boot_child);
 
     if (company_no > 0 && !boot_checkin.equals("")) {
-        CompanyVO company = dao.getCompany(company_no);
-        Vector<RoomVO> roomList = dao.getRoomList(company_no, room_grade, boot_checkin, boot_checkout,
+        CompanyVO company = dao.selectBranchDetailByNo(company_no);
+        Vector<RoomVO> roomList = dao.selectAvailableRoomTypeList(company_no, room_grade, boot_checkin, boot_checkout,
                 boot_adult, boot_child, rooms);
         request.setAttribute("searchDone", "Y");
         request.setAttribute("company", company);
