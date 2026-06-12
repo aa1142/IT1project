@@ -123,7 +123,9 @@ public class HotelDAO {
             String searchWord = convertBranchKeyword(keyword);
             String sql = "SELECT c.company_no, c.company_name, "
                     + "(SELECT COUNT(DISTINCT r.room_grade || '-' || r.room_type) "
-                    + " FROM room r WHERE r.company_no = c.company_no) AS type_cnt "
+                    + " FROM room r WHERE r.company_no = c.company_no) AS type_cnt, "
+                    + "NVL((SELECT ROUND(AVG(rv.rating), 1) FROM review rv "
+                    + " WHERE rv.company_no = c.company_no), 0) AS avg_rating "
                     + "FROM company c ";
             boolean hasKeyword = !searchWord.equals("");
             if (hasKeyword) {
@@ -142,6 +144,7 @@ public class HotelDAO {
                 vo.setCompany_no(rs.getInt("company_no"));
                 vo.setCompany_name(rs.getString("company_name"));
                 vo.setRoom_type_count(rs.getInt("type_cnt"));
+                vo.setRating(rs.getDouble("avg_rating"));
                 HotelDisplay.setCompanyInfo(vo);
                 list.addElement(vo);
             }
@@ -171,7 +174,10 @@ public class HotelDAO {
 
         try {
             con = dbDirectConnect();
-            String sql = "SELECT company_no, company_name FROM company WHERE company_no = ?";
+            String sql = "SELECT c.company_no, c.company_name, "
+                    + "NVL((SELECT ROUND(AVG(rv.rating), 1) FROM review rv "
+                    + " WHERE rv.company_no = c.company_no), 0) AS avg_rating "
+                    + "FROM company c WHERE c.company_no = ?";
             pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, company_no);
             rs = pstmt.executeQuery();
@@ -180,6 +186,7 @@ public class HotelDAO {
                 vo = new CompanyVO();
                 vo.setCompany_no(rs.getInt("company_no"));
                 vo.setCompany_name(rs.getString("company_name"));
+                vo.setRating(rs.getDouble("avg_rating"));
                 HotelDisplay.setCompanyInfo(vo);
             }
         } catch (Exception e) {
