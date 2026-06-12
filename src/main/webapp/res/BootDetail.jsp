@@ -18,7 +18,7 @@
         reservationCode = reservation.getBootNo();
     }
 
-    // 3. 엔화(¥) 오타 교정 및 바뀐 금액 필드(bootPayCheck) 반영
+
     String displayAmount = String.format("%,d", reservation.getBootPayCheck()) + "원";
 
     // 4. 숫자로 통합 관리되는 상태값(bootConfirm) 분기 조건 전면 리팩토링
@@ -97,7 +97,7 @@
             </div>
         </section>
 
-        <a href="${pageContext.request.contextPath}/bootSearch.jsp" class="back-link">다시 조회하기</a>
+        <a href="${pageContext.request.contextPath}/BootSearch.jsp" class="back-link">다시 조회하기</a>
     </main>
 </div>
 

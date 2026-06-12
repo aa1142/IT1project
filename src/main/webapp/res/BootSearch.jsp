@@ -39,7 +39,7 @@ String displayAmountText = String.format("%,d", displayAmount) + "원";
 <meta charset="UTF-8">
 <title>호텔 예약 결제</title>
 
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/reservation.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css">
 
 </head>
 <body>

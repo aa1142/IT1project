@@ -45,13 +45,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>호텔 예약 사이트</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="hotel-common.css" type="text/css" rel="stylesheet">
-    <link href="sestyle.css" type="text/css" rel="stylesheet">
+    
+    <link href="${pageContext.request.contextPath}/testex2/hotel-common.css" type="text/css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/testex2/sestyle.css" type="text/css" rel="stylesheet">
+    
     <script type="text/javascript">
         var initRoomGrade = '<%= room_grade %>';
         var initCheckin = '<%= boot_checkin %>';
     </script>
-    <script type="text/javascript" src="sescript.js"></script>
+    
+    <script type="text/javascript" src="${pageContext.request.contextPath}/testex2/sescript.js"></script>
 </head>
 <body>
     <jsp:include page="siteNav.jsp" />
