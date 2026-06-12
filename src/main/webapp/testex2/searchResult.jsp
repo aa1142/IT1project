@@ -3,6 +3,7 @@
 <%@ page import="com.jyphotel.CompanyVO" %>
 <%@ page import="com.jyphotel.RoomVO" %>
 <%@ page import="com.jyphotel.HotelPriceUtil" %>
+<%@ page import="com.jyphotel.RoomTypeUtil" %>
 
 <%
     CompanyVO company = (CompanyVO) request.getAttribute("company");
@@ -20,8 +21,7 @@
 
     String boot_checkin = (String) request.getAttribute("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
-    String room_grade = (String) request.getAttribute("room_grade");
-    if (room_grade == null) room_grade = "스탠다드";
+    String room_grade = RoomTypeUtil.normalizeUiGrade((String) request.getAttribute("room_grade"));
 
     java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.KOREA);
 %>

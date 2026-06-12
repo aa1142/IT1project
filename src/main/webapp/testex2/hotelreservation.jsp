@@ -6,8 +6,7 @@
 
     int company_no = HotelPriceUtil.toInt(request.getParameter("company_no"), 0);
     int room_type = HotelPriceUtil.toInt(request.getParameter("room_type"), 0);
-    String room_grade = request.getParameter("room_grade");
-    if (room_grade == null) room_grade = "";
+    String room_grade = RoomTypeUtil.toDbGrade(request.getParameter("room_grade"));
     String boot_checkin = request.getParameter("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
     int nights = HotelPriceUtil.toInt(request.getParameter("nights"), 1);
@@ -38,6 +37,9 @@
         member = dao.selectClientProfile(sessionUserId);
     }
 
+    boolean isLoggedIn = (sessionUserId != null);
+    String sessionUserName = (String) session.getAttribute("sessionUserName");
+
     String mLast = "", mFirst = "", mPhone = "", mEmail = "", mAddr = "";
     if (member != null) {
         if (member.getMember_name() != null && member.getMember_name().length() >= 2) {
@@ -46,10 +48,23 @@
         } else if (member.getMember_name() != null) {
             mFirst = member.getMember_name();
         }
-        if (member.getMember_phone() != null) mPhone = member.getMember_phone();
+        if (member.getMember_phone() != null) {
+            mPhone = HotelPriceUtil.normalizeBootPhone(member.getMember_phone());
+        }
         if (member.getMember_email() != null) mEmail = member.getMember_email();
         if (member.getMember_address() != null) mAddr = member.getMember_address();
+    } else if (isLoggedIn && sessionUserName != null && !sessionUserName.trim().isEmpty()) {
+        String nm = sessionUserName.trim();
+        if (nm.length() >= 2) {
+            mLast = nm.substring(0, 1);
+            mFirst = nm.substring(1);
+        } else {
+            mFirst = nm;
+        }
     }
+
+    boolean hasMemberData = member != null
+            || (!mLast.isEmpty() || !mFirst.isEmpty() || !mPhone.isEmpty() || !mEmail.isEmpty());
 
     int breakfastUnit = HotelPriceUtil.BREAKFAST_UNIT;
     int fastCheckinUnit = HotelPriceUtil.FAST_CHECKIN_UNIT;
@@ -121,9 +136,14 @@
             </div>
             <div class="card-content">
               <div class="checkbox-wrapper" style="margin-bottom:16px;">
-                <input type="checkbox" id="loadMemberInfo" onchange="handleLoadMemberInfo()">
+                <input type="checkbox" id="loadMemberInfo" onchange="handleLoadMemberInfo()"<%= isLoggedIn ? "" : " disabled" %>>
                 <label for="loadMemberInfo">회원 정보 불러오기</label>
               </div>
+              <% if (!isLoggedIn) { %>
+              <p style="font-size:12px;color:#b45309;margin:-8px 0 12px;">로그인 후 회원 정보를 불러올 수 있습니다.</p>
+              <% } else if (!hasMemberData) { %>
+              <p style="font-size:12px;color:#71717a;margin:-8px 0 12px;">저장된 회원 정보가 없습니다. 직접 입력해 주세요.</p>
+              <% } %>
               <div class="form-row">
                 <div class="form-group">
                   <label>성 *</label>
@@ -204,6 +224,34 @@
               <div class="price-row" id="price-fastCheckin" style="display:none;">
                 <span>+ ₩<%= nf.format(fastCheckinUnit) %></span>
               </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">결제 방법</div>
+            </div>
+            <div class="card-content">
+              <label class="radio-card selected" id="payCardOnline">
+                <input type="radio" name="payment_method" value="online" checked onchange="handlePaymentMethodChange()">
+                <div class="radio-card-content">
+                  <div class="radio-card-text">
+                    <p>카카오페이 온라인 결제</p>
+                    <p>결제 완료 후 예약이 확정됩니다.</p>
+                  </div>
+                </div>
+              </label>
+              <label class="radio-card" id="payCardOnsite">
+                <input type="radio" name="payment_method" value="onsite" onchange="handlePaymentMethodChange()">
+                <div class="radio-card-content">
+                  <div class="radio-card-text">
+                    <p>현장 결제</p>
+                    <p>체크인 시 프론트에서 결제합니다.</p>
+                  </div>
+                </div>
+              </label>
+              <p class="payment-note" id="paymentNoteOnline">온라인 결제를 선택하면 카카오페이 결제 화면으로 이동합니다.</p>
+              <p class="payment-note" id="paymentNoteOnsite" style="display:none;">현장 결제 예약은 예약 신청 후 예약이 확정이 나면 체크인 시 현장에서 결제합니다.</p>
             </div>
           </div>
 
@@ -290,6 +338,7 @@
                   <span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span>
                 </div>
                 <button type="submit" class="btn-primary" id="reserveBtn" style="margin-top:16px;">예약하기</button>
+                <p class="btn-note" id="reserveBtnNote" style="margin-top:8px;font-size:12px;color:#71717a;text-align:center;">카카오페이 결제 화면으로 이동합니다</p>
               </div>
             </div>
           </div>
@@ -298,9 +347,12 @@
     </form>
   </main>
 
-  <script type="text/javascript" src="reservation.js?v=3"></script>
+  <script type="text/javascript" src="reservation.js?v=5"></script>
   <script>
   window.resConfig = {
+    isLoggedIn: <%= isLoggedIn %>,
+    hasMemberData: <%= hasMemberData %>,
+    loginUrl: '<%= request.getContextPath() %>/wls/login.jsp',
     memberLastName: '<%= mLastJs %>',
     memberFirstName: '<%= mFirstJs %>',
     memberPhone: '<%= mPhoneJs %>',

@@ -8,22 +8,69 @@ public class RoomTypeUtil {
 
 
 
+    public static boolean isAllGrade(String uiGrade) {
+        if (uiGrade == null) {
+            return true;
+        }
+        String g = uiGrade.trim();
+        return g.isEmpty() || "전체".equals(g);
+    }
+
+    /** 화면 등급 기본값 — 전체/빈 값은 스탠다드 */
+    public static String normalizeUiGrade(String uiGrade) {
+        if (isAllGrade(uiGrade)) {
+            return "스탠다드";
+        }
+        return uiGrade.trim();
+    }
+
     public static String toDbGrade(String uiGrade) {
 
-        if (uiGrade == null) {
-
-            return "스탠다드";
-
-        }
-
-        if ("스위트".equals(uiGrade.trim())) {
-
+        String g = normalizeUiGrade(uiGrade);
+        if ("스위트".equals(g) || "스윗트".equals(g)) {
             return "스윗트";
-
+        }
+        if ("스탠다드".equals(g) || "Standard".equalsIgnoreCase(g)) {
+            return "스탠다드";
+        }
+        if ("디럭스".equals(g) || "Deluxe".equalsIgnoreCase(g)) {
+            return "디럭스";
         }
 
-        return uiGrade.trim();
+        return g;
 
+    }
+
+    /** UI 등급 → DB room_grade CHECK 값 ('스탠다드','디럭스','스윗트') */
+    public static String[] getGradeSearchValues(String uiGrade) {
+        String base = toDbGrade(uiGrade);
+        if ("스탠다드".equals(base)) {
+            return new String[] { "스탠다드" };
+        }
+        if ("디럭스".equals(base)) {
+            return new String[] { "디럭스" };
+        }
+        if ("스윗트".equals(base)) {
+            return new String[] { "스윗트" };
+        }
+        return new String[] { base };
+    }
+
+    public static String buildGradeInSql(String uiGrade, java.util.List<String> gradeParams) {
+        String[] grades = getGradeSearchValues(uiGrade);
+        if (grades.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(" AND TRIM(r.room_grade) IN (");
+        for (int i = 0; i < grades.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append("?");
+            gradeParams.add(grades[i]);
+        }
+        sb.append(") ");
+        return sb.toString();
     }
 
 
@@ -66,7 +113,7 @@ public class RoomTypeUtil {
 
         if (room_type == 2) {
 
-            return "더블";
+            return "트윈";
 
         }
 

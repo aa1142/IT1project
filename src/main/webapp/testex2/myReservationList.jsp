@@ -7,7 +7,7 @@
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     Vector<BootVO> list = new Vector<BootVO>();
     if (sessionUserId != null) {
-        list = dao.getBootListByMemberId(sessionUserId);
+        list = dao.selectReservationHistoryByMember(sessionUserId);
     }
 %>
 <!DOCTYPE html>
@@ -32,7 +32,7 @@
     <% if (sessionUserId == null) { %>
       <div class="empty-box">
         <p>로그인 후 확인할 수 있습니다.</p>
-        <p style="margin-top:12px;"><a href="../login.jsp">로그인</a></p>
+        <p style="margin-top:12px;"><a href="../wls/login.jsp">로그인</a></p>
       </div>
     <% } else if (list.isEmpty()) { %>
       <div class="empty-box">
@@ -48,7 +48,9 @@
         <h3><%= b.getCompany_name() %> · <%= b.getReservation_code() %></h3>
         <p><%= b.getRoom_grade_ui() %> <%= b.getRoom_type_name() %> · <%= nights %>박</p>
         <p><%= b.getBoot_checkin() %> ~ <%= b.getBoot_checkout() %></p>
-        <p>예약자: <%= b.getBoot_name() %></p>
+        <p>예약자: <%= b.getBoot_name() %>
+          <% if (b.getBoot_confirm() == 0) { %><span style="color:#b45309;"> · 결제대기</span><% } else { %><span style="color:#15803d;"> · 확정</span><% } %>
+        </p>
         <p><a href="reservationcomplete.jsp?boot_no=<%= b.getBoot_no() %>">상세 보기</a></p>
       </div>
     <%   }
