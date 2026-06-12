@@ -245,12 +245,12 @@ footer{
 <script>
 function goMain(){
   // 💡 메인페이지 파일명을 적어주세요
-  location.href = "index.jsp"; 
+	location.href = "<%= request.getContextPath() %>/wls/index.jsp";
 }
 
 function goLogin(){
   // 💡 제작할 로그인 페이지 파일명을 미리 지정합니다
-  location.href = "login.jsp"; 
+	 location.href = "<%= request.getContextPath() %>/wls/login.jsp";
 }
 </script>
 </body>

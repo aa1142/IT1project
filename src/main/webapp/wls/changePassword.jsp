@@ -58,7 +58,7 @@
 <div class="container">
   <h2>비밀번호 변경</h2>
   
-  <form action="changePasswordAction.jsp" method="post" onsubmit="return validateForm()">
+  <form action="<%= request.getContextPath() %>/changePasswordAction" method="post" onsubmit="return validateForm()">
     <div class="input-group">
       <label>현재 비밀번호</label>
       <input type="password" id="currentPw" name="currentPw" placeholder="현재 비밀번호를 입력해주세요">

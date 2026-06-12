@@ -75,7 +75,7 @@
 <header><a href="index.jsp" class="logo">JYP <span>HOTEL</span></a></header>
 <div class="container">
   <h2>회원정보 수정</h2>
-  <form action="memberModifyAction.jsp" method="post" onsubmit="return validateForm()">
+  <form action="<%= request.getContextPath() %>/memberModifyAction" method="post" onsubmit="return validateForm()">
     <table>
       <tr><th>아이디</th><td><input type="text" value="<%= sessionUserId %>" readonly style="background:#eee;"></td></tr>
       <tr><th>성명</th><td><input type="text" name="name" value="<%= nameKo %>"></td></tr>

@@ -1,56 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
-<%@ page import="java.sql.*" %>
 <%
+    // 💡 서블릿이 보낸 세션 정보와 request 데이터를 받아와서 변수에 정렬합니다.
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     String sessionUserName = (String) session.getAttribute("sessionUserName");
     
-    if (sessionUserId == null) {
-        out.print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='login.jsp';</script>");
-        return;
-    }
-
-    String ctx = request.getContextPath();
-
-    String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
-    String dbUser = "scott"; // ◀ 본인의 오라클 정보로 수정
-    String dbPass = "tiger"; // ◀ 본인의 오라클 정보로 수정
-
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-
-    String email = "";
-    String phone = "";
-    String address = "";
-    String birthdate = "";
-    String gender = "";
-    String grade = "";
-    int count = 0;
-
-    try {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
-
-        // 💡 쿼리문 컬럼명을 새 테이블 구조에 맞게 전면 수정했습니다.
-        String userSql = "SELECT member_email, member_phone, member_address, member_grade, member_count FROM member WHERE member_id = ?";
-        pstmt = conn.prepareStatement(userSql);
-        pstmt.setString(1, sessionUserId);
-        rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            email = rs.getString("member_email");
-            phone = rs.getString("member_phone");
-            address = rs.getString("member_address");
-            grade = rs.getString("member_grade");
-            count = rs.getInt("member_count");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        if (rs != null) try { rs.close(); } catch (SQLException ex) {}
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}
-        if (conn != null) try { conn.close(); } catch (SQLException ex) {}
-    }
+    String email = (String) request.getAttribute("email");
+    String phone = (String) request.getAttribute("phone");
+    String address = (String) request.getAttribute("address");
+    String grade = (String) request.getAttribute("grade");
+    Integer count = (Integer) request.getAttribute("count");
+    
+    if(count == null) count = 0;
 %>
 <!doctype html>
 <html lang="ko">
@@ -100,13 +60,13 @@
       <ul class="menu-list">
         <li><a href="myPage.jsp" class="active">내 정보 관리</a></li>
         <li><a href="memberModify.jsp">회원정보 수정</a></li>
-        <li><a href="changePassword.jsp">비밀번호 변경</a></li>
+        <li><a href="<%= request.getContextPath() %>/changePasswordAction">비밀번호 변경</a></li>
         <li><a href="#" onclick="deleteAccount()" style="color:#d93025;">회원 탈퇴</a></li>
         <script>
 // 회원 탈퇴 버튼을 눌렀을 때 발동하는 자바스크립트 함수
 function deleteAccount() {
   if (confirm("정말로 JYP HOTEL을 탈퇴하시겠습니까?\n탈퇴 시 모든 예약 내역과 정보가 삭제되며 복구할 수 없습니다.")) {
-    location.href = "deleteAccountAction.jsp";
+	  location.href = "<%= request.getContextPath() %>/deleteAccountAction";
   }
 }
 </script>

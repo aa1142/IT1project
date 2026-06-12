@@ -244,7 +244,7 @@ footer{
 
 <div class="container">
 
-<form action="signupAction.jsp" method="post">
+<form action="<%= request.getContextPath() %>/signupAction" method="post">
 
 <h2>회원정보 입력</h2>
 
@@ -385,7 +385,7 @@ function checkDuplicateId() {
     return;
   }
 
-  fetch("checkIdAction.jsp?userid=" + encodeURIComponent(userid))
+  fetch("<%= request.getContextPath() %>/checkIdAction?userid=" + encodeURIComponent(userid))
     .then(response => response.text())
     .then(data => {
       const result = data.trim();

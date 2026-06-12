@@ -167,7 +167,7 @@ footer{
 </header>
 
 <div class="container">
-  <form action="loginAction.jsp" method="post" onsubmit="return validateForm()">
+ <form action="<%= request.getContextPath() %>/loginAction" method="post" onsubmit="return validateForm()">
     <h2>LOGIN</h2>
     
     <div class="input-group">
@@ -182,14 +182,13 @@ footer{
     
     <button type="submit" class="btn-submit">로그인</button>
     
-     <div class="find-wrap">
-     
-      <a href="findAccount.jsp">아이디 찾기</a>
-      <span>|</span>
-      <a href="findAccount.jsp">비밀번호 찾기</a>
-      <span>|</span>
-      <a href="signup.jsp">회원가입</a>
-    </div>
+    <div class="find-wrap">
+  <a href="<%= request.getContextPath() %>/findAccountAction">아이디 찾기</a>
+  <span>|</span>
+  <a href="<%= request.getContextPath() %>/findAccountAction">비밀번호 찾기</a>
+  <span>|</span>
+  <a href="<%= request.getContextPath() %>/wls/signup.jsp">회원가입</a>
+</div>
   </form>
 </div>
 

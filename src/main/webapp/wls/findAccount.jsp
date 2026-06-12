@@ -61,7 +61,7 @@
   <!-- 🆔 1. 아이디 찾기 폼 구역 -->
   <div id="tab-id" class="tab-content active">
     <h2>Find ID</h2>
-    <form action="findAccountAction.jsp" method="post">
+   <form action="<%= request.getContextPath() %>/findAccountAction" method="post">
       <input type="hidden" name="findType" value="id">
       <div class="input-group">
         <label>성명 (국문)</label>
@@ -78,7 +78,7 @@
   <!-- 🔒 2. 비밀번호 찾기 폼 구역 -->
   <div id="tab-pw" class="tab-content">
     <h2>Find Password</h2>
-    <form action="findAccountAction.jsp" method="post">
+   <form action="<%= request.getContextPath() %>/findAccountAction" method="post">
       <input type="hidden" name="findType" value="pw">
       <div class="input-group">
         <label>아이디</label>
