@@ -3,6 +3,7 @@ package myNotice;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -11,21 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-// 🌟 파일 업로드를 처리하기 위한 필수 설정 (최대 파일 크기 등 지정)
 @WebServlet("/insertNotice.do")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-    maxFileSize = 1024 * 1024 * 10,      // 찬 건당 최대 10MB
-    maxRequestSize = 1024 * 1024 * 50    // 전체 요청 최대 50MB
+    fileSizeThreshold = 1024 * 1024 * 2,
+    maxFileSize = 1024 * 1024 * 10,
+    maxRequestSize = 1024 * 1024 * 50
 )
 public class NoticeWriteServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
-        
-        // 1. 일반 텍스트 데이터 꺼내기
+
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String important = request.getParameter("important");
@@ -33,52 +31,53 @@ public class NoticeWriteServlet extends HttpServlet {
         if ("Y".equals(important) && title != null && !title.startsWith("[중요공지]")) {
             title = "[중요공지] " + title;
         }
-        
-        // 2. 파일 업로드 처리 구역
-        // 톰캣 서버 내부의 실제 사진 저장 물리 경로 확보 (webapp 폴더 안에 upload 폴더가 기본 생성되어 있어야 함)
+
         String uploadPath = request.getServletContext().getRealPath("") + File.separator + "upload";
         File uploadDir = new File(uploadPath);
         if (!uploadDir.exists()) {
-            uploadDir.mkdir(); // upload 폴더가 없으면 자동으로 새로 만듦
+            uploadDir.mkdir();
         }
-        
-        // jsp의 <input type="file" name="noticeImage"> 태그에서 파일 정보 가로채기
+
         Part part = request.getPart("noticeImage");
-        String fileName = getFileName(part); // 업로드된 파일의 원래 이름 꺼내기
-        
+        String fileName = getFileName(part);
+
         if (fileName != null && !fileName.isEmpty()) {
-            // 똑같은 이름의 파일 충돌을 방지하기 위해 파일명 앞에 시스템 밀리초 시간을 붙여서 유일하게 만듦
             fileName = System.currentTimeMillis() + "_" + fileName;
-            part.write(uploadPath + File.separator + fileName); // 서버 컴퓨터 폴더에 이미지 파일 실물 저장 완료!
+            part.write(uploadPath + File.separator + fileName);
         } else {
-            fileName = null; // 사용자가 사진을 첨부하지 않았을 때는 DB에 null로 저장
+            fileName = null;
         }
-        
-        // 3. 데이터 뭉치기 및 DAO 호출
+
         NoticeDto dto = new NoticeDto();
         dto.setTitle(title);
         dto.setContent(content);
-        dto.setImageFile(fileName); // 📸 가공된 파일 이름 바구니에 세팅
-        
+        dto.setImageFile(fileName);
+
         NoticeDao dao = new NoticeDao();
         int result = dao.insertNotice(dto);
-        
-        // 4. 결과 응답 처리
+
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
-        
+
         if (result > 0) {
             int newNoticeNo = dao.getLatestNoticeNo();
             out.println("<script>alert('공지사항이 등록되었습니다.'); location.href='notice/noticeDetail.jsp?no=" + newNoticeNo + "';</script>");
         } else {
-            out.println("<script>alert('등록 실패! 콘솔창 에러를 확인하세요.'); history.back();</script>");
+            out.println("<script>alert('등록 실패! 콘솔창 오류를 확인하세요.'); history.back();</script>");
         }
         out.close();
     }
 
-    // Part 객체에서 순수 파일 이름을 추출해내는 보조 메서드
     private String getFileName(Part part) {
+        if (part == null) {
+            return null;
+        }
+
         String contentDisp = part.getHeader("content-disposition");
+        if (contentDisp == null) {
+            return null;
+        }
+
         String[] tokens = contentDisp.split(";");
         for (String token : tokens) {
             if (token.trim().startsWith("filename")) {

@@ -1,30 +1,39 @@
 package myNotice;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-import db.SqlSet;
-
 public class NoticeDao {
-    SqlSet db = new SqlSet();
+
+    private NoticeDto mapNotice(ResultSet rs) throws SQLException {
+        NoticeDto noticeDto = new NoticeDto();
+        noticeDto.setNoticeNo(rs.getInt("NOTICE_NO"));
+        noticeDto.setTitle(rs.getString("NOTICE_TITLE"));
+        noticeDto.setContent(rs.getString("NOTICE_CONTENT"));
+        noticeDto.setHit(rs.getInt("HIT"));
+        noticeDto.setRegDate(rs.getDate("REG_DATE"));
+        noticeDto.setImageFile(rs.getString("IMAGE_FILE"));
+        return noticeDto;
+    }
 
     public ArrayList<NoticeDto> getNoticeList() {
         String sql = "SELECT * FROM NOTICE ORDER BY NOTICE_NO DESC";
-        Object[] params = {};
         ArrayList<NoticeDto> noticeList = new ArrayList<>();
 
-        db.selectTemplate(sql, params, rs -> {
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
             while (rs.next()) {
-                NoticeDto noticeDto = new NoticeDto();
-                noticeDto.setNoticeNo(rs.getInt("notice_no"));
-                noticeDto.setTitle(rs.getString("notice_title"));
-                noticeDto.setContent(rs.getString("notice_content"));
-                noticeDto.setHit(rs.getInt("hit"));
-                noticeDto.setRegDate(rs.getDate("reg_date"));
-                noticeDto.setImageFile(rs.getString("image_file"));
-                noticeList.add(noticeDto);
+                noticeList.add(mapNotice(rs));
             }
-            return noticeList;
-        });
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] getNoticeList failed: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return noticeList;
     }
@@ -33,73 +42,109 @@ public class NoticeDao {
         String sql = "INSERT INTO NOTICE "
                 + "(NOTICE_NO, NOTICE_TITLE, NOTICE_CONTENT, HIT, REG_DATE, IMAGE_FILE) "
                 + "VALUES (NOTICE_SEQ.NEXTVAL, ?, ?, 0, SYSDATE, ?)";
-        Object[] params = {
-                dto.getTitle(),
-                dto.getContent(),
-                dto.getImageFile()
-        };
 
-        return db.updateTemplate(sql, params);
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, dto.getTitle());
+            pstmt.setString(2, dto.getContent());
+            pstmt.setString(3, dto.getImageFile());
+
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] insertNotice failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public int updateNotice(NoticeDto dto) {
         String sql = "UPDATE NOTICE "
                 + "SET NOTICE_TITLE = ?, NOTICE_CONTENT = ?, IMAGE_FILE = ? "
                 + "WHERE NOTICE_NO = ?";
-        Object[] params = {
-                dto.getTitle(),
-                dto.getContent(),
-                dto.getImageFile(),
-                dto.getNoticeNo()
-        };
 
-        return db.updateTemplate(sql, params);
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, dto.getTitle());
+            pstmt.setString(2, dto.getContent());
+            pstmt.setString(3, dto.getImageFile());
+            pstmt.setInt(4, dto.getNoticeNo());
+
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] updateNotice failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public int deleteNotice(int noticeNo) {
         String sql = "DELETE FROM NOTICE WHERE NOTICE_NO = ?";
-        Object[] params = { noticeNo };
 
-        return db.updateTemplate(sql, params);
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, noticeNo);
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] deleteNotice failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public NoticeDto getNoticeDetail(int noticeNo) {
         String sql = "SELECT * FROM NOTICE WHERE NOTICE_NO = ?";
-        Object[] params = { noticeNo };
 
-        return db.selectTemplate(sql, params, rs -> {
-            if (rs.next()) {
-                NoticeDto noticeDto = new NoticeDto();
-                noticeDto.setNoticeNo(rs.getInt("notice_no"));
-                noticeDto.setTitle(rs.getString("notice_title"));
-                noticeDto.setContent(rs.getString("notice_content"));
-                noticeDto.setHit(rs.getInt("hit"));
-                noticeDto.setRegDate(rs.getDate("reg_date"));
-                noticeDto.setImageFile(rs.getString("image_file"));
-                return noticeDto;
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, noticeNo);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapNotice(rs);
+                }
             }
-            return null;
-        });
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] getNoticeDetail failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public int increaseHit(int noticeNo) {
         String sql = "UPDATE NOTICE SET HIT = HIT + 1 WHERE NOTICE_NO = ?";
-        Object[] params = { noticeNo };
 
-        return db.updateTemplate(sql, params);
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, noticeNo);
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] increaseHit failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public int getLatestNoticeNo() {
         String sql = "SELECT MAX(NOTICE_NO) FROM NOTICE";
-        Object[] params = {};
 
-        Integer latestNo = db.selectTemplate(sql, params, rs -> {
+        try (Connection conn = NoticeDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
             if (rs.next()) {
                 return rs.getInt(1);
             }
-            return 0;
-        });
+        } catch (SQLException e) {
+            System.err.println("[NoticeDao] getLatestNoticeNo failed: " + e.getMessage());
+            e.printStackTrace();
+        }
 
-        return latestNo == null ? 0 : latestNo;
+        return 0;
     }
 }

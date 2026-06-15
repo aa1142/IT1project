@@ -45,7 +45,7 @@
 
             if (list == null || list.isEmpty()) {
         %>
-            <tr>+
+            <tr>
                 <td colspan="5">등록된 공지가 없습니다.</td>
             </tr>
         <%

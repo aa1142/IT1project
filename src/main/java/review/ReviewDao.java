@@ -1,119 +1,143 @@
 package review;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-import db.SqlSet;
-
 public class ReviewDao {
-    SqlSet db = new SqlSet();
+
+    private ReviewDto mapReview(ResultSet rs) throws SQLException {
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setReviewNo(rs.getInt("REVIEW_NO"));
+        reviewDto.setMemberid(rs.getString("MEMBER_ID"));
+        reviewDto.setCompanyNo(rs.getInt("COMPANY_NO"));
+        reviewDto.setBranch(rs.getInt("COMPANY_NO"));
+        reviewDto.setRoomgrade(rs.getString("ROOM_GRADE"));
+        reviewDto.setRoomType(rs.getInt("ROOM_TYPE"));
+        reviewDto.setRating(rs.getInt("RATING"));
+        reviewDto.setScore_location(rs.getInt("SCORE_LOCATION"));
+        reviewDto.setScore_cleanliness(rs.getInt("SCORE_CLEANLINESS"));
+        reviewDto.setScore_service(rs.getInt("SCORE_SERVICE"));
+        reviewDto.setScore_price(rs.getInt("SCORE_PRICE"));
+        reviewDto.setScore_facilities(rs.getInt("SCORE_FACILITIES"));
+        reviewDto.setContent(rs.getString("REVIEW_CONTENT"));
+        reviewDto.setRegDate(rs.getDate("REG_DATE"));
+        return reviewDto;
+    }
 
     public int insertReview(ReviewDto dto) {
         String sql = "INSERT INTO REVIEW "
-                + "(review_no, member_id, company_no, room_grade, room_type, rating, "
-                + "score_location, score_cleanliness, score_service, score_price, score_facilities, review_content) "
-                + "VALUES (review_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "(REVIEW_NO, MEMBER_ID, COMPANY_NO, ROOM_GRADE, ROOM_TYPE, RATING, "
+                + "SCORE_LOCATION, SCORE_CLEANLINESS, SCORE_SERVICE, SCORE_PRICE, SCORE_FACILITIES, REVIEW_CONTENT) "
+                + "VALUES (REVIEW_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        Object[] params = {
-                dto.getMemberid(),
-                dto.getCompanyNo(),
-                dto.getRoomgrade(),
-                dto.getRoomType(),
-                dto.getRating(),
-                dto.getScore_location(),
-                dto.getScore_cleanliness(),
-                dto.getScore_service(),
-                dto.getScore_price(),
-                dto.getScore_facilities(),
-                dto.getContent()
-        };
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        return db.updateTemplate(sql, params);
+            pstmt.setString(1, dto.getMemberid());
+            pstmt.setInt(2, dto.getCompanyNo());
+            pstmt.setString(3, dto.getRoomgrade());
+            pstmt.setInt(4, dto.getRoomType());
+            pstmt.setInt(5, dto.getRating());
+            pstmt.setInt(6, dto.getScore_location());
+            pstmt.setInt(7, dto.getScore_cleanliness());
+            pstmt.setInt(8, dto.getScore_service());
+            pstmt.setInt(9, dto.getScore_price());
+            pstmt.setInt(10, dto.getScore_facilities());
+            pstmt.setString(11, dto.getContent());
+
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[ReviewDao] insertReview failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public ArrayList<ReviewDto> getReviewList() {
-        String sql = "SELECT * FROM review ORDER BY review_no DESC";
-        Object[] params = {};
-
+        String sql = "SELECT * FROM REVIEW ORDER BY REVIEW_NO DESC";
         ArrayList<ReviewDto> reviewList = new ArrayList<>();
 
-        db.selectTemplate(sql, params, rs -> {
-            while (rs.next()) {
-                ReviewDto reviewDto = new ReviewDto();
-                reviewDto.setReviewNo(rs.getInt("review_no"));
-                reviewDto.setMemberid(rs.getString("member_id"));
-                reviewDto.setCompanyNo(rs.getInt("company_no"));
-                reviewDto.setRoomgrade(rs.getString("room_grade"));
-                reviewDto.setRoomType(rs.getInt("room_type"));
-                reviewDto.setRating(rs.getInt("rating"));
-                reviewDto.setScore_location(rs.getInt("score_location"));
-                reviewDto.setScore_cleanliness(rs.getInt("score_cleanliness"));
-                reviewDto.setScore_service(rs.getInt("score_service"));
-                reviewDto.setScore_price(rs.getInt("score_price"));
-                reviewDto.setScore_facilities(rs.getInt("score_facilities"));
-                reviewDto.setContent(rs.getString("review_content"));
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-                reviewList.add(reviewDto);
+            while (rs.next()) {
+                reviewList.add(mapReview(rs));
             }
-            return reviewList;
-        });
+        } catch (SQLException e) {
+            System.err.println("[ReviewDao] getReviewList failed: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return reviewList;
     }
 
     public ReviewDto getReviewDetail(int reviewNo) {
-        String sql = "SELECT * FROM review WHERE review_no = ?";
-        Object[] params = { reviewNo };
+        String sql = "SELECT * FROM REVIEW WHERE REVIEW_NO = ?";
 
-        return db.selectTemplate(sql, params, rs -> {
-            if (rs.next()) {
-                ReviewDto reviewDto = new ReviewDto();
-                reviewDto.setReviewNo(rs.getInt("review_no"));
-                reviewDto.setMemberid(rs.getString("member_id"));
-                reviewDto.setCompanyNo(rs.getInt("company_no"));
-                reviewDto.setBranch(rs.getInt("company_no"));
-                reviewDto.setRoomgrade(rs.getString("room_grade"));
-                reviewDto.setRoomType(rs.getInt("room_type"));
-                reviewDto.setRating(rs.getInt("rating"));
-                reviewDto.setScore_location(rs.getInt("score_location"));
-                reviewDto.setScore_cleanliness(rs.getInt("score_cleanliness"));
-                reviewDto.setScore_service(rs.getInt("score_service"));
-                reviewDto.setScore_price(rs.getInt("score_price"));
-                reviewDto.setScore_facilities(rs.getInt("score_facilities"));
-                reviewDto.setContent(rs.getString("review_content"));
-                return reviewDto;
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, reviewNo);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapReview(rs);
+                }
             }
-            return null;
-        });
+        } catch (SQLException e) {
+            System.err.println("[ReviewDao] getReviewDetail failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public int updateReview(ReviewDto dto) {
-        String sql = "UPDATE review "
-                + "SET company_no = ?, room_grade = ?, room_type = ?, rating = ?, "
-                + "score_location = ?, score_cleanliness = ?, score_service = ?, "
-                + "score_price = ?, score_facilities = ?, review_content = ? "
-                + "WHERE review_no = ?";
+        String sql = "UPDATE REVIEW "
+                + "SET COMPANY_NO = ?, ROOM_GRADE = ?, ROOM_TYPE = ?, RATING = ?, "
+                + "SCORE_LOCATION = ?, SCORE_CLEANLINESS = ?, SCORE_SERVICE = ?, "
+                + "SCORE_PRICE = ?, SCORE_FACILITIES = ?, REVIEW_CONTENT = ? "
+                + "WHERE REVIEW_NO = ?";
 
-        Object[] params = {
-                dto.getCompanyNo(),
-                dto.getRoomgrade(),
-                dto.getRoomType(),
-                dto.getRating(),
-                dto.getScore_location(),
-                dto.getScore_cleanliness(),
-                dto.getScore_service(),
-                dto.getScore_price(),
-                dto.getScore_facilities(),
-                dto.getContent(),
-                dto.getReviewNo()
-        };
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-        return db.updateTemplate(sql, params);
+            pstmt.setInt(1, dto.getCompanyNo());
+            pstmt.setString(2, dto.getRoomgrade());
+            pstmt.setInt(3, dto.getRoomType());
+            pstmt.setInt(4, dto.getRating());
+            pstmt.setInt(5, dto.getScore_location());
+            pstmt.setInt(6, dto.getScore_cleanliness());
+            pstmt.setInt(7, dto.getScore_service());
+            pstmt.setInt(8, dto.getScore_price());
+            pstmt.setInt(9, dto.getScore_facilities());
+            pstmt.setString(10, dto.getContent());
+            pstmt.setInt(11, dto.getReviewNo());
+
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[ReviewDao] updateReview failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     public int deleteReview(int reviewNo) {
-        String sql = "DELETE FROM review WHERE review_no = ?";
-        Object[] params = { reviewNo };
+        String sql = "DELETE FROM REVIEW WHERE REVIEW_NO = ?";
 
-        return db.updateTemplate(sql, params);
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, reviewNo);
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[ReviewDao] deleteReview failed: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
 }

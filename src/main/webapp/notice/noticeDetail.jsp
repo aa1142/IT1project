@@ -15,9 +15,8 @@
 
     int noticeNo = Integer.parseInt(noParam);
     NoticeDao dao = new NoticeDao();
-    dao.increaseHit(noticeNo);
-
     NoticeDto dto = dao.getNoticeDetail(noticeNo);
+
     if (dto == null) {
 %>
         <script>
@@ -27,6 +26,9 @@
 <%
         return;
     }
+
+    dao.increaseHit(noticeNo);
+    int displayHit = dto.getHit() + 1;
 
     String title = dto.getTitle() == null ? "" : dto.getTitle();
     boolean important = title.startsWith("[중요공지]");
@@ -81,7 +83,7 @@
         <span class="mx-2">|</span>
         <span>작성일 <%= dto.getRegDate() %></span>
         <span class="mx-2">|</span>
-        <span>조회 <%= dto.getHit() %></span>
+        <span>조회 <%= displayHit %></span>
     </div>
 
     <% if (imageFile != null && !imageFile.isEmpty()) { %>
