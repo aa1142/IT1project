@@ -81,4 +81,25 @@ public class NoticeDao {
             return null;
         });
     }
+
+    public int increaseHit(int noticeNo) {
+        String sql = "UPDATE NOTICE SET HIT = HIT + 1 WHERE NOTICE_NO = ?";
+        Object[] params = { noticeNo };
+
+        return db.updateTemplate(sql, params);
+    }
+
+    public int getLatestNoticeNo() {
+        String sql = "SELECT MAX(NOTICE_NO) FROM NOTICE";
+        Object[] params = {};
+
+        Integer latestNo = db.selectTemplate(sql, params, rs -> {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        });
+
+        return latestNo == null ? 0 : latestNo;
+    }
 }

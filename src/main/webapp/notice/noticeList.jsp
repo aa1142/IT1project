@@ -26,7 +26,7 @@
 </head>
 <body>
 <div class="container">
-    <h2 class="mb-4 fw-bold">공지사항 관리</h2>
+    <h2 class="mb-4 fw-bold text-center">공지사항 관리</h2>
 
     <table class="table table-hover text-center">
         <thead>
@@ -45,7 +45,7 @@
 
             if (list == null || list.isEmpty()) {
         %>
-            <tr>
+            <tr>+
                 <td colspan="5">등록된 공지가 없습니다.</td>
             </tr>
         <%
@@ -57,11 +57,13 @@
         %>
             <tr>
                 <td><%= dto.getNoticeNo() %></td>
-                <td class="text-start">
-                    <% if (important) { %>
-                        <span class="important-badge">중요공지</span>
-                    <% } %>
-                    <%= displayTitle %>
+                <td class="text-center">
+                    <a href="noticeDetail.jsp?no=<%= dto.getNoticeNo() %>" class="text-decoration-none text-dark">
+                        <% if (important) { %>
+                            <span class="important-badge">중요공지</span>
+                        <% } %>
+                        <%= displayTitle %>
+                    </a>
                 </td>
                 <td><%= dto.getRegDate() %></td>
                 <td><%= dto.getHit() %></td>

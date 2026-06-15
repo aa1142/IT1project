@@ -68,7 +68,8 @@ public class NoticeWriteServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         
         if (result > 0) {
-            out.println("<script>alert('사진을 포함한 공지사항이 등록되었습니다.'); location.href='notice/noticeList.jsp';</script>");
+            int newNoticeNo = dao.getLatestNoticeNo();
+            out.println("<script>alert('공지사항이 등록되었습니다.'); location.href='notice/noticeDetail.jsp?no=" + newNoticeNo + "';</script>");
         } else {
             out.println("<script>alert('등록 실패! 콘솔창 에러를 확인하세요.'); history.back();</script>");
         }
