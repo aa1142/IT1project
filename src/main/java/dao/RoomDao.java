@@ -19,12 +19,12 @@ public class RoomDao {
         String sql = "SELECT * FROM room "
                    + "WHERE room_grade = ? "
                    + "  AND room_type = ? "
-                   + "  AND room_now = '사용 가능' "
+                   + "  AND room_now = '空室' "
                    + "  AND company_no = ? "
                    + "  AND room_no NOT IN ("
                    + "      SELECT room_no FROM boot "
-                   + "      WHERE boot_checkin < TO_DATE(?, 'YYYY-MM-DD') "
-                   + "        AND boot_checkout > TO_DATE(?, 'YYYY-MM-DD') "
+                   + "      WHERE boot_checkin <= TO_DATE(?, 'YYYY-MM-DD') "
+                   + "        AND boot_checkout >= TO_DATE(?, 'YYYY-MM-DD') "
                    + "        AND boot_confirm = 1"
                    + "  ) "
         		   + "order by room_no asc";
@@ -83,7 +83,7 @@ public class RoomDao {
                 + "                AND b.boot_checkout > TO_DATE(?, 'YYYY-MM-DD') " // 두 번째 ?
                 + "                AND b.boot_confirm = 1 "
                 + "WHERE r.company_no = ? "                                         // 세 번째 ?
-                + "  AND r.room_grade IN ('스탠다드', '디럭스', '스윗트')"
+                + "  AND r.room_grade IN ('STANDARD', 'DELUXE', 'SUITE')"
                 + "  AND r.room_type IN (1, 2, 5) "
                 + "GROUP BY r.room_grade";
                 
@@ -97,13 +97,13 @@ public class RoomDao {
                 // 1. SELECT 절에 명시된 정확한 컬럼/별칭 명칭으로 가져옵니다.
                 String roomGrade = rs.getString("room_grade");
                 switch (roomGrade) {
-				case "스탠다드":
+				case "STANDARD":
 					roomGrade = "standard";
 					break;
-				case "디럭스":
+				case "DELUXE":
 					roomGrade = "deluxe";
 					break;
-				case "스윗트":
+				case "SUITE":
 					roomGrade = "suite";
 					break;
 				}
@@ -129,7 +129,7 @@ public class RoomDao {
     			+ "       COUNT(CASE WHEN room_type = 5 THEN 1 END) AS reserved_family "
     			+ "FROM room "
     			+ "WHERE company_no = ? "
-    			+ "  AND room_grade IN ('스탠다드', '디럭스', '스윗트') "
+    			+ "  AND room_grade IN ('STANDARD', 'DELUXE', 'SUITE') "
     			+ "  AND room_type IN (1, 2, 5) "
     			+ "GROUP BY room_grade";
     	Object[] params = {companyNo};
@@ -138,13 +138,13 @@ public class RoomDao {
             while (rs.next()) {  //반복문으로 출력
             	String roomGrade = rs.getString("room_grade");
                 switch (roomGrade) {
-				case "스탠다드":
+				case "STANDARD":
 					roomGrade = "standard";
 					break;
-				case "디럭스":
+				case "DELUXE":
 					roomGrade = "deluxe";
 					break;
-				case "스윗트":
+				case "SUITE":
 					roomGrade = "suite";
 					break;
 				}
@@ -207,12 +207,12 @@ public class RoomDao {
     	String sql = "SELECT DISTINCT room_grade, room_type, room_price "
                 + "FROM room "
                 + "WHERE company_no = ? "
-                + "  AND room_grade IN ('스탠다드', '디럭스', '스윗트') "
+                + "  AND room_grade IN ('STANDARD', 'DELUXE', 'SUITE') "
                 + "ORDER BY "
                 + "    CASE room_grade "
-                + "        WHEN '스탠다드' THEN 1 "
-                + "        WHEN '디럭스' THEN 2 "   // <- 1. 누락되었던 숫자 2 추가!
-                + "        WHEN '스윗트' THEN 3 "
+                + "        WHEN 'STANDARD' THEN 1 "
+                + "        WHEN 'DELUXE' THEN 2 "   // <- 1. 누락되었던 숫자 2 추가!
+                + "        WHEN 'SUITE' THEN 3 "
                 + "        ELSE 4 "                 // <- 2. 뒤쪽 코드가 잘리는 위험한 주석(--) 제거!
                 + "    END ASC, "
                 + "    room_type ASC";

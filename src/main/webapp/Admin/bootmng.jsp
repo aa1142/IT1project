@@ -28,34 +28,34 @@
         if(typeof $('#memoModal').modal === 'function') {
             $('#memoModal').modal('show');
         } else {
-            alert("메모 모달을 불러올 수 없습니다. 모달 ID를 확인해 주세요.");
+            alert("メモモーダルを読み込めません。モーダルIDを確認してください。");
         }
     }
 </script>
 
 <div class="container-fluid px-4">
-    <h2 class="fw-bold fs-3 mb-3">예약관리</h2>
+    <h2 class="fw-bold fs-3 mb-3">予約管理</h2>
     
     <div class="card border-0 shadow-sm p-3 mb-4 bg-white rounded">
         <form method="get" action="" class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label text-muted small fw-semibold">예약 구분</label>
+                <label class="form-label text-muted small fw-semibold">予約区分</label>
                 <select class="form-select" name="bootTime">
-                    <option value="upcoming" <%= "upcoming".equals(bootTime) ? "selected" : "" %>>현재 / 예정된 예약</option>
-                    <option value="past" <%= "past".equals(bootTime) ? "selected" : "" %>>지난 예약 내역 (과거)</option>
+                    <option value="upcoming" <%= "upcoming".equals(bootTime) ? "selected" : "" %>>現在・今後の予約</option>
+                    <option value="past" <%= "past".equals(bootTime) ? "selected" : "" %>>過去の予約履歴</option>
                 </select>
             </div>
             
             <div class="col-md-3">
-                <label class="form-label text-muted small fw-semibold">예약처리 상태조회</label>
+                <label class="form-label text-muted small fw-semibold">予約ステータス照会</label>
                 <select class="form-select" name="bootStatus">
-                    <option value="전체" <%= "전체".equals(bootStatus) ? "selected" : "" %>>전체 내역 보기</option>
-                    <option value="결제완료" <%= "결제완료".equals(bootStatus) ? "selected" : "" %>>결제완료 건</option>
-                    <option value="예약확정" <%= "예약확정".equals(bootStatus) ? "selected" : "" %>>예약확정 건</option>
+                    <option value="전체" <%= "전체".equals(bootStatus) ? "selected" : "" %>>すべての履歴を表示</option>
+                    <option value="결제완료" <%= "결제완료".equals(bootStatus) ? "selected" : "" %>>決済完了</option>
+                    <option value="예약확정" <%= "예약확정".equals(bootStatus) ? "selected" : "" %>>予約確定</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100" style="background-color: #1a2536; border: none; height: 38px;">필터 검색</button>
+                <button type="submit" class="btn btn-primary w-100" style="background-color: #1a2536; border: none; height: 38px;">フィルター検索</button>
             </div>
         </form>
     </div>
@@ -64,15 +64,15 @@
         <table class="table table-hover text-center align-middle">
             <thead>
                 <tr>
-                    <th>예약번호</th>
-                    <th>예약자명</th>
-                    <th>연락처</th>
-                    <th>체크인</th>
-                    <th>체크아웃</th>
-                    <th>등급</th>
-                    <th>이용</th>
-                    <th>상태</th>
-                    <th>관리</th>
+                    <th>予約番号</th>
+                    <th>予約者名</th>
+                    <th>連絡先</th>
+                    <th>チェックイン</th>
+                    <th>チェックアウト</th>
+                    <th>グレード</th>
+                    <th>タイプ</th>
+                    <th>ステータス</th>
+                    <th>管理</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,19 +93,19 @@
                     <td><%= cleanCheckIn %></td>
                     <td><%= cleanCheckOut %></td>
                     <td><%= boot.getRoomGrade() %></td>
-                    <td><%= (boot.getRoomType()==1?"싱글":boot.getRoomType()==2?"트윈":"패밀리") %></td>
-                    <td><%= (boot.getBootConfirm()==1?"예약확정":"결제완료") %></td>
+                    <td><%= (boot.getRoomType()==1?"シングル":boot.getRoomType()==2?"ツイン":"ファミリー") %></td>
+                    <td><%= (boot.getBootConfirm()==1?"予約確定":"決済完了") %></td>
                     <td>
                         <button type="button" 
-						        class="btn btn-info btn-sm" 
-						        onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
-						        data-room-grade="<%= boot.getRoomGrade() != null ? boot.getRoomGrade() : "" %>" 
-						        data-please="<%= boot.getBootPlease() != null ? boot.getBootPlease().replace("\"", "&quot;").replace("\r\n", " ") : "" %>" 
-						        data-checkin="<%= cleanCheckIn %>" 
-						        data-checkout="<%= cleanCheckOut %>" 
-						        data-room-type-text="<%= boot.getRoomType() == 1 ? "싱글" : boot.getRoomType() == 2 ? "트윈" : "패밀리" %>">
-						    관리
-						</button>
+                                class="btn btn-info btn-sm" 
+                                onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
+                                data-room-grade="<%= boot.getRoomGrade() != null ? boot.getRoomGrade() : "" %>" 
+                                data-please="<%= boot.getBootPlease() != null ? boot.getBootPlease().replace("\"", "&quot;").replace("\r\n", " ") : "" %>" 
+                                data-checkin="<%= cleanCheckIn %>" 
+                                data-checkout="<%= cleanCheckOut %>" 
+                                data-room-type-text="<%= boot.getRoomType() == 1 ? "シングル" : boot.getRoomType() == 2 ? "ツイン" : "ファミリー" %>">
+                            管理
+                        </button>
                     </td>
                 </tr>
                 <% } %>

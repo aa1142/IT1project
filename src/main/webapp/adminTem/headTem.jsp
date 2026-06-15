@@ -1,17 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>예약관리</title>
+    <title>予約管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -48,7 +48,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark admin-nav mb-4">
     <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold fs-3" id="dynamic-brand" href="/HotelReservation/Admin/bootmng">예약관리</a>
+        <a class="navbar-brand fw-bold fs-3" id="dynamic-brand" href="/HotelReservation/Admin/bootmng">予約管理</a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -56,12 +56,12 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto" id="dynamic-menu-list">
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">룸 배정/현황</a></li>
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/bootStatus">예약현황</a></li>
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/onsitePayment">현장결제</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">客室割り当て・状況</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/bootStatus">予約状況</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/onsitePayment">現地決済</a></li>
             </ul>
             <span class="navbar-text text-white">
-                ${not empty adminData ? adminData.adminName : '관리자'}님
+                ${not empty adminData ? adminData.adminName : '管理者'}様
             </span>
         </div>
     </div>
@@ -73,8 +73,8 @@
         const brandLogo = document.getElementById('dynamic-brand');
         const menuList = document.getElementById('dynamic-menu-list');
         
-        // 🎯 1. 안전장치(Null Check) 추가
-        // 특정 페이지에서 요소가 일시적으로 로드되지 않더라도 스크립트 에러로 전체 페이지가 멈추는 것을 방임합니다.
+        // 🎯 1. 安全対策（Null Check）の追加
+        // 特定のページで要素が一時的にロードされなくても、スクリプトエラーでページ全体が停止するのを防ぎます。
         if (brandLogo && menuList) {
             const navLinks = menuList.querySelectorAll('.nav-link');
             let matchedLink = null;
@@ -86,7 +86,7 @@
                 }
             });
             
-            // 2. 일치하는 서브메뉴 스와핑(Swapping) 실행
+            // 2. 一致するサブメニューのスワップ（Swapping）実行
             if (matchedLink) {
                 const currentMenuText = matchedLink.innerText; 
                 
@@ -94,8 +94,10 @@
                 brandLogo.setAttribute('href', matchedLink.getAttribute('href'));
                 
                 const parentLi = matchedLink.parentElement;
-                parentLi.innerHTML = `<a class="nav-link" href="/HotelReservation/Admin/bootmng">예약관리</a>`;
+                parentLi.innerHTML = `<a class="nav-link" href="/HotelReservation/Admin/bootmng">予約管理</a>`;
             }
         }
     });
 </script>
+</body>
+</html>

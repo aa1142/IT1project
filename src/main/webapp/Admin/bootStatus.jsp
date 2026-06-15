@@ -5,7 +5,8 @@
 <style>
     body {
         background-color: #f1f5f9;
-        font-family: 'Malgun Gothic', dotum, sans-serif;
+        /* 🎯 일본어 가독성을 위한 표준 비즈니스 고딕 폰트셋 적용 */
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     }
     .nav-dark {
         background-color: #1e293b;
@@ -86,7 +87,7 @@
                 <table class="table table-borderless calendar-table">
                     <thead>
                         <tr class="text-muted">
-                            <th class="text-danger">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th class="text-primary">토</th>
+                            <th class="text-danger">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th class="text-primary">土</th>
                         </tr>
                     </thead>
                     <tbody id="calendar-body">
@@ -97,67 +98,65 @@
         
         <div class="col-md-8">
             <div class="card card-custom p-4 h-100 shadow-sm">
-                <h6 class="fw-bold mb-3">객실 등급별 예약 요약 <span class="text-muted fs-7 fw-normal" id="summary-date-text">(<%= todayStr %>)</span></h6>
+                <h6 class="fw-bold mb-3">客室ランク別予約概要 <span class="text-muted fs-7 fw-normal" id="summary-date-text">(<%= todayStr %>)</span></h6>
                 <div class="table-responsive">
                     <table class="table table-custom align-middle text-center m-0">
                         <thead>
                             <tr class="table-light">
                                 <th class="table-diagonal" style="width: 25%; height: 50px;">
-                                    <span class="left-bottom text-secondary">등급</span>
-                                    <span class="right-top text-secondary">타입</span>
+                                    <span class="left-bottom text-secondary">ランク</span>
+                                    <span class="right-top text-secondary">タイプ</span>
                                 </th>
-                                <th style="width: 25%;">싱글</th>
-                                <th style="width: 25%;">트윈</th>
-                                <th style="width: 25%;">패밀리</th>
+                                <th style="width: 25%;">シングル</th>
+                                <th style="width: 25%;">ツイン</th>
+                                <th style="width: 25%;">ファミリー</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="fw-semibold text-secondary text-start ps-3">스탠다드</td>
-                            	<td>
-						            <span class="fw-bold text-primary" id="stdSingleReserved">-</span><span class="text-muted">/</span><span id="stdSingleTotal">-</span>
-						            <br><small class="text-success fw-bold" id="stdSingleLeft"></small>
-						        </td>
-						        <td>
-						            <span class="fw-bold text-primary" id="stdTwinReserved">-</span><span class="text-muted">/</span><span id="stdTwinTotal">-</span>
-						            <br><small class="text-success fw-bold" id="stdTwinLeft"></small>
-						        </td>
-						        <td>
-						            <span class="fw-bold text-primary" id="stdFamilyReserved">-</span><span class="text-muted">/</span><span id="stdFamilyTotal">-</span>
-						            <br><small class="text-success fw-bold" id="stdFamilyLeft"></small>
-						        </td>
+                                <td class="fw-semibold text-secondary text-start ps-3">スタンダード</td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="stdSingleReserved">-</span><span class="text-muted">/</span><span id="stdSingleTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="stdSingleLeft"></small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="stdTwinReserved">-</span><span class="text-muted">/</span><span id="stdTwinTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="stdTwinLeft"></small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="stdFamilyReserved">-</span><span class="text-muted">/</span><span id="stdFamilyTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="stdFamilyLeft"></small>
+                                </td>
                             </tr>
                             
                             <tr>
-                                <td class="fw-semibold text-secondary text-start ps-3">디럭스</td>
+                                <td class="fw-semibold text-secondary text-start ps-3">デラックス</td>
                                 <td>
-						            <span class="fw-bold text-primary" id="dlxSingleReserved">-</span><span class="text-muted">/</span><span id="dlxSingleTotal">-</span>
-						            <br><small class="text-success fw-bold" id="dlxSingleLeft"></small>
-						        </td>
-						        <td>
-						            <span class="fw-bold text-primary" id="dlxTwinReserved">-</span><span class="text-muted">/</span><span id="dlxTwinTotal">-</span>
-						            <br><small class="text-success fw-bold" id="dlxTwinLeft"></small>
-						        </td>
-						        <td>
-						            <span class="fw-bold text-primary" id="dlxFamilyReserved">-</span><span class="text-muted">/</span><span id="dlxFamilyTotal">-</span>
-						            <br><small class="text-success fw-bold" id="dlxFamilyLeft"></small>
-						        </td>
+                                    <span class="fw-bold text-primary" id="dlxSingleReserved">-</span><span class="text-muted">/</span><span id="dlxSingleTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="dlxSingleLeft"></small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="dlxTwinReserved">-</span><span class="text-muted">/</span><span id="dlxTwinTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="dlxTwinLeft"></small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="dlxFamilyReserved">-</span><span class="text-muted">/</span><span id="dlxFamilyTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="dlxFamilyLeft"></small>
+                                </td>
                             </tr>
                             
-							
-							<tr>
-							    <td class="fw-semibold text-secondary text-start ps-3">스윗트</td>
-							    <td class="text-muted bg-light-subtle">
-							        - </td>
-							    <td>
-							        <span class="fw-bold text-primary" id="steTwinReserved">-</span><span class="text-muted">/</span><span id="steTwinTotal">-</span>
-							        <br><small class="text-success fw-bold" id="steTwinLeft"></small>
-							    </td>
-							    <td>
-							        <span class="fw-bold text-primary" id="steFamilyReserved">-</span><span class="text-muted">/</span><span id="steFamilyTotal">-</span>
-							        <br><small class="text-success fw-bold" id="steFamilyLeft"></small>
-							    </td>
-							</tr>
+                            <tr>
+                                <td class="fw-semibold text-secondary text-start ps-3">スイート</td>
+                                <td class="text-muted bg-light-subtle">-</td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="steTwinReserved">-</span><span class="text-muted">/</span><span id="steTwinTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="steTwinLeft"></small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" id="steFamilyReserved">-</span><span class="text-muted">/</span><span id="steFamilyTotal">-</span>
+                                    <br><small class="text-success fw-bold" id="steFamilyLeft"></small>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -165,46 +164,16 @@
         </div>
     </div>
 
-    <div class="card card-custom p-4 mb-4">
-        <h6 class="fw-bold mb-3">방 종류별 예약 이용률</h6>
-        <div class="row align-items-center mb-2">
-            <div class="col-2 text-secondary fw-semibold">스탠다드 <span class="badge bg-light text-dark ms-1">45%</span></div>
-            <div class="col-8">
-                <div class="progress" style="height: 12px;">
-                    <div class="progress-bar bg-primary" style="width: 45%"></div>
-                </div>
-            </div>
-            <div class="col-2 text-end"><button class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size:0.8rem">예약 이용</button></div>
-        </div>
-        <div class="row align-items-center mb-2">
-            <div class="col-2 text-secondary fw-semibold">디럭스 <span class="badge bg-light text-dark ms-1">45%</span></div>
-            <div class="col-8">
-                <div class="progress" style="height: 12px;">
-                    <div class="progress-bar bg-success" style="width: 45%"></div>
-                </div>
-            </div>
-            <div class="col-2 text-end"><button class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size:0.8rem">예약 이용</button></div>
-        </div>
-        <div class="row align-items-center">
-            <div class="col-2 text-secondary fw-semibold">스위트 <span class="badge bg-light text-dark ms-1">10%</span></div>
-            <div class="col-8">
-                <div class="progress" style="height: 12px;">
-                    <div class="progress-bar bg-warning" style="width: 10%"></div>
-                </div>
-            </div>
-            <div class="col-2 text-end"><button class="btn btn-sm btn-outline-secondary py-1 px-3" style="font-size:0.8rem">예약 이용</button></div>
-        </div>
-    </div>
 
-    <h6 class="fw-bold mb-3 text-secondary">방 종류별 가격 수정</h6>
+    <h6 class="fw-bold mb-3 text-secondary">客室タイプ別料金修正</h6>
     <div class="row g-3">
     <%
         List<RoomDto> priceList = (List<RoomDto>) request.getAttribute("priceList");
         
         java.util.Map<String, java.util.Map<Integer, Integer>> gradeMap = new java.util.LinkedHashMap<String, java.util.Map<Integer, Integer>>();
-        gradeMap.put("스탠다드", new java.util.HashMap<Integer, Integer>());
-        gradeMap.put("디럭스", new java.util.HashMap<Integer, Integer>());
-        gradeMap.put("스윗트", new java.util.HashMap<Integer, Integer>());
+        gradeMap.put("STANDARD", new java.util.HashMap<Integer, Integer>());
+        gradeMap.put("DELUXE", new java.util.HashMap<Integer, Integer>());
+        gradeMap.put("SUITE", new java.util.HashMap<Integer, Integer>());
 
         if (priceList != null && !priceList.isEmpty()) {
             for (RoomDto room : priceList) {
@@ -217,11 +186,11 @@
 
             for (String grade : gradeMap.keySet()) {
                 String bgClass = "bg-secondary";
-                if ("스탠다드".equals(grade)) {
+                if ("STANDARD".equals(grade)) {
                     bgClass = "bg-primary";
-                } else if ("디럭스".equals(grade)) {
+                } else if ("DELUXE".equals(grade)) {
                     bgClass = "bg-success";
-                } else if ("스윗트".equals(grade)) {
+                } else if ("SUITE".equals(grade)) {
                     bgClass = "bg-warning";
                 }
                 
@@ -234,49 +203,46 @@
                 String formattedFamily = (familyPrice != null) ? String.format("%,d", familyPrice) : "0";
     %>
 <div class="col-md-4">
-    <%-- ✨ 변경 1: h-100 d-flex flex-column 클래스 추가 (높이 동기화 및 세로 정렬) --%>
     <div class="card card-custom p-4 h-100 d-flex flex-column">
         <div class="d-flex align-items-center mb-3">
             <span class="p-2 <%= bgClass %> rounded-circle me-2"></span>
             <h6 class="fw-bold mb-0"><%= grade %></h6>
         </div>
         
-        <% if (!"스윗트".equals(grade)) { %>
+        <% if (!"SUITE".equals(grade)) { %>
         <div class="mb-2">
-            <label class="form-label text-muted small mb-1">1박 가격(싱글)</label>
+            <label class="form-label text-muted small mb-1">1泊料金（シングル）</label>
             <div class="input-group">
                 <input type="text" class="form-control text-end fw-semibold price-input price-single" value="<%= formattedSingle %>">
-                <span class="input-group-text bg-light text-muted small fw-bold">원</span>
+                <span class="input-group-text bg-light text-muted small fw-bold">円</span>
             </div>
         </div>
         <% } %>
         
          <div class="mb-2">
-             <label class="form-label text-muted small mb-1">1박 가격(트윈)</label>
+             <label class="form-label text-muted small mb-1">1泊料金（ツイン）</label>
             <div class="input-group">
                 <input type="text" class="form-control text-end fw-semibold price-input price-twin" value="<%= formattedTwin %>">
-                <span class="input-group-text bg-light text-muted small fw-bold">원</span>
+                <span class="input-group-text bg-light text-muted small fw-bold">円</span>
             </div>
         </div>
          <div class="mb-2">
-               <label class="form-label text-muted small mb-1">1박 가격(패밀리)</label>
+                <label class="form-label text-muted small mb-1">1泊料金（ファミリー）</label>
             <div class="input-group">
                 <input type="text" class="form-control text-end fw-semibold price-input price-family" value="<%= formattedFamily %>">
-                <span class="input-group-text bg-light text-muted small fw-bold">원</span>
+                <span class="input-group-text bg-light text-muted small fw-bold">円</span>
             </div>
         </div>
         
-        <%-- ✨ 변경 2: mt-2를 지우고 mt-auto 추가 (남는 공간을 밀어내어 바닥에 고정) --%>
-        <button class="btn btn-success w-100 btn-save mt-auto" onclick="">저장</button>
+        <button class="btn btn-success w-100 btn-save mt-auto">SAVE</button>
     </div>
 </div>
-<%-- (기존 코드 생략) --%>
     <% 
             } 
         } else { 
     %>
         <div class="col-12 text-center text-muted py-4">
-            등록된 객실 가격 정보가 없습니다.
+            登録された客室料金情報がありません。
         </div>
     <% 
         } 
@@ -300,22 +266,20 @@ $(document).ready(function() {
         let card = $(this).closest('.card');
         let gradeName = card.find('h6').text(); 
         
-        // 각 타입별 인풋창의 값을 따로 추출합니다.
         let singleStr = card.find('.price-single').val() || "0";
         let twinStr = card.find('.price-twin').val() || "0";
         let familyStr = card.find('.price-family').val() || "0";
         
-        // DB 전송용 순수 숫자 추출
         let rawSingle = singleStr.replace(/,/g, ''); 
         let rawTwin = twinStr.replace(/,/g, ''); 
         let rawFamily = familyStr.replace(/,/g, ''); 
         
-        alert("[" + gradeName + " 가격 수정내역]" +
-              "싱글: " + singleStr + "원 (서버용: " + rawSingle + ")" +
-              "트윈: " + twinStr + "원 (서버용: " + rawTwin + ")" +
-              "패밀리: " + familyStr + "원 (서버용: " + rawFamily + ")" +
-              "성공적으로 가져왔습니다!");
-        
+        // 🚀 테스트용 얼럿 문구 일본어화
+        alert("[" + gradeName + " 料金修正内訳]\n" +
+              "シングル: " + singleStr + "円 (サーバー用: " + rawSingle + ")\n" +
+              "ツイン: " + twinStr + "円 (サーバー用: " + rawTwin + ")\n" +
+              "ファミリー: " + familyStr + "円 (サーバー用: " + rawFamily + ")\n" +
+              "正常に取得されました！");
     });
 
     // ================= 3. 동적 달력 스크립트 구성 =================
@@ -328,7 +292,8 @@ $(document).ready(function() {
     const realTodayDate = today.getDate();
 
     function renderCalendar(year, month) {
-        $('#calendar-title').text(year + '년 ' + (month + 1) + '월');
+        // 🎯 연, 월 타이틀 일본어 포맷 변경
+        $('#calendar-title').text(year + '年 ' + (month + 1) + '月');
 
         let firstDay = new Date(year, month, 1).getDay();
         let totalDays = new Date(year, month + 1, 0).getDate();
@@ -421,88 +386,78 @@ function fetchReservationSummary(targetDate) {
         data: { date: targetDate }, 
         dataType: 'json', 
         success: function(data) {
-            // 1. 스탠다드 라인 (3개 전부)
             parseAndRender('stdSingle', data.standard1);
             parseAndRender('stdTwin', data.standard2);
             parseAndRender('stdFamily', data.standard5);
             
-            // 2. 디럭스 라인 (3개 전부)
             parseAndRender('dlxSingle', data.deluxe1);
             parseAndRender('dlxTwin', data.deluxe2);
             parseAndRender('dlxFamily', data.deluxe5);
             
-            // 3. 스윗트 라인 (3개 전부)
-            parseAndRender('steSingle', data.suite1); // 서블릿에서 suite1도 던져주도록 설정 필요!
+            parseAndRender('steSingle', data.suite1); 
             parseAndRender('steTwin', data.suite2);
             parseAndRender('steFamily', data.suite5);
         },
         error: function(xhr, status, error) {
-            console.error("데이터 로드 실패: ", error);
+            console.error("データの読み込みに失敗しました: ", error);
         }
     });
 }
 
-// 💡 스크립트 가장 하단(태그 닫히기 전)에 이 함수 정의를 반드시 넣어주셔야 합니다!
 function parseAndRender(prefix, rawStr) {
-    // 서버에서 데이터가 안 오거나 null 일 때의 예외 처리
     if (!rawStr || rawStr.indexOf('/') === -1) {
         $('#' + prefix + 'Reserved').text('0');
         $('#' + prefix + 'Total').text('0');
-        $('#' + prefix + 'Left').text('(0실 남음)');
+        // 🎯 잔여 실 표기법 변경
+        $('#' + prefix + 'Left').text('(残り0室)');
         return;
     }
 
-    // "3/10" 형태의 문자열을 분리 (Parse 단계)
     let parts = rawStr.split('/');
     let reserved = parseInt(parts[0], 10) || 0;
     let total = parseInt(parts[1], 10) || 0;
     let left = total - reserved;
-    if (left < 0) left = 0; // 혹시 모를 음수 방지
+    if (left < 0) left = 0; 
 
-    // HTML 엘리먼트에 꽂아넣기 (Render 단계)
     $('#' + prefix + 'Reserved').text(reserved);
     $('#' + prefix + 'Total').text(total);
-    $('#' + prefix + 'Left').text('(' + left + '실 남음)');
+    // 🎯 남은 객실 동적 텍스트 일본어화
+    $('#' + prefix + 'Left').text('(残り' + left + '室)');
 }
 
-//================= 2. 가격 수정 저장 버튼 이벤트 (3개 가격 통합 추출) =================
-$(".btn-save").click(function() {
+//================= 4. 가격 수정 저장 DB 전송 (비동기 AJAX 통신부 문구 변경) =================
+$(document).on('click', '.btn-save', function() {
     let card = $(this).closest('.card');
     let gradeName = card.find('h6').text(); 
     
-    // 각 타입별 인풋창의 값을 따로 추출합니다.
     let singleStr = card.find('.price-single').val() || "0";
     let twinStr = card.find('.price-twin').val() || "0";
     let familyStr = card.find('.price-family').val() || "0";
     
-    // DB 전송용 순수 숫자 추출 (쉼표 제거)
     let rawSingle = singleStr.replace(/,/g, ''); 
     let rawTwin = twinStr.replace(/,/g, ''); 
     let rawFamily = familyStr.replace(/,/g, ''); 
     
-    // 🚀 [추가] 실제 DB 반영을 위한 AJAX 호출
     $.ajax({
-        url: '${pageContext.request.contextPath}/admin/updateRoomPrice.do', // 1. 본인의 Controller 매핑 주소로 맞추세요!
-        type: 'POST', // 데이터를 수정하는 작업이므로 POST 방식 권장
+        url: '${pageContext.request.contextPath}/admin/updateRoomPrice.do', 
+        type: 'POST', 
         data: {
-            roomGrade: gradeName,     // ex) '스탠다드', '디럭스', '스위트'
-            priceSingle: rawSingle,   // ex) 150000 (스위트라면 위에서 0으로 처리됨)
-            priceTwin: rawTwin,       // ex) 200000
-            priceFamily: rawFamily    // ex) 350000
+            roomGrade: gradeName,     
+            priceSingle: rawSingle,   
+            priceTwin: rawTwin,       
+            priceFamily: rawFamily    
         },
-        dataType: 'text', // 서버에서 성공여부 문자열("success")을 받아온다고 가정
+        dataType: 'text', 
         success: function(response) {
             if (response.trim() === "success") {
-                alert(gradeName + " 가격이 성공적으로 수정되었습니다! 👍");
-                // 만약 수정 후 화면을 새로고침하고 싶다면 아래 주석 해제
-                // location.reload();
+                alert(gradeName + "の料金が正常に修正されました！ 👍");
             } else {
-                alert("가격 수정에 실패했습니다. 다시 시도해 주세요.");
+                alert("料金の修正に失敗しました。もう一度お試しください。");
             }
         },
         error: function(xhr, status, error) {
-            console.error("가격 수정 통신 실패: ", error);
-            alert("서버 연결 중 오류가 발생했습니다.");
+            console.error("料金修正の通信失敗: ", error);
+            alert("サーバーとの通信중에 エラーが発生しました。");
         }
     });
 });

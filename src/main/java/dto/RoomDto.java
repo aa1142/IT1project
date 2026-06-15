@@ -9,32 +9,7 @@ package dto;
 	    private int roomType;      // room_type (NUMBER) - 객실 타입 (1=싱글, 2=트윈, 5=패밀리)
 	    private int roomPrice;    // room_price (NUMBER(10)) - 객실 가격 (금액이 커질 수 있으므로 int 권장)
 
-	    // 기본 생성자 (상태 기본값 세팅)
-	    public RoomDto() {
-	        this.roomNow = "사용가능"; // DB DEFAULT '사용가능' 반영
-	    }
 
-	    // 모든 필드를 포함하는 생성자
-	    public RoomDto(int roomNo, int companyNo, String roomNow, String roomGrade, int roomType, int roomPrice) {
-	        this.roomNo = roomNo;
-	        this.companyNo = companyNo;
-	        this.roomNow = roomNow;
-	        this.roomGrade = roomGrade;
-	        this.roomType = roomType;
-	        this.roomPrice = roomPrice;
-	    }
-
-	    // ⭐ 요청하신 느낌의 복사 생성자 (오류 수정 버전)
-	    public RoomDto(RoomDto roomDto) {
-	        if (roomDto != null) { // NullPointerException 방지를 위한 안전장치
-	            this.roomNo = roomDto.getRoomNo();
-	            this.companyNo = roomDto.getCompanyNo();
-	            this.roomNow = roomDto.getRoomNow();
-	            this.roomGrade = roomDto.getRoomGrade();
-	            this.roomType = roomDto.getRoomType();
-	            this.roomPrice = roomDto.getRoomPrice();
-	        }
-	    }
 
 	    // Getter / Setter 메서드
 	    public int getRoomNo() {
