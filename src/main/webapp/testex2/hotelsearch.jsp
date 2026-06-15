@@ -165,7 +165,7 @@
                                    style="display:none;" onchange="selectCompanyRadio(this)">
                             <div class="hotel-option-name"><%= c.getCompany_name() %></div>
                             <div class="hotel-option-info">
-                                <span>⭐ <%= c.getRating() %>/5.0</span>
+                                <span>⭐ <%= String.format("%.1f", c.getRating()) %>/5.0</span>
                                 <span>🏨 <%= c.getRoom_type_count() %>가지 객실</span>
                             </div>
                         </label>
