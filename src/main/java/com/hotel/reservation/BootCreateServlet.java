@@ -32,7 +32,7 @@ public class BootCreateServlet extends HttpServlet {
             }
 
             // 브라우저 폼 파라미터 -> BootDTO 1:1 매핑
-            boot.setRoomGrade(valueOrDefault(request.getParameter("roomGrade"), "스탠다드"));
+            boot.setRoomGrade(valueOrDefault(request.getParameter("roomGrade"), "STANDARD"));
             boot.setRoomType(parseInt(request.getParameter("roomType"), 2)); 
             boot.setRoomNo(parseInt(request.getParameter("roomNo"), 0));     
             boot.setCompanyNo(parseInt(request.getParameter("companyNo"), 1)); 

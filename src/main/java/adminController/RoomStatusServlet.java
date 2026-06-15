@@ -45,10 +45,10 @@ public class RoomStatusServlet extends HttpServlet {
 	    
 	    for (RoomDto room : roomList) {
 	        String status = (String) room.getRoomNow();
-	        if ("사용 가능".equals(status)) available++;
-	        else if ("투숙 중".equals(status)) occupied++;
-	        else if ("청소 중".equals(status)) cleaning++;
-	        else if ("점검 중".equals(status)) inspecting++;
+	        if ("空室".equals(status)) available++;
+	        else if ("宿泊中".equals(status)) occupied++;
+	        else if ("清掃中".equals(status)) cleaning++;
+	        else if ("点検中".equals(status)) inspecting++;
 	    }
 	    request.setAttribute("countAvailable", available);
 	    request.setAttribute("countOccupied", occupied);

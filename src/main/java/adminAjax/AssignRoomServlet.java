@@ -23,12 +23,12 @@ public class AssignRoomServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	System.out.println("배정 들어옴");
         // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
         
         HttpSession session = request.getSession();
         Integer companyNo = (Integer) session.getAttribute("companyNo");
-        
         // 임시 데이터
         companyNo = 1;
         
@@ -40,7 +40,6 @@ public class AssignRoomServlet extends HttpServlet {
         int roomNo = 0;
         try {
             if (bootNoStr != null) bootNo = Integer.parseInt(bootNoStr);
-            if (roomNoStr != null) roomNo = Integer.parseInt(roomNoStr);
         } catch (NumberFormatException e) {
             System.out.println("숫자 변환 중 오류 발생! 넘어온 값 체크 필요.");
             e.printStackTrace();
@@ -65,7 +64,7 @@ public class AssignRoomServlet extends HttpServlet {
                 final BootDto currentBoot = bootDto;
                 final String assignedRoomNo = roomNoStr;
                 
-                
+              
                 // 톰캣 스레드가 메일 보내느라 멈추지 않도록 별도 스레드로 비동기 처리
                 new Thread(() -> {
                     try {
@@ -78,15 +77,15 @@ public class AssignRoomServlet extends HttpServlet {
                         String roomName ="";
                         switch (roomTypeNo) {
         				case 1:
-        					roomName = "싱글";
+        					roomName = "シングル";
         					break;
         					
         				case 2:
-        					roomName = "트윈";
+        					roomName = "ツイン";
         					break;
         					
         				case 5:
-        					roomName = "패밀리";
+        					roomName = "ファミリー";
         					break;
 
         				}

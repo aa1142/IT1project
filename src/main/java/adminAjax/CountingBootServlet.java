@@ -37,7 +37,7 @@ public class CountingBootServlet extends HttpServlet {
          Map<String, Integer> reservedMap = roomdao.countBootingRoom(searchDate, companyNo);
          Map<String, Integer> countAll = roomdao.countAllTypeRoom(companyNo);
         
-        System.out.println("디럭스패밀리= "+countAll.get("standard_familyAll"));
+        System.out.println("디럭스패밀리= "+countAll.get("deluxe_familyAll"));
         // 5. Ajax가 요구하는 key 명칭에 맞게 최종 응답용 Map 구성하기
         // Ajax 코드에서 'data.reservedStdSingle', 'data.totalStdSingle' 형태로 쓰고 있습니다.
         Map<String, String> resultData = new HashMap<>();

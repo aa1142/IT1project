@@ -35,7 +35,7 @@ public class ChangeRoomPriceServlet extends HttpServlet {
 				
 				// [콘솔 확인용] 데이터가 서버에 잘 도착했는지 체크해보세요!
 				System.out.println("[ChangeRoomPriceServlet] 요청 수신 -> 등급: " + roomGrade 
-						+ " | 싱글: " + priceSingleStr + " | 트윈: " + priceTwinStr + " | 패밀리: " + priceFamilyStr);
+						+ " | シングル: " + priceSingleStr + " | ツイン: " + priceTwinStr + " | ファミリー: " + priceFamilyStr);
 				
 				// 3. 변수 초기화 및 숫자 데이터 파싱 (null 및 빈값 방어 코드)
 				int priceSingle = (priceSingleStr != null && !priceSingleStr.isEmpty()) ? Integer.parseInt(priceSingleStr) : 0;

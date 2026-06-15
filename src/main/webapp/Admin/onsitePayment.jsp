@@ -34,27 +34,27 @@
 </style>
 
 <div class="container-fluid px-4 mt-4">
-    <h2 class="fw-bold fs-3 mb-3">현장결제 관리</h2>
+    <h2 class="fw-bold fs-3 mb-3">現地決済管理</h2>
     
     <div class="card border-0 shadow-sm p-3 mb-4 search-card rounded">
         <form method="get" action="${pageContext.request.contextPath}/Admin/onsitePayment" class="row g-2 align-items-end">
             <div class="col-md-4">
-                <label class="search-label">예약 구분 (기간)</label> 
+                <label class="search-label">予約区分（期間）</label> 
                 <select class="form-select" name="bootTime">
-                    <option value="upcoming" <%= "upcoming".equals(bootTime) ? "selected" : "" %>>현재 / 예정된 예약</option>
-                    <option value="past" <%= "past".equals(bootTime) ? "selected" : "" %>>지난 예약 내역 (과거)</option>
+                    <option value="upcoming" <%= "upcoming".equals(bootTime) ? "selected" : "" %>>現在・今後の予約</option>
+                    <option value="past" <%= "past".equals(bootTime) ? "selected" : "" %>>過去の予約履歴</option>
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="search-label">결제 상태</label> 
+                <label class="search-label">ステータス</label> 
                 <select class="form-select" name="bootStatus">
-                    <option value="전체" <%= "전체".equals(bootStatus) ? "selected" : "" %>>전체 내역 보기</option>
-                    <option value="예약대기" <%= "예약대기".equals(bootStatus) ? "selected" : "" %>>예약대기 건</option>
-                    <option value="예약확정" <%= "예약확정".equals(bootStatus) ? "selected" : "" %>>예약확정 건</option>
+                    <option value="전체" <%= "전체".equals(bootStatus) ? "selected" : "" %>>すべて表示</option>
+                    <option value="예약대기" <%= "예약대기".equals(bootStatus) ? "selected" : "" %>>予約待ち</option>
+                    <option value="예약확정" <%= "예약확정".equals(bootStatus) ? "selected" : "" %>>予約確定</option>
                 </select>
             </div>
             <div class="col-md-4">
-                <button type="submit" class="btn text-white w-100 fw-bold" style="background-color: #1a2536; height: 38px;">필터 검색</button>
+                <button type="submit" class="btn text-white w-100 fw-bold" style="background-color: #1a2536; height: 38px;">検索</button>
             </div>
         </form>
     </div>
@@ -63,21 +63,21 @@
         <table class="table text-center align-middle">
             <thead>
                 <tr>
-                    <th>예약번호</th>
-                    <th>예약자명</th> 
-                    <th>전화번호</th> 
-                    <th>객실 종류</th>
-                    <th>이용 타입</th>     
-                    <th>체크인</th> 
-                    <th>체크아웃</th>
-                    <th>처리 상태</th> 
-                    <th>객실 배정</th>
+                    <th>予約番号</th>
+                    <th>予約者名</th> 
+                    <th>電話番号</th> 
+                    <th>客室グレード</th>
+                    <th>部屋タイプ</th>     
+                    <th>チェックイン</th> 
+                    <th>チェックアウト</th>
+                    <th>対応状況</th> 
+                    <th>客室割り当て</th>
                 </tr>
             </thead>
             <tbody>
                 <% if(bootList.isEmpty()) { %>
                     <tr>
-                        <td colspan="9" class="text-muted py-4">조회된 현장결제 내역이 없습니다.</td>
+                        <td colspan="9" class="text-muted py-4">該当する現地決済의予約データがありません。</td>
                     </tr>
                 <% } else { 
                     for (BootDto boot : bootList) { 
@@ -95,27 +95,27 @@
                         </span>
                     </td>
                     <td><%= boot.getRoomGrade() %></td>
-                    <td><%= (boot.getRoomType()==1?"싱글":boot.getRoomType()==2?"트윈":"패밀리") %></td>
+                    <td><%= (boot.getRoomType()==1?"シングル":boot.getRoomType()==2?"ツイン":"ファミリー") %></td>
                     <td><%= cleanCheckIn %></td>
                     <td><%= cleanCheckOut %></td>
                     <td>
                         <% if(boot.getBootConfirm() == 1) { %>
-                            <span class="text-success fw-bold">예약확정</span>
+                            <span class="text-success fw-bold">予約確定</span>
                         <% } else { %>
-                            <span class="text-warning fw-bold">예약대기</span>
+                            <span class="text-warning fw-bold">予約待ち</span>
                         <% } %>
                     </td>
                     <td>
-						<button class="btn btn-sm text-white fw-bold" style="background-color: #0d6efd; border: none; border-radius: 4px; padding: 5px 12px;"
-						        onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
-						        data-room-grade="<%= boot.getRoomGrade() %>" 
-						        data-room-type="<%= boot.getRoomType() %>"
-						        data-room-type-text="<%= (boot.getRoomType()==1?"싱글":boot.getRoomType()==2?"트윈":"패밀리") %>"
-						        data-checkin="<%= cleanCheckIn %>"
-						        data-checkout="<%= cleanCheckOut %>"
-						        data-please="<%= boot.getBootPlease() %>">
-						    관리
-						</button>
+                        <button class="btn btn-sm text-white fw-bold" style="background-color: #0d6efd; border: none; border-radius: 4px; padding: 5px 12px;"
+                                onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
+                                data-room-grade="<%= boot.getRoomGrade() %>" 
+                                data-room-type="<%= boot.getRoomType() %>"
+                                data-room-type-text="<%= (boot.getRoomType()==1?"シングル":boot.getRoomType()==2?"ツイン":"ファミリー") %>"
+                                data-checkin="<%= cleanCheckIn %>"
+                                data-checkout="<%= cleanCheckOut %>"
+                                data-please="<%= boot.getBootPlease() %>">
+                            管理
+                        </button>
                     </td>
                 </tr>
                 <%   } 
@@ -139,11 +139,11 @@
                      <%= i %>
                   </a>
                </li>
-      <%    } else { %>
+      <%     } else { %>
                <li class="page-item mx-1">
                   <a class="page-link border-0 bg-transparent text-dark" href="?page=<%= i %>&bootStatus=<%= bootStatus %>&bootTime=<%= bootTime %>"><%= i %></a>
                </li>
-      <%    }
+      <%     }
          } %>
          
       <li class="page-item mx-2 <%= currentPage >= totalPage ? "disabled" : "" %>">
@@ -176,18 +176,17 @@
                 brandLogo.setAttribute('href', matchedLink.getAttribute('href'));
                 
                 const parentLi = matchedLink.parentElement;
-                parentLi.innerHTML = `<a class="nav-link" href="/HotelReservation/Admin/bootmng">예약관리</a>`;
+                parentLi.innerHTML = `<a class="nav-link" href="/HotelReservation/Admin/bootmng">予約管理</a>`;
             }
         }
     });
 
     // 연락처 클릭 시 메모 모달 바인딩 함수
-    // 🎯 [수정] 자바스크립트 에러를 내던 오타 'Buchung'을 지웠습니다.
     function openMemoModal(name, phoneNo) {
         if(typeof $('#memoModal').modal === 'function') {
             $('#memoModal').modal('show');
         } else {
-            alert("메모 모달을 불러올 수 없습니다.");
+            alert("メモ画面を読み込めませんでした。");
         }
     }
 </script>

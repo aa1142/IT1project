@@ -5,7 +5,7 @@
       <div class="modal-content border-0 shadow-lg">
          
          <div class="modal-header text-white" style="background-color: #2c3e50;">
-            <h5 class="modal-title fw-bold" id="customerMemoModalLabel">고객 메모 관리</h5>
+            <h5 class="modal-title fw-bold" id="customerMemoModalLabel">顧客メモ管理</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
 
@@ -14,27 +14,27 @@
                
                <div class="p-3 bg-white rounded shadow-sm mb-3 border-start border-secondary border-4">
                   <div class="d-flex justify-content-between">
-                     <span class="text-muted small">고객명: <strong id="memoModalGuestName" class="text-dark">-</strong></span>
-                     <span class="text-muted small">연락처: <strong id="memoModalPhone" class="text-dark">-</strong></span>
+                     <span class="text-muted small">顧客名: <strong id="memoModalGuestName" class="text-dark">-</strong></span>
+                     <span class="text-muted small">連絡先: <strong id="memoModalPhone" class="text-dark">-</strong></span>
                   </div>
                </div>
 
                <div class="card border-0 shadow-sm p-3 bg-white mb-3">
-                  <label class="form-label fw-bold text-secondary small mb-2">관리자 입력 메모</label>
-                  <textarea id="newMemoText" name="memoContent" class="form-control mb-2" rows="3" placeholder="고객 응대내용이나 관리 기록을 입력하세요."></textarea>
+                  <label class="form-label fw-bold text-secondary small mb-2">管理者入力メモ</label>
+                  <textarea id="newMemoText" name="memoContent" class="form-control mb-2" rows="3" placeholder="顧客応対内容や管理記録を入力してください。"></textarea>
                   <div class="text-end">
-                     <input type="button" class="btn btn-sm btn-primary px-3 fw-bold" onclick="saveCustomerMemo()" value="메모 등록">
+                     <input type="button" class="btn btn-sm btn-primary px-3 fw-bold" onclick="saveCustomerMemo()" value="メモ登録">
                   </div>
                </div>
 
-               <h6 class="fw-bold text-dark mb-2 small">이전 등록된 메모 기록</h6>
+               <h6 class="fw-bold text-dark mb-2 small">登録済みのメモ履歴</h6>
                <div id="memoHistoryList" class="d-flex flex-column gap-2" style="max-height: 200px; overflow-y: auto;">
-                  <div class="text-center text-muted py-3 small" id="noMemoText">등록된 메모가 없습니다.</div>
+                  <div class="text-center text-muted py-3 small" id="noMemoText">登録されたメモがありません。</div>
                </div>
             </div>
 
             <div class="modal-footer bg-light">
-               <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+               <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">閉じる</button>
             </div>
          </form>
 
@@ -46,7 +46,7 @@
     // 전역 변수로 부트스트랩 모달 객체를 담아 중복 생성을 방지합니다.
     let memoBootstrapModal = null;
 
-    // 🎯 1. 메인 페이지의 연락처 클릭 시 호출되는 함수 (순서 매칭: phone, name)
+    // 🎯 1. 메인 페이지의 연락처 클릭 시 호출되는 함수
     function openMemoModal(bootName, bootPhone) {
         // 상단 정보 바인딩
         document.getElementById('memoModalGuestName').innerText = bootName;
@@ -82,7 +82,7 @@
                         let memoBox = `
                             <div class="p-2 bg-white rounded shadow-sm border border-light-subtle">
                                 <div class="d-flex justify-content-between mb-1">
-                                    <span class="fw-bold text-secondary small">✍️ \${memo.adminName || '관리자'}</span>
+                                    <span class="fw-bold text-secondary small">✍️ \${memo.adminName || '管理者'}</span>
                                     <span class="text-muted" style="font-size: 11px;">\${memo.memoDate}</span>
                                 </div>
                                 <p class="mb-0 text-dark small" style="word-break: break-all; white-space: pre-wrap;">\${memo.memoContent}</p>
@@ -91,11 +91,11 @@
                         listContainer.append(memoBox);
                     });
                 } else {
-                    listContainer.append('<div class="text-center text-muted py-3 small" id="noMemoText">등록된 메모가 없습니다.</div>');
+                    listContainer.append('<div class="text-center text-muted py-3 small" id="noMemoText">登録されたメモがありません。</div>');
                 }
             },
             error: function() {
-                console.log("메모 내역 로드 실패");
+                console.log("メモ履歴の読み込みに失敗しました。");
             }
         });
     }
@@ -107,7 +107,7 @@
         const content = document.getElementById('newMemoText').value;
 
         if (!content || content.trim() === "") {
-            alert("메모 내용을 입력해 주세요.");
+            alert("メモ内容を入力してください。");
             document.getElementById('newMemoText').focus();
             return;
         }
@@ -124,15 +124,15 @@
             dataType: 'json',
             success: function(res) {
                 if (res.status === "success") {
-                    alert("메모가 정상적으로 등록되었습니다.");
+                    alert("メモ가 정상적으로 등록되었습니다.");
                     document.getElementById('newMemoText').value = ""; // 입력창 비우기
                     loadMemoHistory(phone); // 등록 성공 후 리스트 즉시 갱신!
                 } else {
-                    alert("메모 등록 실패: " + res.message);
+                    alert("メモの登録に失敗しました: " + res.message);
                 }
             },
             error: function() {
-                alert("서버와 통신 중 오류가 발생했습니다.");
+                alert("サーバーとの通信中にエラーが発生しました。");
             }
         });
     }

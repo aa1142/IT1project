@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dao.BootDao;
 import dto.BootDto;
@@ -39,8 +40,10 @@ public class OnSitePaymentServlet extends HttpServlet {
         }
 
         // 기본 설정 값
+        HttpSession session = request.getSession();
+        Integer companyNo = (Integer)session.getAttribute("companyNo");
+        companyNo = 1;
         BootDao bootDao = new BootDao();
-        int companyNo = 1;
         int pageSize = 5; 
         int payCheck = 1; // 🎯 현장 결제 건만 필터링하기 위한 고유 조건 값
         
@@ -53,11 +56,11 @@ public class OnSitePaymentServlet extends HttpServlet {
             for (BootDto boot : allBootList) {
                 if (!"전체".equals(bootStatus)) {
                     int confirmVal = boot.getBootConfirm();
-                    if (confirmVal == 0) {
-                        bootStatus = "예약대기"; 
+                    if ("예약대기".equals(bootStatus) &&confirmVal != 0) {
+                    	continue;
                     }
-                    if (confirmVal == 1) {
-                    	bootStatus = "예약확정"; 
+                    if ("예약확정".equals(bootStatus) &&confirmVal != 1) {
+                    	continue;
                     }
                 }
                 filteredList.add(boot);
