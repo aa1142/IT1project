@@ -43,11 +43,13 @@
 </head>
 <body>
   <header>
-    <a href="index.jsp" class="logo">JYP <span>HOTEL</span></a>
+    <!-- 🛠️ 교정: 메인 로고 클릭 시 일반 wls 폴더 안의 메인화면으로 정확히 이동 -->
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="logo">JYP <span>HOTEL</span></a>
     <nav>
       <ul>
-        <li><a href="index.jsp">메인으로</a></li>
-        <li><a href="logout.jsp">로그아웃</a></li>
+        <!-- 🛠️ 교정: 상단 헤더 메뉴 링크 절대 경로 동기화 -->
+        <li><a href="<%= request.getContextPath() %>/wls/index.jsp">메인으로</a></li>
+        <li><a href="<%= request.getContextPath() %>/logoutAction">로그아웃</a></li>
       </ul>
     </nav>
   </header>
@@ -58,18 +60,12 @@
         <p>등급: <span style="color:var(--point); font-weight:bold;"><%= grade %></span></p>
       </div>
       <ul class="menu-list">
-        <li><a href="myPage.jsp" class="active">내 정보 관리</a></li>
-        <li><a href="memberModify.jsp">회원정보 수정</a></li>
+        <!-- 🛠️ 교정: 사이드바 내 정보 관리는 가상 주소인 /myPage 서블릿을 호출해야 DB를 다시 조회해서 정상 작동합니다 -->
+        <li><a href="<%= request.getContextPath() %>/myPage" class="active">내 정보 관리</a></li>
+        <!-- 🛠️ 교정: 회원정보 수정 화면을 열어주는 서블릿 가상 주소 매핑 -->
+        <li><a href="<%= request.getContextPath() %>/memberModifyAction">회원정보 수정</a></li>
         <li><a href="<%= request.getContextPath() %>/changePasswordAction">비밀번호 변경</a></li>
         <li><a href="#" onclick="deleteAccount()" style="color:#d93025;">회원 탈퇴</a></li>
-        <script>
-// 회원 탈퇴 버튼을 눌렀을 때 발동하는 자바스크립트 함수
-function deleteAccount() {
-  if (confirm("정말로 JYP HOTEL을 탈퇴하시겠습니까?\n탈퇴 시 모든 예약 내역과 정보가 삭제되며 복구할 수 없습니다.")) {
-	  location.href = "<%= request.getContextPath() %>/deleteAccountAction";
-  }
-}
-</script>
       </ul>
     </aside>
     <main class="content-area">
@@ -84,5 +80,14 @@ function deleteAccount() {
     </main>
   </div>
   <footer><p>&copy; 2026 JYP HOTEL. All rights reserved.</p></footer>
+
+<script>
+// 회원 탈퇴 버튼을 눌렀을 때 발동하는 자바스크립트 함수 (가독성을 위해 하단 배치)
+function deleteAccount() {
+  if (confirm("정말로 JYP HOTEL을 탈퇴하시겠습니까?\n탈퇴 시 모든 예약 내역과 정보가 삭제되며 복구할 수 없습니다.")) {
+      location.href = "<%= request.getContextPath() %>/deleteAccountAction";
+  }
+}
+</script>
 </body>
 </html>

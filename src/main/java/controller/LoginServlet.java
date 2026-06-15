@@ -45,7 +45,8 @@ public class LoginServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/wls/index.jsp");
     }
     
-    // 💡 사용자가 로그인창에서 [로그인] 버튼을 누르면 이곳(POST)으로 데이터가 넘어옵니다.
+    // 💡 하얀 화면을 원천 차단하고 진짜 원인을 화면에 뿌려주는 로그인 doPost 완전판
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -53,9 +54,15 @@ public class LoginServlet extends HttpServlet {
 
         String userid = request.getParameter("userid");
         String userpw = request.getParameter("userpw");
+        
+        if (userid == null || userpw == null || userid.trim().equals("") || userpw.trim().equals("")) {
+            out.print("<script>alert('아이디와 비밀번호를 모두 입력해 주세요.'); history.back();</script>");
+            return;
+        }
+
         String encryptedPw = encryptSHA256(userpw);
 
-        // 오라클 데이터베이스 연동 정보 설정 (본인의 SID가 orcl 인지 xe 인지 꼭 확인하세요!)
+        // ⚠️ 본인의 실제 오라클 정보(orcl 또는 xe)를 정확히 확인하세요!
         String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
         String dbUser = "scott";                 
         String dbPass = "tiger";
@@ -68,8 +75,8 @@ public class LoginServlet extends HttpServlet {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
-            // 변경된 오라클 스키마 규격 매칭 (member_name, member_id, member_pw)
-            String sql = "SELECT member_name FROM member WHERE member_id = ? AND member_pw = ?";
+            // 로그인 시 회원의 이름(member_name), 등급(member_grade), 예약횟수(member_count) 조회
+            String sql = "SELECT member_name, member_grade, member_count FROM member WHERE member_id = ? AND member_pw = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, userid.trim());
             pstmt.setString(2, encryptedPw);
@@ -78,28 +85,62 @@ public class LoginServlet extends HttpServlet {
 
             if (rs.next()) {
                 String memberName = rs.getString("member_name");
+                String memberGrade = rs.getString("member_grade");
+                int memberCount = rs.getInt("member_count");
+                
+                // 💡 [안전 장치 추가] 10회 이상일 때 VIP 승격 쿼리가 에러나도 로그인은 통과되도록 독립 try-catch 처리
+                if (memberCount >= 10 && !"관리자".equals(memberGrade) && !"VIP".equals(memberGrade)) {
+                    PreparedStatement updateGradePstmt = null;
+                    try {
+                        String updateGradeSql = "UPDATE member SET member_grade = 'VIP' WHERE member_id = ?";
+                        updateGradePstmt = conn.prepareStatement(updateGradeSql);
+                        updateGradePstmt.setString(1, userid.trim());
+                        updateGradePstmt.executeUpdate();
+                        
+                        memberGrade = "VIP"; // 실시간 변수 갱신
+                    } catch (Exception ex) {
+                        System.out.println("⚠️ VIP 자동 승격 중 예외 발생 (로그인은 계속 진행됨): " + ex.getMessage());
+                    } finally {
+                        if (updateGradePstmt != null) try { updateGradePstmt.close(); } catch(Exception e){}
+                    }
+                }
                 
                 // 세션(Session) 메모리에 로그인 상태 기록 유지
                 HttpSession session = request.getSession();
                 session.setAttribute("sessionUserId", userid);
                 session.setAttribute("sessionUserName", memberName);
+                session.setAttribute("sessionUserGrade", memberGrade);
                 
-                // 💡 [로그인 성공] 팝업창을 띄운 후, 일반 폴더 안에 있는 index.jsp 메인 화면으로 주소창을 이동시킵니다!
                 out.print("<script>");
-                out.print("alert('" + memberName + "님, 환영합니다! JYP HOTEL 로그인에 성공했습니다.');");
-                out.print("location.href='" + request.getContextPath() + "/wls/index.jsp';"); 
+                if ("관리자".equals(memberGrade)) {
+                    out.print("alert('👑 [시스템 최고 관리자] 로그인에 성공했습니다. 관리자 전용 대시보드로 이동합니다.');");
+                    out.print("location.href='" + request.getContextPath() + "/Admin/bootmng.jsp';"); 
+                } else {
+                    out.print("alert('" + memberName + "님, 환영합니다! JYP HOTEL 로그인에 성공했습니다.');");
+                    out.print("location.href='" + request.getContextPath() + "/wls/index.jsp';"); 
+                }
                 out.print("</script>");
+                return;
+                
             } else {
                 out.print("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+                return;
             }
 
         } catch (Exception e) {
+            // 💡 로그인 중에 예외가 터지면 하얀 화면 대신 핑크색 상자에 진짜 영어 원인을 즉시 렌더링합니다.
             e.printStackTrace();
-            out.print("<script>alert('서버 오류 발생: " + e.getMessage() + "'); history.back();</script>");
+            out.println("<div style='padding:30px; background:#fff0f0; border:2px solid #ffcccc; color:#d93025; margin:50px; font-family:sans-serif;'>");
+            out.println("<h2>⚠️ 로그인 서블릿 백엔드 에러 발생!</h2>");
+            out.println("<hr style='border:1px solid #ffcccc;'>");
+            out.println("<pre style='background:#fff; padding:15px; border:1px solid #ddd; font-size:14px; overflow-x:auto;'>" + e.toString() + "</pre>");
+            out.println("</div>");
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException ex) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}
             if (conn != null) try { conn.close(); } catch (SQLException ex) {}
         }
     }
-}
+
+    }
+

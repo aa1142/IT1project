@@ -1,47 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
-<%@ page import="java.sql.*" %>
 <%
+    // 💡 [백엔드 최적화]: 이제 자바 서블릿(MemberModifyServlet)이 오라클 DB 데이터를 대신 조회해서 배달해 줍니다!
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     if (sessionUserId == null) {
-        out.print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='login.jsp';</script>");
+        out.print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='" + request.getContextPath() + "/wls/login.jsp';</script>");
         return;
     }
 
-    String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
-    String dbUser = "scott"; // ◀ 본인 정보 수정
-    String dbPass = "tiger"; // ◀ 본인 정보 수정
+    // 서블릿이 request 상자에 담아 보낸 데이터들을 안전하게 낚아챕니다.
+    String nameKo = (String) request.getAttribute("name");
+    String email = (String) request.getAttribute("email");
+    String phone = (String) request.getAttribute("phone");
+    String address = (String) request.getAttribute("address");
 
-    Connection conn = null;
-    PreparedStatement pstmt = null;
-    ResultSet rs = null;
-
-    String nameKo = "";
-    String email = "";
-    String phone = "";
-    String address = "";
-
-    try {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
-
-        // 💡 쿼리문 컬럼명 수정 완료
-        String sql = "SELECT member_name, member_email, member_phone, member_address FROM member WHERE member_id = ?";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, sessionUserId);
-        rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            nameKo = rs.getString("member_name");
-            email = rs.getString("member_email");
-            phone = rs.getString("member_phone");
-            address = rs.getString("member_address");
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        if (rs != null) try { rs.close(); } catch (SQLException ex) {}
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}
-        if (conn != null) try { conn.close(); } catch (SQLException ex) {}
+    // 혹시라도 서블릿을 거치지 않고 주소창에 직접 쳐서 들어왔을 때를 대비한 방어 코드
+    if (nameKo == null) {
+        out.print("<script>location.href='" + request.getContextPath() + "/memberModifyAction';</script>");
+        return;
     }
 %>
 <!doctype html>
@@ -63,8 +38,25 @@
   th { width:180px; text-align:left; padding:18px 14px; background:#fafafa; border-bottom:1px solid var(--line); }
   td { padding:16px 14px; border-bottom:1px solid var(--line); }
   input { height:46px; border:1px solid var(--line); border-radius:8px; padding:0 14px; width:100%; outline:none; }
-  .inline { display:flex; gap:10px; }
-  .btn { height:46px; padding:0 18px; background:var(--main); color:#fff; border:none; border-radius:8px; cursor:pointer; }
+  
+  /* 💡 [주소창 버그 해결 핵심 CSS 구역] */
+  .inline { display:flex; gap:10px; align-items:center; }
+  .inline input { flex: 1; min-width: 0; } /* ◀ 입력창이 남은 가로 공간을 채우고 절대 버튼을 밀지 못하게 방어합니다 */
+  
+ 
+  .btn { 
+    height:46px; 
+    padding:0 16px; 
+    background:var(--main); 
+    color:#fff; 
+    border:none; 
+    border-radius:8px; 
+    cursor:pointer; 
+    white-space: nowrap; 
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
   .submit-wrap { text-align:center; display:flex; justify-content:center; gap:15px; }
   .btn-submit { width:200px; height:50px; border:none; border-radius:10px; font-weight:700; cursor:pointer; }
   .btn-save { background: var(--main); color:white; }
@@ -72,7 +64,8 @@
 </style>
 </head>
 <body>
-<header><a href="index.jsp" class="logo">JYP <span>HOTEL</span></a></header>
+<!-- 🛠️ 교정: 상단 헤더 클릭 시 일반 wls 폴더 내부 메인으로 정확히 유도 -->
+<header><a href="<%= request.getContextPath() %>/wls/index.jsp" class="logo">JYP <span>HOTEL</span></a></header>
 <div class="container">
   <h2>회원정보 수정</h2>
   <form action="<%= request.getContextPath() %>/memberModifyAction" method="post" onsubmit="return validateForm()">
