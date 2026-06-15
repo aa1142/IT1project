@@ -9,6 +9,7 @@ public class CompanyVO {
     private String location;
     private String feature;
     private String meal_info;
+    private String cover_image;
 
     public int getCompany_no() { return company_no; }
     public void setCompany_no(int company_no) { this.company_no = company_no; }
@@ -30,4 +31,7 @@ public class CompanyVO {
 
     public String getMeal_info() { return meal_info; }
     public void setMeal_info(String meal_info) { this.meal_info = meal_info; }
+
+    public String getCover_image() { return cover_image; }
+    public void setCover_image(String cover_image) { this.cover_image = cover_image; }
 }

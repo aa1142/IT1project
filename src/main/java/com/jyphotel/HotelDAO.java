@@ -34,12 +34,12 @@ public class HotelDAO {
             + " ) ";
 
     /** context.xml(proid) 기준 — SID/서비스명 환경 차이 대비 후보 URL */
-    private static final String DB_USER = "scott";
-    private static final String DB_PASS = "tiger";
+    private static final String DB_USER = "proid";
+    private static final String DB_PASS = "3431";
     private static final String[] DB_URLS = {
             //"jdbc:oracle:thin:@localhost:1521:xe",
             "jdbc:oracle:thin:@localhost:1521:orcl",
-//            "jdbc:oracle:thin:@//localhost:1521/XEPDB1"
+            "jdbc:oracle:thin:@//localhost:1521/XEPDB1"
     };
 
     private static String lastDbError = "";

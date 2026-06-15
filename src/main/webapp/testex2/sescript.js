@@ -227,6 +227,67 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
+function initImageCarousels() {
+    document.querySelectorAll('.img-carousel').forEach(function(carousel) {
+        if (carousel.dataset.initialized === '1') return;
+
+        var raw = carousel.getAttribute('data-images');
+        if (!raw) return;
+
+        var images;
+        try {
+            images = JSON.parse(raw);
+        } catch (e) {
+            return;
+        }
+        if (!images || images.length === 0) return;
+
+        var idx = 0;
+        var imgEl = carousel.querySelector('.carousel-img');
+        var counter = carousel.querySelector('.carousel-counter');
+        var prevBtn = carousel.querySelector('.carousel-prev');
+        var nextBtn = carousel.querySelector('.carousel-next');
+        var alt = carousel.getAttribute('data-alt') || '';
+
+        if (!imgEl || !prevBtn || !nextBtn) return;
+
+        function updateNav() {
+            var multi = images.length > 1;
+            prevBtn.classList.toggle('hidden', !multi);
+            nextBtn.classList.toggle('hidden', !multi);
+        }
+
+        function show(nextIndex) {
+            idx = (nextIndex + images.length) % images.length;
+            imgEl.src = images[idx];
+            imgEl.alt = alt;
+            if (counter) {
+                counter.textContent = (idx + 1) + ' / ' + images.length;
+            }
+            updateNav();
+        }
+
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            show(idx - 1);
+        });
+
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            show(idx + 1);
+        });
+
+        imgEl.addEventListener('click', function() {
+            openLightbox(images[idx], alt);
+        });
+
+        show(0);
+        carousel.dataset.initialized = '1';
+    });
+}
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeLightbox();
 });
@@ -248,6 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateInfoBox();
+    initImageCarousels();
 
     var searchForm = document.getElementById('searchForm');
     if (searchForm) {
