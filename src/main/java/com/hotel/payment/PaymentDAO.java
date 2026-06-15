@@ -64,9 +64,9 @@ public class PaymentDAO {
      */
     public PaymentDTO findPaidPaymentByBootNo(String bootNo) throws Exception {
         // 부적합한 식별자 에러 방지를 위해 BOOT_NO 컬럼명을 RESERVATION_ID로 전면 수정 고정
-        String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, CREATED_AT " +
-                     "FROM PAYMENT " +
-                     "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
+    	String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT " +
+                "FROM PAYMENT " +
+                "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -83,7 +83,7 @@ public class PaymentDAO {
                     dto.setPaymentMethod(rs.getString("PAYMENT_METHOD"));
                     dto.setAmount(rs.getInt("AMOUNT"));
                     dto.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
-                    dto.setCreatedAt(String.valueOf(rs.getTimestamp("CREATED_AT")));
+                    dto.setCreatedAt(String.valueOf(rs.getTimestamp("APPROVED_AT")));
                     return dto;
                 }
             }

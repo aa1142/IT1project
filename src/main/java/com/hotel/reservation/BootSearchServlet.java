@@ -7,14 +7,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// 외부 URL 호출 주소를 명칭 대통합 규칙에 맞게 /bootSearch 로 설정
+// 외부 URL 호출 주소는 소문자로 대통합 규칙 유지 (/bootSearch)
 @WebServlet("/bootSearch")
 public class BootSearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * bootSearch.jsp 폼 화면에서 [예약 조회] 버튼을 누르면 POST 방식으로 요청이 들어옵니다.
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -22,16 +19,16 @@ public class BootSearchServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         try {
-            // 1. bootSearch.jsp 가 폼 데이터로 전송한 파라미터 수집
-            String reservationCode = request.getParameter("reservationCode"); // ORD... 형태의 고유 코드
-            String bootKeyword = request.getParameter("bootKeyword");         // 전화번호 또는 이메일
+            // 1. BootSearch.jsp 폼에서 전송한 파라미터 수집
+            String reservationCode = request.getParameter("reservationCode"); 
+            String bootKeyword = request.getParameter("bootKeyword");         
 
-            // 2. 입력값 누락 예외 방어벽
+            // 2. [방어벽] 입력값 누락 시 대문자 /res/BootSearch.jsp 로 강제 복귀
             if (reservationCode == null || reservationCode.trim().isEmpty() ||
                 bootKeyword == null || bootKeyword.trim().isEmpty()) {
                 
                 request.setAttribute("errorMessage", "예약코드와 검증용 키워드를 누락 없이 입력해 주세요.");
-                request.getRequestDispatcher("/bootSearch.jsp").forward(request, response);
+                request.getRequestDispatcher("/res/BootSearch.jsp").forward(request, response);
                 return;
             }
 
@@ -39,33 +36,30 @@ public class BootSearchServlet extends HttpServlet {
             BootDAO dao = new BootDAO();
             BootDTO bootDto = dao.findByReservationCodeAndPhoneOrEmail(reservationCode.trim(), bootKeyword.trim());
 
-            // 4. [검증 실패] 일치하는 예약 내역이 DB에 존재하지 않는 경우
+            // 4. [검증 실패] 일치하는 데이터가 없을 시 에러 메시지와 함께 다시 대문자 BootSearch.jsp 로 복귀
             if (bootDto == null) {
-                request.setAttribute("errorMessage", "입력하신 정보와 일치하는 예약(BOOT) 내역을 찾을 수 없습니다.");
-                // 원래 입력하던 화면으로 튕구고 에러 메시지 표출
-                request.getRequestDispatcher("/bootSearch.jsp").forward(request, response);
+                request.setAttribute("errorMessage", "입력하신 정보와 일치하는 예약 내역을 찾을 수 없습니다.");
+                request.getRequestDispatcher("/res/BootSearch.jsp").forward(request, response);
                 return;
             }
 
             // 5. [검증 성공] 찾은 진짜 가방(BootDTO)을 request 저장소에 "boot"라는 이름으로 적재
             request.setAttribute("boot", bootDto);
 
-            // 6. 예약 정보를 시각적으로 보여주고 환불 버튼을 지원할 결과 페이지(bootDetail.jsp)로 Forward 토스
-            request.getRequestDispatcher("/res/bootDetail.jsp").forward(request, response);
+            // 6. 🎯 [대소문자 싱크 완효] res 폴더 안의 대문자로 시작하는 BootDetail.jsp 로 시원하게 토스!
+            request.getRequestDispatcher("/res/BootDetail.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "백엔드 시스템 조회 오류: " + e.getMessage());
-            request.getRequestDispatcher("/bootSearch.jsp").forward(request, response);
+            request.getRequestDispatcher("/res/BootSearch.jsp").forward(request, response);
         }
     }
 
-    /**
-     * 혹시 모를 GET 방식 다이렉트 요청이 들어올 경우 조회 폼 화면으로 돌려보내는 안전장치
-     */
+    // 7. 사용자가 주소창에 직접 치고 들어오는 등 GET 방식 요청 시 대문자 BootSearch.jsp 로 안전하게 이동
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/bootSearch.jsp");
+        response.sendRedirect(request.getContextPath() + "/res/BootSearch.jsp");
     }
 }

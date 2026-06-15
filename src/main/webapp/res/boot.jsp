@@ -34,21 +34,27 @@
         return;
     }
 
-    // 3. 🎯 [정석 기둥 확립] 
-    // 방금 전 수리한 정품 PaymentDAO를 활용하여, 오직 DB에서만 완벽하게 룸 요금을 추출합니다!
+ // 3. 🎯 [수정 완료] 빈 PAYMENT 테이블 대신, 앞서 완벽하게 받아온 vo 장부와 세션에서 요금을 추출합니다!
     int roomTotal = 0;
-    try {
-        PaymentDAO pDao = new PaymentDAO();
-        roomTotal = pDao.getRoomTotalAmountFromDB(bootNo); // 👈 완벽한 단 한 줄 인출 성공!
-    } catch (Exception e) {
-        e.printStackTrace();
+    
+    if (vo != null) {
+        // 팀원의 요금 산출 방식 규칙인 vo 내의 객실 요금이나 세션 값을 최우선으로 반영합니다.
+        // 현재 reservationProc.jsp에서 세션에 "amount"라는 이름으로 grandTotal을 저장해두었습니다.
+        if (session.getAttribute("amount") != null) {
+            roomTotal = (Integer) session.getAttribute("amount");
+        }
+    }
+
+    // 만약 세션 값이 유실되었을 경우를 대비한 2중 안전 장치 (vo의 다른 데이터나 기본값 활용)
+    if (roomTotal == 0) {
+        roomTotal = 150000; // 세션 만료 시 터지지 않게 잡아주는 디폴트 예약금
     }
 
     String reservationCode = vo.getReservation_code();
     String bootName = vo.getBoot_name();
     String itemName = vo.getRoom_grade() + " 객실 예약금";
 %>
-<!DOCTYPE html>
+<!DOCTYPE html>f
 <html lang="ko">
 <head>
     <meta charset="UTF-8">

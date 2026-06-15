@@ -4,113 +4,128 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.hotel.reservation.BootDAO; // [수정] 새 부트 DAO 임포트
+import com.hotel.payment.PaymentDAO;
+import com.hotel.payment.PaymentDTO;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 @WebServlet("/kakaoRefund")
 public class KakaoRefundServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private static final String KAKAO_CANCEL_URL = "https://open-api.kakaopay.com/online/v1/payment/cancel";
-    private static final String CID = "TC0ONETIME";
-    private static final String SECRET_KEY = "DEVC377EA1FE352A2FD439A893097F76D602E5D1";
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
         request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        // 1. BootDetail.jsp 가 히든으로 던져준 예약식별번호(bootNo) 수집
+        String bootNo = request.getParameter("bootNo");
+
+        if (bootNo == null || bootNo.trim().isEmpty()) {
+            out.println("<script>alert('예약 번호가 유실되었습니다.'); history.go(-1);</style>");
+            return;
+        }
 
         try {
-            // 1. [수정] 파라미터를 숫자가 아닌 고유 문자열 PK인 bootNo로 수집
-            String bootNo = request.getParameter("bootNo");
+            // 2. 팀원의 PaymentDAO를 깨워서 PAYMENT 테이블에 저장된 영수증(TID, 금액) 긁어오기
+            PaymentDAO payDao = new PaymentDAO();
+            PaymentDTO payDto = payDao.findPaidPaymentByBootNo(bootNo.trim());
 
-            if (bootNo == null || bootNo.trim().isEmpty()) {
-                request.setAttribute("errorMessage", "예약 식별 번호(bootNo) 정보가 올바르지 않습니다.");
-                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
+            if (payDto == null) {
+                out.println("<script>alert('승인된 결제 내역(TID)을 찾을 수 없어 환불이 불가능합니다.'); history.go(-1);</script>");
                 return;
             }
 
-            // 2. [수정] PaymentDAO에 bootNo(문자열)를 넘겨 환불 대상 영수증 낚아채기
-            PaymentDAO paymentDAO = new PaymentDAO();
-            PaymentDTO payment = paymentDAO.findPaidPaymentByBootNo(bootNo); 
+            // 팀원 가방에서 카카오 고유 거래번호와 결제됐던 진짜 금액 인출
+            String tid = payDto.getTid();
+            int cancelAmount = payDto.getAmount();
 
-            if (payment == null) {
-                request.setAttribute("errorMessage", "환불 가능한 결제 내역을 찾을 수 없습니다.");
-                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-                return;
-            }
-
-            // 3. 카카오페이 환불(Cancel) API 통신용 JSON 데이터 구성
-            String json = "{"
-                    + "\"cid\":\"" + CID + "\","
-                    + "\"tid\":\"" + payment.getTid() + "\","
-                    + "\"cancel_amount\":" + payment.getAmount() + ","
-                    + "\"cancel_tax_free_amount\":0"
-                    + "}";
-
-            HttpURLConnection connection = (HttpURLConnection) new URL(KAKAO_CANCEL_URL).openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Authorization", "SECRET_KEY " + SECRET_KEY);
-            connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-            connection.setDoOutput(true);
-
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                outputStream.write(json.getBytes(StandardCharsets.UTF_8));
-            }
-
-            String responseBody = readBody(connection);
-
-            // 카카오측 환불 거절 또는 통신 장애 시 차단
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                request.setAttribute("errorMessage", "카카오페이 환불 실패: " + responseBody);
-                request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-                return;
-            }
-
-            // 4. 카카오 환불 컨펌 확인 완료 후 우리 DB 정비 작업
-            // [수정] PAYMENT 테이블의 결제 상태를 REFUNDED로 업데이트 (bootNo 기준)
-            paymentDAO.updatePaymentStatus(bootNo, "REFUNDED");
-
-            // [수정] BOOT 테이블의 예약 승인 코드를 '2'(취소/환불완료) 숫자로 리셋
-            BootDAO bootDAO = new BootDAO();
-            bootDAO.updateReservationStatus(bootNo, 2);
-
-            request.setAttribute("message", "환불 및 예약 취소가 완전히 처리되었습니다.");
+            // 3. 🚀 카카오페이 환불(Cancel) 오픈 API 타격 시작
+            URL url = new URL("https://open-api.kakaopay.com/online/v1/payment/cancel");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             
-            // [수정] 최종 리다이렉트 파일명을 통합 선언된 bootSearch.jsp로 정비
-            response.sendRedirect(request.getContextPath() + "/bootSearch.jsp");
+            conn.setRequestMethod("POST");
+            // 우리 프로젝트 전용 카카오페이 정품 어드민 시크릿 키 장착
+            conn.setRequestProperty("Authorization", "SECRET_KEY DEVC377EA1FE352A2FD439A893097F76D602E5D1");
+            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            conn.setDoOutput(true);
+
+            // 카카오 규격에 맞춘 환불 JSON 페이로드 구성
+            String jsonPayload = "{"
+                + "\"cid\":\"TC0ONETIME\","
+                + "\"tid\":\"" + tid + "\","
+                + "\"cancel_amount\":" + cancelAmount + ","
+                + "\"cancel_tax_free_amount\":0"
+                + "}";
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes("UTF-8");
+                os.write(input, 0, input.length);
+            }
+
+            // 4. 카카오 서버 응답 코드 확인
+            int responseCode = conn.getResponseCode();
+            
+            if (responseCode == 200) { // 🎉 카카오페이 실시간 돈 빼내기 성공!
+                
+                // ---------------------------------------------------------------
+                // [A작업] 팀원 PAYMENT 테이블 상태 변경 (PAID -> REFUNDED)
+                // ---------------------------------------------------------------
+                payDao.updatePaymentStatus(bootNo, "REFUNDED");
+
+                // ---------------------------------------------------------------
+                // [B작업] 우리 BOOT 테이블 상태 변경 (BOOT_CONFIRM = 2 취소완료)
+                // ---------------------------------------------------------------
+                updateBootTableToCancel(bootNo);
+
+                out.println("<script>alert('카카오페이 환불 및 예약 취소가 정상 완료되었습니다.'); location.href='" 
+                            + request.getContextPath() + "/res/BootSearch.jsp';</script>");
+            } else {
+                // 카카오 서버가 환불 거절했을 때 에러 로그 파싱
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "UTF-8"));
+                String line;
+                StringBuilder sb = new StringBuilder();
+                while ((line = br.readLine()) != null) { sb.append(line); }
+                br.close();
+                
+                System.out.println("[카카오 환불 거절 로그]: " + sb.toString());
+                out.println("<script>alert('카카오페이 API 환불 승인 거절되었습니다.\\n이미 환불되었거나 금액 오류입니다.'); history.go(-1);</script>");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "환불 처리 중 백엔드 내부 오류 발생: " + e.getMessage());
-            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
+            out.println("<script>alert('환불 처리 중 서버 오류 발생: " + e.getMessage() + "'); history.go(-1);</script>");
         }
     }
 
-    private static String readBody(HttpURLConnection connection) throws IOException {
-        BufferedReader reader;
-        if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-        } else {
-            reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
+    /**
+     * 오라클 BOOT 테이블의 확정 상태값을 취소(2)로 쾅 박아버리는 동기화 메서드
+     */
+    private void updateBootTableToCancel(String bootNo) {
+        String sql = "UPDATE BOOT SET BOOT_CONFIRM = 2, BOOT_PLEASE = BOOT_PLEASE || ? WHERE BOOT_NO = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "SCOTT", "tiger");
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "|카카오환불완료");
+            pstmt.setString(2, bootNo);
+            pstmt.executeUpdate();
+            System.out.println("[시스템 로그] BOOT 테이블 취소 상태(2) 업데이트 성공");
+            
+        } catch (Exception e) {
+            System.out.println("[오류] BOOT 테이블 상태 업데이트 실패: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        StringBuilder body = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            body.append(line);
-        }
-        reader.close();
-        return body.toString();
     }
 }
