@@ -85,7 +85,7 @@
       <nav>
         <ul>
           <li><a href="<%=ctx%>/branchList.jsp">REVIEW</a></li>
-          <li><a href="<%=ctx%>/community.jsp">공지사항</a></li>
+          <li><a href="<%=ctx%>/community.jsp">NOTICE</a></li>
           <% if(!isLogin) { %>
               <li><a href="<%=ctx%>/wls/login.jsp" style="color:var(--point-blue);">로그인</a></li>
               <li><a href="<%=ctx%>/signupAction">회원가입</a></li>
