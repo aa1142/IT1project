@@ -15,9 +15,6 @@ public class MyNoticeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     // 데이터베이스(MySQL)에 접속하기 위한 3대 정보 설정
-    private final String url = "jdbc:mysql://localhost:3306/IT1project?serverTimezone=UTC";
-    private final String user = "root";
-    private final String pass = "1243"; // 💡 팀원들과 맞춘 MySQL 비밀번호를 적는 곳!
     
     /*
      * private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";

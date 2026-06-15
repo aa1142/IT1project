@@ -120,7 +120,7 @@
     <section class="detail-section" id="yokohama-section"><div class="detail-box"><img src="<%=ctx%>/images/yokohama.png" class="detail-image" alt="요코하마"><div class="detail-text"><h2>요코하마 지점</h2><p>아름다운 항구 전망과 편안한 객실을 제공하는 프리미엄 지점입니다.</p></div></div></section>
 
     <div class="booking-container">
-      <form action="roomList.jsp" method="get" class="booking-wrapper" onsubmit="return checkBookingForm()">
+      <form action="<%=ctx%>/testex2/keywordProc.jsp" method="post" class="booking-wrapper" onsubmit="return checkBookingForm()">
         <div class="input-group">
           <label>지점명</label>
           <select name="dest" id="dest">
@@ -152,6 +152,9 @@
             </div>
           </div>
         </div>
+<input type="hidden" name="rooms" value="1">
+<input type="hidden" name="room_grade" value="스탠다드">
+
         <button type="submit" class="btn-search">호텔 검색</button>
       </form>
     </div>

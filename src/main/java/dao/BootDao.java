@@ -31,7 +31,7 @@ public class BootDao {
         // 1. 쿼리문의 맨 바깥쪽 조건을 BETWEEN ? AND ? 로 수정합니다.
     	// bootTime 값에 따라 오늘 자정 기준 '이후(>=)' 인가, '이전(<)' 인가 조건을 동적으로 생성
     	String dateCondition = "past".equals(bootTime) ? " < TRUNC(SYSDATE) " : " >= TRUNC(SYSDATE) ";
-
+    	
     	String sql = "SELECT * FROM ("
     	        + "    SELECT rownum AS rnum, a.* FROM ("
     	        + "        SELECT * FROM boot WHERE company_no = ? AND boot_checkin " + dateCondition + " AND boot_pay_check = ? ORDER BY boot_no ASC"
@@ -125,9 +125,10 @@ public class BootDao {
     }
     
     
-    public String SelectOneFirstBootDate(int roomNo, int company) {
+    public String[] SelectOneFirstBootDate(int roomNo, int company) {
     	String sql = "SELECT * FROM ( "
-    			+ "    SELECT TO_CHAR(boot_checkin, 'YYYY-MM-DD') AS boot_checkin "
+    			+ "    SELECT TO_CHAR(boot_checkin, 'YYYY-MM-DD')AS boot_checkin, "
+    			+ "TO_CHAR(boot_checkout, 'YYYY-MM-DD') AS boot_checkout"
     			+ "    FROM boot "
     			+ "    WHERE room_no = ? "
     			+ "      AND company_no = ? "
@@ -137,21 +138,50 @@ public class BootDao {
     			+ "WHERE ROWNUM = 1";
     	
     	Object[] params = { roomNo, company };
-    	String firstCheckIn = db.selectTemplate(sql, params, rs -> {
+    	String[] firstCheckInOut = db.selectTemplate(sql, params, rs -> {
  	       
-    		String checkIn="";  // Dto 생성
+    		;  // Dto 생성
+    		
         		if (rs.next()) {  //어차피 한개니까 if문 활용
     	            
     		    //출력값저장
-        			checkIn=(rs.getString("boot_checkin"));
-                    
-        			return checkIn;// 중간 반환
+        			
+        			String checkIn=(rs.getString("boot_checkin"));
+        			String checkOut=(rs.getString("boot_checkout"));
+        			String[] checkInOut= {checkIn, checkOut};
+        			return checkInOut;// 중간 반환
     	        }
         		return null;//없으면 null로 반환
         	});
-        	return firstCheckIn; //최종반환
+        	return firstCheckInOut; //최종반환
         }
-
+    
+    public BootDto selectOneBoot(int bootNo) {
+    	String sql = "select * from boot where boot_no = ?";
+    	Object[] params = {bootNo};
+    	BootDto resultDto=db.selectTemplate(sql, params, rs -> {
+ 	       
+    		BootDto bootDto = new BootDto();  // Dto 생성
+        		if (rs.next()) {  //어차피 한개니까 if문 활용
+    	            
+    		    //출력값저장
+    	        bootDto.setBootNo(rs.getString("boot_no"));     //Dto 값 넣기
+                bootDto.setBootEmail(rs.getString("boot_email"));
+                bootDto.setRoomGrade(rs.getString("room_grade"));
+                bootDto.setBootName(rs.getString("boot_name"));
+                bootDto.setRoomType(rs.getInt("room_type"));
+    	        }
+        		return bootDto;// 중간 반환
+        	});
+        	return resultDto; //최종반환
+    }
+    
+    public int updateBootCode(String bootCode, int bootNo, int companyNo) {
+    	String sql = "update boot set reservation_code=? where boot_no = ? and company_no=?";
+    	Object[] params = {bootCode, bootNo, companyNo};
+    	int result = db.updateTemplate(sql, params);
+    	return result;
+    }
     
     	
 }

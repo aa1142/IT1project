@@ -1,18 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.Vector" %>
-<%@ page import="com.jyphotel.*" %>
+<%@ page import="com.jyphotel.HotelPriceUtil" %>
+<%@ page import="com.jyphotel.RoomTypeUtil" %>
 <% request.setCharacterEncoding("UTF-8"); %>
 <jsp:useBean id="dao" class="com.jyphotel.HotelDAO" />
 <%
-    String keyword = request.getParameter("keyword");
-    if (keyword == null) keyword = "";
-
     String dest = request.getParameter("dest");
-    if (keyword.equals("") && dest != null) {
-        if ("tokyo".equals(dest)) keyword = "東京";
-        else if ("shinjuku".equals(dest)) keyword = "新宿";
-        else if ("yokohama".equals(dest)) keyword = "横浜";
-    }
+    if (dest == null) dest = "";
 
     String boot_checkin = request.getParameter("boot_checkin");
     if (boot_checkin == null || boot_checkin.equals("")) {
@@ -31,7 +24,7 @@
 
     int boot_adult = HotelPriceUtil.toInt(request.getParameter("boot_adult"), 0);
     if (boot_adult <= 0) {
-        boot_adult = HotelPriceUtil.toInt(request.getParameter("adult"), 1);
+        boot_adult = HotelPriceUtil.toInt(request.getParameter("adult"), 2);
     }
     int boot_child = HotelPriceUtil.toInt(request.getParameter("boot_child"), -1);
     if (boot_child < 0) {
@@ -39,45 +32,31 @@
     }
     int rooms = HotelPriceUtil.toInt(request.getParameter("rooms"), 1);
 
-    // 사이드바: 지점 3곳 전부 표시
-    Vector<CompanyVO> companyList = dao.getCompanyList("");
-
     int company_no = HotelPriceUtil.toInt(request.getParameter("company_no"), 0);
-    // index에서 선택한 지점만 초기 선택 (목록은 전체 유지)
-    if (company_no <= 0 && dest != null && !boot_checkin.equals("")) {
-        if ("tokyo".equals(dest)) company_no = 1;
-        else if ("shinjuku".equals(dest)) company_no = 2;
-        else if ("yokohama".equals(dest)) company_no = 3;
+    if (company_no <= 0 && !dest.equals("")) {
+        company_no = dao.resolveCompanyNoByDest(dest);
     }
 
-    String room_grade = request.getParameter("room_grade");
-    if (room_grade == null || room_grade.equals("")) room_grade = "스탠다드";
+    String room_grade = RoomTypeUtil.normalizeUiGrade(request.getParameter("room_grade"));
+    String checkout = boot_checkout;
+    if (checkout.equals("") && !boot_checkin.equals("")) {
+        checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
+    }
 
-    request.setAttribute("companyList", companyList);
-    request.setAttribute("keyword", keyword);
-    request.setAttribute("company_no", company_no);
-    request.setAttribute("room_grade", room_grade);
-    request.setAttribute("boot_checkin", boot_checkin);
-    request.setAttribute("boot_checkout", HotelPriceUtil.calcCheckout(boot_checkin, nights));
-    request.setAttribute("nights", nights);
-    request.setAttribute("rooms", rooms);
-    request.setAttribute("boot_adult", boot_adult);
-    request.setAttribute("boot_child", boot_child);
-
+    String ctx = request.getContextPath();
+    StringBuilder url = new StringBuilder(ctx);
+    url.append("/testex2/hotelsearch.jsp?");
+    url.append("company_no=").append(company_no);
+    url.append("&boot_checkin=").append(java.net.URLEncoder.encode(boot_checkin, "UTF-8"));
+    url.append("&boot_checkout=").append(java.net.URLEncoder.encode(checkout, "UTF-8"));
+    url.append("&nights=").append(nights);
+    url.append("&rooms=").append(rooms);
+    url.append("&boot_adult=").append(boot_adult);
+    url.append("&boot_child=").append(boot_child);
+    url.append("&room_grade=").append(java.net.URLEncoder.encode(room_grade, "UTF-8"));
     if (company_no > 0 && !boot_checkin.equals("")) {
-        CompanyVO company = dao.getCompany(company_no);
-        if (company == null && companyList.size() > 0) {
-            company = companyList.elementAt(0);
-            company_no = company.getCompany_no();
-        }
-        String checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
-        Vector<RoomVO> roomList = dao.getRoomList(company_no, room_grade, boot_checkin, checkout,
-                boot_adult, boot_child, rooms);
-        request.setAttribute("searchDone", "Y");
-        request.setAttribute("company", company);
-        request.setAttribute("roomList", roomList);
-        request.setAttribute("company_no", company_no);
+        url.append("&autoSearch=Y");
     }
 
-    request.getRequestDispatcher("hotelsearch.jsp").forward(request, response);
+    response.sendRedirect(url.toString());
 %>

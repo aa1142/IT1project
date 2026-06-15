@@ -49,7 +49,7 @@
                 <label class="search-label">결제 상태</label> 
                 <select class="form-select" name="bootStatus">
                     <option value="전체" <%= "전체".equals(bootStatus) ? "selected" : "" %>>전체 내역 보기</option>
-                    <option value="결제완료" <%= "결제완료".equals(bootStatus) ? "selected" : "" %>>결제완료 건</option>
+                    <option value="예약대기" <%= "예약대기".equals(bootStatus) ? "selected" : "" %>>예약대기 건</option>
                     <option value="예약확정" <%= "예약확정".equals(bootStatus) ? "selected" : "" %>>예약확정 건</option>
                 </select>
             </div>
@@ -102,7 +102,7 @@
                         <% if(boot.getBootConfirm() == 1) { %>
                             <span class="text-success fw-bold">예약확정</span>
                         <% } else { %>
-                            <span class="text-warning fw-bold">결제완료</span>
+                            <span class="text-warning fw-bold">예약대기</span>
                         <% } %>
                     </td>
                     <td>

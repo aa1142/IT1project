@@ -28,6 +28,11 @@ public class NoticeWriteServlet extends HttpServlet {
         // 1. 일반 텍스트 데이터 꺼내기
         String title = request.getParameter("title");
         String content = request.getParameter("content");
+        String important = request.getParameter("important");
+
+        if ("Y".equals(important) && title != null && !title.startsWith("[중요공지]")) {
+            title = "[중요공지] " + title;
+        }
         
         // 2. 파일 업로드 처리 구역
         // 톰캣 서버 내부의 실제 사진 저장 물리 경로 확보 (webapp 폴더 안에 upload 폴더가 기본 생성되어 있어야 함)

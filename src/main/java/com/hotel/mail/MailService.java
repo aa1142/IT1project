@@ -79,4 +79,73 @@ public class MailService {
                 .replace("<", "&lt;")
                 .replace(">", "&gt;");
     }
+    
+    
+    
+    
+    
+  //현장결제용 이메일
+    public void sendOnsiteConfirmMail(
+            String toEmail,
+            String bookerName,
+            String reservationCode,
+            String roomGrade,
+            String roomType
+            ) throws Exception {
+
+        if (toEmail == null || toEmail.trim().isEmpty()) {
+            return;
+        }
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("rkfqo12@gmail.com", "ijnbbvlnrgwglpgs");
+            }
+        });
+
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress("rkfqo12@gmail.com", "JYP HOTEL", "UTF-8"));
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+        
+        // 제목 변경
+        message.setSubject("[JYP HOTEL] 요청하신 객실 예약이 확정되었습니다. (현장결제 건)", "UTF-8");
+
+        // 현장결제 및 방 배정 안내 컨셉의 HTML 템플릿
+        String html =
+                "<div style='font-family:Arial, sans-serif; padding:24px; color:#222; max-width:600px; border:1px solid #eee;'>"
+              + "  <h2 style='color:#9a772e; border-bottom:2px solid #9a772e; padding-bottom:10px;'>JYP HOTEL 예약 확정 안내</h2>"
+              + "  <p>안녕하세요, <strong>" + escape(bookerName) + "</strong>님.</p>"
+              + "  <p>고객님께서 신청하신 온라인 예약 건에 대해 담당자 확인 및 <strong>객실 배정</strong>이 완료되어 안내해 드립니다.</p>"
+              + "  "
+              + "  <div style='background-color:#f8f9fa; padding:15px; border-radius:4px; margin:20px 0;'>"
+              + "    <p style='margin:5px 0;'><strong>🏢 예약 번호:</strong> " + escape(reservationCode) + "</p>"
+              + "    <p style='margin:5px 0;'><strong>🛏️ 선택 등급:</strong> " + escape(roomGrade) + "</p>"
+              + "    <p style='margin:5px 0;'><strong>🛋️ 객실 종류:</strong> " + escape(roomType) + "</p>" // 🎯 비어있던 태그에 roomType 바인딩
+              + "  </div>"
+              + "  "
+              + "  <p>본 예약은 <strong>[현장결제]</strong> 건으로, 대금은 체크인 하실 때 프론트 데스크에서 지불해 주시면 됩니다.</p>"
+              + "  <p>호텔 방문 시 상단의 <strong>예약 번호</strong> 또는 <strong>통신용 고유코드</strong>를 제시해 주세요.</p>"
+              + "  <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+              + "  <p style='color:#777; font-size:12px;'>※ 예약을 취소하시거나 일정을 변경하시려면 방문 3일 전까지 고객센터로 연락해 주시기 바랍니다.</p>"
+              + "  <p style='color:#9a772e; margin-top:30px; font-weight:bold;'>JYP HOTEL RESIDENCE</p>"
+              + "</div>";
+
+        message.setContent(html, "text/html; charset=UTF-8");
+
+        Transport.send(message);
+    }
 }
+
+
+
+
+
+
+

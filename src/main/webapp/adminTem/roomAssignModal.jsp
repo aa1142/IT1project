@@ -110,7 +110,7 @@
             $.ajax({
                 url: '${pageContext.request.contextPath}/admin/assignRoom.do', 
                 type: 'POST',
-                data: { bootNo: selectedBootNo, roomNo: selectedRoomNum },
+                data: { bootNo: selectedBootNo, roomNo: selectedRoomNum, bootEmail: boot.getBootEmail },
                 dataType: 'json',
                 success: function(res) {
                     if (res.status === "success") {

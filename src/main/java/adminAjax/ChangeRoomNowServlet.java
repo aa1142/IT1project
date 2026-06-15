@@ -45,6 +45,7 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	    
 	    int result = 0;//성공 여부
 	    
+	    
 	    // 3. 조건문으로 현장 결제 데이터 처리 분기하기
 	    if ("Y".equals(isWalkIn)) {
 	        // 워크인 모드일 때만 전송되는 데이터 수집
@@ -60,7 +61,6 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	        // 4. 수집한 데이터 DTO에 세팅하기
 	        BootDto bootDto = new BootDto();
 	        bootDto.setBootNo("Hotel-"+System.currentTimeMillis());
-	        bootDto.setRoomNo(roomNo);
 	        bootDto.setBootName(bootName);
 	        bootDto.setCompanyNo(company);
 	        bootDto.setBootPhone(bootPhone);
@@ -71,11 +71,13 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	        bootDto.setRoomGrade(roomGrade);
 	        bootDto.setRoomType(roomType);
 	        result = bootDao.assignRoom(bootDto);
+	        if(result>0) {
+	        	result = roomDao.updateRoomNow(roomNow, roomNo, company);
+	        }
 	    }
-	    System.out.println("주문 넣기"+result);
-	    if(result>0) {
+	    else {
 	    	result = roomDao.updateRoomNow(roomNow, roomNo, company);
-	    }
+		}
 
 	    System.out.println("방 업데이트"+result);
 	    // AJAX 응답

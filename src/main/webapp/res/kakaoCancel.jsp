@@ -23,7 +23,7 @@
   <p class="notice">카카오페이 결제 진행 중 사용자에 의해 결제가 취소되었습니다.<br>다시 예약을 진행하시려면 아래 버튼을 눌러주세요.</p>
 
   <div class="btn-group">
-    <a class="btn btn-light" href="${pageContext.request.contextPath}/index.jsp">메인으로</a>
+    <a class="btn btn-light" href="${pageContext.request.contextPath}.../wls/index.jsp">메인으로</a>
     <a class="btn btn-dark" href="javascript:history.back();">이전 화면으로</a>
   </div>
 </main>

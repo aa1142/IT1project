@@ -7,7 +7,7 @@ package dto;
 	    private String roomNow;    // room_now (VARCHAR2) - 현재 상태 ('사용가능', '청소 중', '점검 중') / 기본값: '사용가능'
 	    private String roomGrade;  // room_grade (VARCHAR2) - 객실 등급 ('스탠다드', '디럭스', '스윗트')
 	    private int roomType;      // room_type (NUMBER) - 객실 타입 (1=싱글, 2=트윈, 5=패밀리)
-	    private long roomPrice;    // room_price (NUMBER(10)) - 객실 가격 (금액이 커질 수 있으므로 long 권장)
+	    private int roomPrice;    // room_price (NUMBER(10)) - 객실 가격 (금액이 커질 수 있으므로 int 권장)
 
 	    // 기본 생성자 (상태 기본값 세팅)
 	    public RoomDto() {
@@ -15,7 +15,7 @@ package dto;
 	    }
 
 	    // 모든 필드를 포함하는 생성자
-	    public RoomDto(int roomNo, int companyNo, String roomNow, String roomGrade, int roomType, long roomPrice) {
+	    public RoomDto(int roomNo, int companyNo, String roomNow, String roomGrade, int roomType, int roomPrice) {
 	        this.roomNo = roomNo;
 	        this.companyNo = companyNo;
 	        this.roomNow = roomNow;
@@ -77,11 +77,11 @@ package dto;
 	        this.roomType = roomType;
 	    }
 
-	    public long getRoomPrice() {
+	    public int getRoomPrice() {
 	        return roomPrice;
 	    }
 
-	    public void setRoomPrice(long roomPrice) {
+	    public void setRoomPrice(int roomPrice) {
 	        this.roomPrice = roomPrice;
 	    }
 

@@ -6,7 +6,7 @@
     String boot_no = request.getParameter("boot_no");
     if (boot_no == null) boot_no = "";
 
-    BootVO boot = dao.getBoot(boot_no);
+    BootVO boot = dao.selectReservationReceipt(boot_no);
     if (boot == null) {
         response.sendRedirect("hotelsearch.jsp");
         return;
@@ -52,6 +52,9 @@
     <div class="card success-banner">
       <h2>예약이 완료되었습니다</h2>
       <p>예약코드 <strong><%= boot.getReservation_code() %></strong></p>
+      <% if (boot.getBoot_confirm() == 0) { %>
+      <p style="color:#b45309;margin-top:8px;">결제 대기 중입니다. 미결제 시 예약이 취소될 수 있습니다.</p>
+      <% } %>
     </div>
 
     <div class="card" style="padding:24px;">
@@ -79,7 +82,8 @@
       <div class="complete-actions">
         <a href="myReservationList.jsp" class="btn-list">예약 내역</a>
         <a href="hotelsearch.jsp" class="btn-list">다른 예약</a>
-        <a href="../index.jsp" class="btn-home">홈으로</a>
+        <a href="<%= request.getContextPath() %>/res/bootSearch.jsp" class="btn-list">예약 조회</a>
+        <a href="../wls/index.jsp" class="btn-home">홈으로</a>
       </div>
     </div>
   </main>

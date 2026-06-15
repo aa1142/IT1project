@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.hotel.mail.MailService;
-import com.hotel.reservation.BootDAO; // ReservationDAO 대신 새 일꾼 임포트
+import com.hotel.reservation.BootDAO;
 
 @WebServlet("/kakaoApprove")
 public class KakaoApproveServlet extends HttpServlet {
@@ -31,50 +31,32 @@ public class KakaoApproveServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
-        // 1. 카카오페이 인증 후 주소창으로 넘어오는 인증 토큰 낚아채기
         String pgToken = request.getParameter("pg_token");
 
-        // 2. KakaoReadyServlet에서 킵해두었던 세션 바구니 정보들 일제히 인출
         HttpSession session = request.getSession();
         String tid = (String) session.getAttribute("tid");
         String partnerOrderId = (String) session.getAttribute("partnerOrderId");
         String partnerUserId = (String) session.getAttribute("partnerUserId");
 
-        // BOOT 통합 규격에 맞추어 문자열 및 오브젝트 데이터 바인딩
-        Object bootNoObj = session.getAttribute("bootNo"); // 기존 reservationId 대체
+        Object bootNoObj = session.getAttribute("bootNo"); 
         Object amountObj = session.getAttribute("amount");
         Object reservationCodeObj = session.getAttribute("reservationCode");
         Object bookerEmailObj = session.getAttribute("bootEmail");
         Object bookerNameObj = session.getAttribute("bootName");
 
-        // 3. 비정상적 진입 세션 유실 체크 방어벽
         if (pgToken == null || tid == null || partnerOrderId == null || partnerUserId == null) {
-            request.setAttribute("errorMessage", "결제 승인 필수 정보(세션 데이터 등)가 유실되었습니다.");
+            System.out.println("[검증 로그] 카카오 세션 필수 정보가 누락되어 실패 구역으로 튕깁니다.");
+            request.setAttribute("errorMessage", "결제 승인 필수 정보가 유실되었습니다.");
             request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
 
-        if (bootNoObj == null) {
-            request.setAttribute("errorMessage", "예약 식별 정보(bootNo)가 없습니다. 다시 진행해주세요.");
-            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-            return;
-        }
-
-        // 4. 안전하게 수집된 데이터를 변수로 매핑 (문자열 PK 체계 적용)
         String bootNo = String.valueOf(bootNoObj);
         int amount = parseInt(String.valueOf(amountObj), 50000);
         String reservationCode = reservationCodeObj == null ? "" : String.valueOf(reservationCodeObj);
         String bookerEmail = bookerEmailObj == null ? "" : String.valueOf(bookerEmailObj);
         String bookerName = bookerNameObj == null ? "고객" : String.valueOf(bookerNameObj);
 
-        if (bootNo.trim().isEmpty() || "null".equalsIgnoreCase(bootNo)) {
-            request.setAttribute("errorMessage", "예약 식별 코드가 올바르지 않습니다.");
-            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-            return;
-        }
-
-        // 5. 카카오 최종 승인 API용 JSON 통신 데이터 셋업
         String json = "{"
                 + "\"cid\":\"" + CID + "\","
                 + "\"tid\":\"" + tid + "\","
@@ -95,75 +77,66 @@ public class KakaoApproveServlet extends HttpServlet {
 
         String responseBody = readBody(connection);
 
-        // 카카오 서버 승인 실패 시 조기 예외 처리
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            System.out.println("[검증 로그] 카카오 본사 승인 거절됨. 응답코드: " + connection.getResponseCode());
             request.setAttribute("errorMessage", "카카오 최종 승인 실패: " + responseBody);
             request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
-
-        // 6. 카카오 최종 확인이 떨어졌으므로 PAYMENT 내역 가방 바인딩 및 DB INSERT
-        PaymentDTO payment = new PaymentDTO();
-        payment.setBootNo(bootNo); // 내부적으로 bootNo를 엮을 수 있게 변경 지원
-        payment.setTid(tid);
-        payment.setPartnerOrderId(partnerOrderId);
-        payment.setPaymentMethod("KAKAOPAY");
-        payment.setAmount(amount);
-        payment.setPaymentStatus("PAID");
+        System.out.println("[검증 로그] 카카오 승인 성공 완료! 이제 오라클 대상을 타격합니다.");
+        System.out.println("[검증 로그] 던질 bootNo 값: [" + bootNo + "]");
 
         try {
             PaymentDAO paymentDAO = new PaymentDAO();
-            paymentDAO.insertPayment(payment);
+            
+            // 1. 먼저 기존 결제 상태 업데이트를 시도합니다.
+            int payResult = paymentDAO.updatePaymentStatus(bootNo, "PAID");
+            System.out.println("[검증 로그] 오라클 PAYMENT 테이블 업데이트 반영 건수: " + payResult + "건");
 
-            // [핵심 변경] 새 부트 DAO를 호출하고 상태값을 숫자 '1'(결제완료)로 업데이트
+            // [추가] 만약 업데이트된 행이 0건이라면, 신규 결제 내역이므로 테이블에 INSERT 합니다.
+            if (payResult == 0) {
+                System.out.println("[검증 로그] 기존 결제 레코드가 없으므로 신규 결제 레코드를 INSERT합니다.");
+                PaymentDTO paymentDTO = new PaymentDTO();
+                paymentDTO.setBootNo(bootNo);
+                paymentDTO.setTid(tid);
+                paymentDTO.setPartnerOrderId(partnerOrderId);
+                paymentDTO.setPaymentMethod("KAKAOPAY");
+                paymentDTO.setAmount(amount);
+                paymentDTO.setPaymentStatus("PAID");
+                
+                int insertResult = paymentDAO.insertPayment(paymentDTO);
+                System.out.println("[검증 로그] 신규 결제 레코드 INSERT 완료: " + insertResult + "건");
+            }
+
             BootDAO bootDAO = new BootDAO();
             bootDAO.updateReservationStatus(bootNo, 1);
+            System.out.println("[검증 로그] BootDAO 상태 변경 실행 완료");
 
         } catch (Exception e) {
+            System.out.println("[💥 검증 로그 에러 발생] 오라클 타격 도중 자바 예외가 발생했습니다!");
             e.printStackTrace();
-            request.setAttribute("errorMessage", "결제 내역 DB 영속화 실패: " + e.getMessage());
-            request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
-            return;
         }
 
-        // 7. 예약 확정 이메일 비동기 발송 파트
         try {
             MailService mailService = new MailService();
-            mailService.sendReservationCompleteMail(
-                    bookerEmail,
-                    bookerName,
-                    reservationCode,
-                    partnerOrderId,
-                    amount
-            );
-            session.setAttribute("mailStatus", "예약 확인 메일이 성공적으로 발송되었습니다.");
+            mailService.sendReservationCompleteMail(bookerEmail, bookerName, reservationCode, partnerOrderId, amount);
         } catch (Exception e) {
-            e.printStackTrace();
-            session.setAttribute("mailStatus", "메일 서버 오류로 발송은 누락되었으나 결제 및 예약은 정상 등록되었습니다.");
+            System.out.println("[검증 로그] 메일 발송 예외 발생 (무시하고 계속 진행)");
         }
-
-        // 8. 사용 완료된 휘발성 세션 키값 정리 및 성공 화면 전달 데이터 바인딩
-        session.removeAttribute("tid");
-        session.removeAttribute("partnerUserId");
 
         session.setAttribute("partnerOrderId", partnerOrderId);
         session.setAttribute("bootNo", bootNo);
         session.setAttribute("reservationCode", reservationCode);
         session.setAttribute("amount", amount);
 
-        // 결과 가시화 처리를 위한 성공 페이지로 리다이렉트
-        response.sendRedirect(request.getContextPath() + "/kakaoSuccess.jsp");
+        response.sendRedirect(request.getContextPath() + "/res/kakaoSuccess.jsp");
     }
 
     private static int parseInt(String value, int defaultValue) {
         try {
-            if (value == null || value.trim().isEmpty()) {
-                return defaultValue;
-            }
+            if (value == null || value.trim().isEmpty()) { return defaultValue; }
             return Integer.parseInt(value);
-        } catch (Exception e) {
-            return defaultValue;
-        }
+        } catch (Exception e) { return defaultValue; }
     }
 
     private static String readBody(HttpURLConnection connection) throws IOException {
@@ -173,12 +146,9 @@ public class KakaoApproveServlet extends HttpServlet {
         } else {
             reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
         }
-
         StringBuilder body = new StringBuilder();
         String line;
-        while ((line = reader.readLine()) != null) {
-            body.append(line);
-        }
+        while ((line = reader.readLine()) != null) { body.append(line); }
         reader.close();
         return body.toString();
     }
