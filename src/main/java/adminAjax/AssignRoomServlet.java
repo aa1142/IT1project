@@ -23,10 +23,9 @@ public class AssignRoomServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	System.out.println("배정 들어옴");
         // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
-        
+
         HttpSession session = request.getSession();
         Integer companyNo = (Integer) session.getAttribute("companyNo");
         // 임시 데이터
@@ -35,11 +34,11 @@ public class AssignRoomServlet extends HttpServlet {
         BootDao bootDao = new BootDao();
         String bootNoStr = request.getParameter("bootNo");
         String roomNoStr = request.getParameter("roomNo");
-        
         int bootNo = 0;
         int roomNo = 0;
         try {
             if (bootNoStr != null) bootNo = Integer.parseInt(bootNoStr);
+            if (roomNoStr != null) roomNo = Integer.parseInt(roomNoStr);
         } catch (NumberFormatException e) {
             System.out.println("숫자 변환 중 오류 발생! 넘어온 값 체크 필요.");
             e.printStackTrace();
@@ -47,13 +46,15 @@ public class AssignRoomServlet extends HttpServlet {
         
         // 1. 방 배정 전, 현재 예약 정보(이메일, 이름, 결제타입 등)를 미리 확보합니다.
         BootDto bootDto = bootDao.selectOneBoot(bootNo);
-        
         // DB 실행 (성공 시 1, 실패 시 0 반환)
         int result = bootDao.assignRoom(bootNo, roomNo, companyNo);
         
         // AJAX 통신을 위한 JSON 응답 코드
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        
+        
+        System.out.println("PayCheck="+bootDto.getBootPayCheck());
         
         if (result > 0) {
             // 🎯 [핵심 추가] 방 배정 성공 시, '현장결제' 건인지 판별하여 메일 발송

@@ -170,6 +170,7 @@ public class BootDao {
                 bootDto.setRoomGrade(rs.getString("room_grade"));
                 bootDto.setBootName(rs.getString("boot_name"));
                 bootDto.setRoomType(rs.getInt("room_type"));
+                bootDto.setBootPayCheck(rs.getInt("boot_pay_check"));
     	        }
         		return bootDto;// 중간 반환
         	});
