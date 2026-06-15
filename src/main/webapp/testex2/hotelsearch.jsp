@@ -117,12 +117,12 @@
     <title>호텔 예약 사이트</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="hotel-common.css" type="text/css" rel="stylesheet">
-    <link href="sestyle.css?v=6" type="text/css" rel="stylesheet">
+    <link href="sestyle.css?v=7" type="text/css" rel="stylesheet">
     <script type="text/javascript">
         var initRoomGrade = '<%= room_grade %>';
         var initCheckin = '<%= boot_checkin %>';
     </script>
-    <script type="text/javascript" src="sescript.js?v=5"></script>
+    <script type="text/javascript" src="sescript.js?v=6"></script>
 </head>
 <body>
     <jsp:include page="siteNav.jsp" />

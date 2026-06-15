@@ -38,15 +38,27 @@ public class HotelDisplay {
         }
     }
 
-    /** 호텔 갤러리 — 대표 1장만 작게 표시 */
+    /** 호텔 갤러리 — 대표 1장 + 추가 3장 (썸네일 선택용) */
     public static String[] getHotelGalleryPaths(int companyNo) {
         switch (companyNo) {
             case 1:
-                return new String[] { "/images/tokyomain.png" };
+                return img(
+                        "/images/tokyomain.png",
+                        "/images/hotel_tokyorobi.png",
+                        "/images/hotel_restorant.png",
+                        "/images/hotel_gym.png");
             case 2:
-                return new String[] { "/images/shinmain.png" };
+                return img(
+                        "/images/shinmain.png",
+                        "/images/hotel_shinjukurobi.png",
+                        "/images/hotel_restorant.png",
+                        "/images/hotel_gym.png");
             case 3:
-                return new String[] { "/images/yokomain.png" };
+                return img(
+                        "/images/yokomain.png",
+                        "/images/hotel_yokohamarobi.png",
+                        "/images/hotel_restorant.png",
+                        "/images/hotel_gym.png");
             default:
                 return new String[0];
         }

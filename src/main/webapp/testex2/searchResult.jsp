@@ -36,13 +36,29 @@
             <div class="detail-title"><%= company.getCompany_name() %></div>
             <div class="detail-header-section">
                 <% if (hotelImages.length > 0) {
-                    String hotelThumbUrl = HotelDisplay.toUrl(ctx, hotelImages[0]);
+                    String hotelMainUrl = HotelDisplay.toUrl(ctx, hotelImages[0]);
+                    String galleryId = "hotel-gallery-" + company.getCompany_no();
                 %>
-                <button type="button" class="hotel-photo-wrap"
-                        onclick="openLightbox('<%= hotelThumbUrl %>', '<%= company.getCompany_name() %>')"
-                        title="호텔 사진 크게 보기">
-                    <img src="<%= hotelThumbUrl %>" alt="<%= company.getCompany_name() %>">
-                </button>
+                <div class="hotel-gallery" id="<%= galleryId %>"
+                     data-alt="<%= company.getCompany_name() %>">
+                    <button type="button" class="hotel-photo-wrap hotel-gallery-main"
+                            title="호텔 사진 크게 보기">
+                        <img class="hotel-gallery-img" src="<%= hotelMainUrl %>"
+                             alt="<%= company.getCompany_name() %>">
+                    </button>
+                    <div class="hotel-gallery-thumbs">
+                        <% for (int hi = 0; hi < hotelImages.length; hi++) {
+                            String thumbUrl = HotelDisplay.toUrl(ctx, hotelImages[hi]);
+                        %>
+                        <button type="button"
+                                class="hotel-gallery-thumb<%= hi == 0 ? " active" : "" %>"
+                                data-src="<%= thumbUrl %>"
+                                title="사진 <%= hi + 1 %>">
+                            <img src="<%= thumbUrl %>" alt="<%= company.getCompany_name() %> <%= hi + 1 %>">
+                        </button>
+                        <% } %>
+                    </div>
+                </div>
                 <% } %>
                 <div class="detail-info">
                     <div class="detail-section">

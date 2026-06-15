@@ -227,6 +227,37 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
+function initHotelGalleries() {
+    document.querySelectorAll('.hotel-gallery').forEach(function(gallery) {
+        if (gallery.dataset.initialized === '1') return;
+
+        var mainBtn = gallery.querySelector('.hotel-gallery-main');
+        var mainImg = gallery.querySelector('.hotel-gallery-img');
+        var thumbs = gallery.querySelectorAll('.hotel-gallery-thumb');
+        var alt = gallery.getAttribute('data-alt') || '';
+
+        if (!mainBtn || !mainImg || thumbs.length === 0) return;
+
+        thumbs.forEach(function(thumb) {
+            thumb.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var src = thumb.getAttribute('data-src');
+                if (!src) return;
+                mainImg.src = src;
+                thumbs.forEach(function(t) { t.classList.remove('active'); });
+                thumb.classList.add('active');
+            });
+        });
+
+        mainBtn.addEventListener('click', function() {
+            openLightbox(mainImg.src, alt);
+        });
+
+        gallery.dataset.initialized = '1';
+    });
+}
+
 function initImageCarousels() {
     document.querySelectorAll('.img-carousel').forEach(function(carousel) {
         if (carousel.dataset.initialized === '1') return;
@@ -309,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     updateInfoBox();
+    initHotelGalleries();
     initImageCarousels();
 
     var searchForm = document.getElementById('searchForm');
