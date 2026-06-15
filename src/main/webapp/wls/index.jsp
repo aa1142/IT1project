@@ -84,8 +84,8 @@
       <a href="index.jsp" class="logo">JYP <span>HOTEL</span></a>
       <nav>
         <ul>
-          <li><a href="<%=ctx%>/branchList.jsp">지점보기</a></li>
-          <li><a href="<%=ctx%>/community.jsp">커뮤니티</a></li>
+          <li><a href="<%=ctx%>/branchList.jsp">REVIEW</a></li>
+          <li><a href="<%=ctx%>/community.jsp">공지사항</a></li>
           <% if(!isLogin) { %>
               <li><a href="<%=ctx%>/wls/login.jsp" style="color:var(--point-blue);">로그인</a></li>
               <li><a href="<%=ctx%>/signupAction">회원가입</a></li>
