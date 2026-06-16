@@ -97,7 +97,7 @@ public class SignupServlet extends HttpServlet {
             pstmt.setString(2, encryptedPw);
             pstmt.setString(3, nameKo != null ? nameKo : "未入力");
             pstmt.setString(4, phone);
-            pstmt.setString(5, "一般"); 
+            pstmt.setString(5, "일반");
             pstmt.setString(6, email != null ? email : "test@test.com");
             pstmt.setString(7, address);
 

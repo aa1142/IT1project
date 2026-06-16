@@ -74,7 +74,7 @@
     <aside class="sidebar">
       <div class="welcome-box">
         <h3><%= sessionUserName %> 様</h3>
-        <p>会員ランク: <span style="color:var(--point); font-weight:bold;"><%= grade %></span></p>
+       <p>会員ランク: <span style="color:var(--point); font-weight:bold;"><%= "일반".equals(grade) ? "一般" : grade %></span></p>
       </div>
       <ul class="menu-list">
         <li><a href="<%= request.getContextPath() %>/myPage" class="active">会員情報の管理</a></li>
@@ -94,7 +94,13 @@
       </table>
       
     
-      <h2 class="section-title" style="margin-top: 20px;">最近の客室予約履歴</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-bottom: 2px solid var(--main); padding-bottom: 10px;">
+        <h2 style="font-size: 22px; font-weight: 900; color: var(--main); margin: 0; border: none; padding: 0;">最近の宿泊予約履歴</h2>
+        
+        <!-- 🔗 누르면 다른 팀원이 만든 reviewWrite.jsp 전체 리스트 또는 작성 페이지로 즉시 화면 전환 -->
+        <a href="<%= request.getContextPath() %>/review/reviewList.jsp" class="title-review-btn">クチコミを書く</a>
+      </div>
+      
       <table class="reserve-table">
         <thead>
           <tr>
