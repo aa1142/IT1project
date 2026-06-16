@@ -71,8 +71,8 @@
         <div class="row"><strong>통신용 고유코드</strong><span><%= reservationCode %></span></div>
         <div class="row"><strong>예약자명</strong><span><%= bootName %></span></div>
         <div class="row"><strong>상품명</strong><span><%= itemName %></span></div>
-        <div class="row"><strong>수량</strong><span>1</span></div>
-        <div class="row"><strong>결제금액</strong><span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span></div>
+        <div class="row"><strong>部屋数</strong><span>1</span></div>
+        <div class="row"><strong>合計(</strong><span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span></div>
     </div>
 
     <form action="${pageContext.request.contextPath}/res/kakaoReady.jsp" method="post">
