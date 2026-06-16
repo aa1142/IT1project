@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>로그인 | JYP HOTEL</title>
+<title>ログイン | JYP HOTEL</title>
 <style>
 @import url("https://googleapis.com");
 
@@ -20,7 +20,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:"Noto Sans KR",sans-serif;
+  font-family:"Noto Sans JP",sans-serif;
 }
 
 body{
@@ -171,23 +171,23 @@ footer{
     <h2>LOGIN</h2>
     
     <div class="input-group">
-      <label for="userid">아이디</label>
-      <input type="text" id="userid" name="userid" placeholder="아이디를 입력해주세요">
+      <label for="userid">ユーザーID</label>
+      <input type="text" id="userid" name="userid" placeholder="ユーザーIDを入力してください">
     </div>
     
     <div class="input-group">
-      <label for="userpw">비밀번호</label>
-      <input type="password" id="userpw" name="userpw" placeholder="비밀번호를 입력해주세요">
+      <label for="userpw">パスワード</label>
+      <input type="password" id="userpw" name="userpw" placeholder="パスワードを入力してください">
     </div>
     
-    <button type="submit" class="btn-submit">로그인</button>
+    <button type="submit" class="btn-submit">ログイン</button>
     
     <div class="find-wrap">
-  <a href="<%= request.getContextPath() %>/findAccountAction">아이디 찾기</a>
+  <a href="<%= request.getContextPath() %>/findAccountAction">IDをお忘れの方</a>
   <span>|</span>
-  <a href="<%= request.getContextPath() %>/findAccountAction">비밀번호 찾기</a>
+  <a href="<%= request.getContextPath() %>/findAccountAction">パスワードをお忘れの方</a>
   <span>|</span>
-  <a href="<%= request.getContextPath() %>/wls/signup.jsp">회원가입</a>
+  <a href="<%= request.getContextPath() %>/wls/signup.jsp">会員登録</a>
 </div>
   </form>
 </div>
@@ -202,11 +202,11 @@ function validateForm() {
   const userpw = document.getElementById("userpw").value;
   
   if(userid.trim() === "") {
-    alert("아이디를 입력해주세요.");
+    alert("ユーザーIDを入力してください。");
     return false;
   }
   if(userpw.trim() === "") {
-    alert("비밀번호를 입력해주세요.");
+    alert("パスワードを入力してください。");
     return false;
   }
   return true;

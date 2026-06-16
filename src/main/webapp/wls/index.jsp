@@ -6,13 +6,13 @@
     String ctx = request.getContextPath();
 %>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JYP HOTEL | 공식 예약 사이트</title>
+    <title>JYP HOTEL | 公式予約サイト</title>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap");
 
       :root {
         --main-blue: #111111;
@@ -21,7 +21,7 @@
         --text-dark: #222222;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Noto Sans KR", sans-serif; }
+      * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Noto Sans JP", sans-serif; }
       html { scroll-behavior: smooth; }
       body { background-color: white; color: var(--text-dark); min-width: 1280px; padding-bottom: 110px; }
 
@@ -87,11 +87,11 @@
           <li><a href="<%=ctx%>/review/reviewList.jsp">REVIEW</a></li>
           <li><a href="<%=ctx%>/notice/noticeList.jsp">NOTICE</a></li>
           <% if(!isLogin) { %>
-              <li><a href="<%=ctx%>/wls/login.jsp" style="color:var(--point-blue);">로그인</a></li>
-              <li><a href="<%=ctx%>/signupAction">회원가입</a></li>
+              <li><a href="<%=ctx%>/wls/login.jsp" style="color:var(--point-blue);">ログイン</a></li>
+              <li><a href="<%=ctx%>/signupAction">会員登録</a></li>
           <% } else { %>
-              <li><a href="<%=ctx%>/myPage" style="color:var(--point-blue);"><%= sessionUserName %>님 마이페이지</a></li>
-              <li><a href="logout.jsp" style="color:#aaa;">로그아웃</a></li>
+              <li><a href="<%=ctx%>/myPage" style="color:var(--point-blue);"><%= sessionUserName %>様 マイページ</a></li>
+              <li><a href="logout.jsp" style="color:#aaa;">ログアウト</a></li>
           <% } %>
         </ul>
       </nav>
@@ -102,60 +102,60 @@
       <div class="main-overlay">
         <h1>JYP HOTEL</h1>
         <div class="btn-wrapper">
-          <button class="main-btn" onclick="scrollToSection('accommodation')">지점보기</button>
+          <button class="main-btn" onclick="scrollToSection('accommodation')">店舗一覧</button>
         </div>
       </div>
     </main>
 
     <section class="content-section" id="accommodation">
       <div class="grid">
-        <div class="grid-item" onclick="scrollToSection('tokyo-section')"><h3>도쿄</h3><p>도쿄역과 주요 관광지 접근성 우수</p></div>
-        <div class="grid-item" onclick="scrollToSection('shinjuku-section')"><h3>신주쿠</h3><p>쇼핑과 비즈니스 중심 지역</p></div>
-        <div class="grid-item" onclick="scrollToSection('yokohama-section')"><h3>요코하마</h3><p>항구도시의 여유로운 분위기</p></div>
+        <div class="grid-item" onclick="scrollToSection('tokyo-section')"><h3>東京</h3><p>東京駅や主要観光地へのアクセス抜群</p></div>
+        <div class="grid-item" onclick="scrollToSection('shinjuku-section')"><h3>新宿</h3><p>ショッピングとビジネスの中心エリア</p></div>
+        <div class="grid-item" onclick="scrollToSection('yokohama-section')"><h3>横浜</h3><p>港町ならではの開放的な雰囲気</p></div>
       </div>
     </section>
 
-    <section class="detail-section" id="tokyo-section"><div class="detail-box"><img src="<%=ctx%>/images/tokyo.png" class="detail-image" alt="도쿄"><div class="detail-text"><h2>도쿄 지점</h2><p>도쿄역 인근에 위치하여 관광과 비즈니스 모두에 최적의 접근성을 제공합니다.</p></div></div></section>
-    <section class="detail-section" id="shinjuku-section"><div class="detail-box"><img src="<%=ctx%>/images/shinjuku.png" class="detail-image" alt="신주쿠"><div class="detail-text"><h2>신주쿠 지점</h2><p>신주쿠역에서 가까워 쇼핑, 식사, 관광을 편리하게 즐길 수 있습니다.</p></div></div></section>
-    <section class="detail-section" id="yokohama-section"><div class="detail-box"><img src="<%=ctx%>/images/yokohama.png" class="detail-image" alt="요코하마"><div class="detail-text"><h2>요코하마 지점</h2><p>아름다운 항구 전망과 편안한 객실을 제공하는 프리미엄 지점입니다.</p></div></div></section>
+    <section class="detail-section" id="tokyo-section"><div class="detail-box"><img src="<%=ctx%>/images/tokyo.png" class="detail-image" alt="東京"><div class="detail-text"><h2>東京店</h2><p>東京駅近くに位置し、観光やビジネスの双方に最適なアクセスを提供します。</p></div></div></section>
+    <section class="detail-section" id="shinjuku-section"><div class="detail-box"><img src="<%=ctx%>/images/shinjuku.png" class="detail-image" alt="新宿"><div class="detail-text"><h2>新宿店</h2><p>新宿駅からほど近く、ショッピングやグルメ、観光を快適にお楽しみいただけます。</p></div></div></section>
+    <section class="detail-section" id="yokohama-section"><div class="detail-box"><img src="<%=ctx%>/images/yokohama.png" class="detail-image" alt="横浜"><div class="detail-text"><h2>横浜店</h2><p>美しい港の景色と心地よい客室を提供するプレミアムな店舗です。</p></div></div></section>
 
     <div class="booking-container">
       <form action="<%=ctx%>/testex2/keywordProc.jsp" method="post" class="booking-wrapper" onsubmit="return checkBookingForm()">
         <div class="input-group">
-          <label>지점명</label>
+          <label>店舗名</label>
           <select name="dest" id="dest">
-            <option value="tokyo">도쿄</option>
-            <option value="shinjuku">신주쿠</option>
-            <option value="yokohama">요코하마</option>
+            <option value="tokyo">東京</option>
+            <option value="shinjuku">新宿</option>
+            <option value="yokohama">横浜</option>
           </select>
         </div>
         <div class="input-group">
-          <label>체크인</label>
+          <label>チェックイン</label>
           <input type="date" id="checkin" name="checkin" />
         </div>
         <div class="input-group">
-          <label>체크아웃</label>
+          <label>チェックアウト</label>
           <input type="date" id="checkout" name="checkout" />
         </div>
         <div class="input-group guest-inline-group">
-          <label>인원</label>
+          <label>人数</label>
           <div class="guest-inline-box">
             <div class="guest-inline-item">
-              <span>성인</span>
+              <span>大人</span>
               <div class="counter"><button type="button" onclick="changeAdult(-1)">-</button><span id="adultCount">2</span><button type="button" onclick="changeAdult(1)">+</button></div>
               <input type="hidden" name="adult" id="adult_input" value="2">
             </div>
             <div class="guest-inline-item">
-              <span>어린이</span>
+              <span>子供</span>
               <div class="counter"><button type="button" onclick="changeChild(-1)">-</button><span id="childCount">0</span><button type="button" onclick="changeChild(1)">+</button></div>
               <input type="hidden" name="child" id="child_input" value="0">
             </div>
           </div>
         </div>
-<input type="hidden" name="rooms" value="1">
-<input type="hidden" name="room_grade" value="스탠다드">
+        <input type="hidden" name="rooms" value="1">
+        <input type="hidden" name="room_grade" value="스탠다드">
 
-        <button type="submit" class="btn-search">호텔 검색</button>
+        <button type="submit" class="btn-search">空室検索</button>
       </form>
     </div>
 
@@ -168,7 +168,7 @@
       function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: "smooth" }); }
       function checkBookingForm() {
         const checkin = document.getElementById("checkin").value; const checkout = document.getElementById("checkout").value;
-        if (!checkin || !checkout || new Date(checkin) >= new Date(checkout)) { alert("올바른 날짜를 선택해주세요."); return false; }
+        if (!checkin || !checkout || new Date(checkin) >= new Date(checkout)) { alert("正しい日付を選択してください。"); return false; }
         return true;
       }
       window.onload = function () {

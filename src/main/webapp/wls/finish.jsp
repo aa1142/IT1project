@@ -1,15 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>가입완료 | JYP HOTEL</title>
+<title>会員登録完了 | JYP HOTEL</title>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&display=swap");
 
 :root{
   --main:#111111;
@@ -22,7 +22,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:"Noto Sans KR",sans-serif;
+  font-family:"Noto Sans JP",sans-serif;
 }
 
 body{
@@ -273,8 +273,8 @@ footer{
 </header>
 
 <div class="step-wrap">
-  <div class="step">01 회원정보 입력</div>
-  <div class="step active">02 가입완료</div>
+  <div class="step">01 会員情報の入力</div>
+  <div class="step active">02 登録完了</div>
 </div>
 
 <div class="container">
@@ -283,27 +283,27 @@ footer{
     ✓
   </div>
 
-  <h2>회원가입이 완료되었습니다</h2>
+  <h2>会員登録が完了しました</h2>
 
   <p class="desc">
-    JYP HOTEL 회원이 되신 것을 환영합니다.<br>
-    로그인 후 다양한 예약 서비스를 이용하실 수 있습니다.
+    JYP HOTELの会員にご登録いただき、誠にありがとうございます。<br>
+    ログイン後、様々な宿泊予約サービスをご利用いただけます。
   </p>
 
   <div class="info-box">
-    <p><strong>이용안내 :</strong> 로그인 후 객실 예약 및 예약 조회가 가능합니다.</p>
+    <p><strong>ご利用案内：</strong> ログイン後、客室のご予約および予約状況の照会が可能になります。</p>
   </div>
 
   <div class="btn-wrap">
 
     <button class="btn btn-main"
       onclick="goLogin()">
-      로그인 하기
+      ログインする
     </button>
 
     <button class="btn btn-sub"
       onclick="goMain()">
-      메인으로 이동
+      メインへ戻る
     </button>
 
   </div>

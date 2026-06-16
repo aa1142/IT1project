@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-// 💡 비밀번호 변경 화면 및 요청을 처리할 가상 주소 설정
+// 💡 パスワード変更画面およびリクエストを処理する仮想アドレスの設定
 @WebServlet("/changePasswordAction")
 public class ChangePasswordServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // SHA-256 해시 암호화 메서드
+    // SHA-256 ハッシュ暗号化メソッド
     public String encryptSHA256(String base) {
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
@@ -38,22 +38,22 @@ public class ChangePasswordServlet extends HttpServlet {
         }
     }
 
-    // 보안 구역(wls) 내부에 있는 changePassword.jsp 화면을 안전하게 열어주는 GET 통로
+    // セキュリティ領域(wls)内部にある changePassword.jsp 画面を安全に開くための GET パス
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
         
         HttpSession session = request.getSession();
         if (session.getAttribute("sessionUserId") == null) {
-            response.getWriter().print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='login.jsp';</script>");
+            response.getWriter().print("<script>alert('ログインが必要なサービスです。'); location.href='login.jsp';</script>");
             return;
         }
         
-        // 🔒 WEB-INF/wls/changePassword.jsp 화면 포워딩
+        // 🔒 wls/changePassword.jsp 画面へリダイレクト
         response.sendRedirect(request.getContextPath() + "/wls/changePassword.jsp");
     }
 
-    // 실제 새 암호로 UPDATE를 확정 짓는 처리단 (POST 방식)
+    // 実際に新しいパスワードへの UPDATE を確定する処理（POST 方式）
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -65,7 +65,7 @@ public class ChangePasswordServlet extends HttpServlet {
         String currentPw = request.getParameter("currentPw");
         String newPw = request.getParameter("newPw");
 
-        // 현재 비밀번호와 새 비밀번호를 해시 난수로 변환
+        // 現在のパスワードと新しいパスワードをハッシュ値に変換
         String encryptedCurrentPw = encryptSHA256(currentPw);
         String encryptedNewPw = encryptSHA256(newPw);
 
@@ -79,7 +79,7 @@ public class ChangePasswordServlet extends HttpServlet {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
-            // 기존 비밀번호 검증
+            // 現在のパスワードの検証
             String checkSql = "SELECT COUNT(*) FROM member WHERE member_id = ? AND member_pw = ?";
             pstmt = conn.prepareStatement(checkSql);
             pstmt.setString(1, sessionUserId);
@@ -88,13 +88,13 @@ public class ChangePasswordServlet extends HttpServlet {
             
             int count = 0; if(rs.next()) { count = rs.getInt(1); }
             if (count == 0) {
-                out.print("<script>alert('현재 비밀번호가 일치하지 않습니다.'); history.back();</script>");
+                out.print("<script>alert('現在のパスワードが一致しません。'); history.back();</script>");
                 return;
             }
             
             if (pstmt != null) pstmt.close();
             
-            // 새 비밀번호로 UPDATE
+            // 新しいパスワードに UPDATE
             String updateSql = "UPDATE member SET member_pw = ? WHERE member_id = ?";
             pstmt = conn.prepareStatement(updateSql);
             pstmt.setString(1, encryptedNewPw);
@@ -103,13 +103,13 @@ public class ChangePasswordServlet extends HttpServlet {
             int result = pstmt.executeUpdate();
             
             if(result > 0) {
-                out.print("<script>alert('비밀번호가 안전하게 변경되었습니다.'); location.href='" + request.getContextPath() + "/myPage';</script>");
+                out.print("<script>alert('パスワードが正常に変更されました。'); location.href='" + request.getContextPath() + "/myPage';</script>");
             } else {
-                out.print("<script>alert('비밀번호 변경 실패'); history.back();</script>");
+                out.print("<script>alert('パスワードの変更に失敗しました。'); history.back();</script>");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.print("<script>alert('에러: " + e.getMessage() + "'); history.back();</script>");
+            out.print("<script>alert('エラー: " + e.getMessage() + "'); history.back();</script>");
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException ex) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}

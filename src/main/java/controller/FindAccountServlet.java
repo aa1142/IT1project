@@ -13,18 +13,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-// 💡 계정 찾기 폼 전송 및 화면 열기를 처리할 가상 주소 설정
+// 💡 アカウント検索フォームの送信および画面表示を処理する仮想アドレスの設定
 @WebServlet("/findAccountAction")
 public class FindAccountServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // 💡 일반 wls 폴더 안에 숨어있는 findAccount.jsp 화면으로 다이렉트 주소창을 점프시킵니다.
+    // 💡 通常のwlsフォルダ内に配置されている findAccount.jsp 画面にリダイレクトします。
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.sendRedirect(request.getContextPath() + "/wls/findAccount.jsp");
     }
 
-    // 💡 사용자가 [아이디 찾기] 또는 [임시 비밀번호 발급]을 누르면 이곳(POST)으로 넘어옵니다.
+    // 💡 ユーザーが [IDを確認する] または [仮パスワードを発行する] をクリックすると、ここ(POST)へ遷移します。
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -33,9 +33,9 @@ public class FindAccountServlet extends HttpServlet {
         String findType = request.getParameter("findType");
         String name = request.getParameter("name");
         String email = request.getParameter("email");
-        String userid = request.getParameter("userid"); // 비밀번호 찾기 시 수집
+        String userid = request.getParameter("userid"); // パスワード検索時に収集
 
-        // ⚠️ 본인의 실제 오라클 정보로 꼭 확인하세요! (orcl 또는 xe)
+        // ⚠️ ご自身の実際のOracle情報（orcl または xe）に合わせてご確認ください。
         String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
         String dbUser = "scott";                 
         String dbPass = "tiger";
@@ -49,7 +49,7 @@ public class FindAccountServlet extends HttpServlet {
             conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
             if ("id".equals(findType)) {
-                // 🆔 1. 아이디 찾기 쿼리 로직 (새 컬럼명 member_name, member_email, member_id 반영)
+                // 🆔 1. ID検索のクエリロジック（カラム名 member_name, member_email, member_id を反映）
                 String sql = "SELECT member_id FROM member WHERE member_name = ? AND member_email = ?";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, name.trim());
@@ -59,15 +59,15 @@ public class FindAccountServlet extends HttpServlet {
                 if (rs.next()) {
                     String foundId = rs.getString("member_id");
                     out.print("<script>");
-                    out.print("alert('" + name + " 회원님의 아이디는 [" + foundId + "] 입니다.');");
-                    out.print("location.href='" + request.getContextPath() + "/wls/login.jsp';"); // 일반 폴더 주소로 이동
+                    out.print("alert('" + name + " 様のユーザーIDは [" + foundId + "] です。');");
+                    out.print("location.href='" + request.getContextPath() + "/wls/login.jsp';"); // 通常のログインフォルダへ移動
                     out.print("</script>");
                 } else {
-                    out.print("<script>alert('일치하는 회원 정보가 존재하지 않습니다.'); history.back();</script>");
+                    out.print("<script>alert('一致する会員情報が存在しません。'); history.back();</script>");
                 }
 
             } else if ("pw".equals(findType)) {
-                // 🔒 2. 비밀번호 찾기 (임시 패스워드 강제 주입 및 변경) 로직
+                // 🔒 2. パスワード検索（仮パスワードの強制注入および変更）ロジック
                 String sql = "SELECT COUNT(*) FROM member WHERE member_id = ? AND member_name = ? AND member_email = ?";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, userid.trim());
@@ -83,24 +83,24 @@ public class FindAccountServlet extends HttpServlet {
                 if (count > 0) {
                     if (pstmt != null) pstmt.close();
                     
-                    // 프로젝트 제출용 가상 계정 관리를 위해 임시 비번 'jyp1234'로 UPDATE 연동
+                    // プロジェクト提出用の仮想アカウント管理のため、仮パスワード 'jyp1234' に UPDATE 連動
                     String updateSql = "UPDATE member SET member_pw = 'jyp1234' WHERE member_id = ?";
                     pstmt = conn.prepareStatement(updateSql);
                     pstmt.setString(1, userid.trim());
                     pstmt.executeUpdate();
 
                     out.print("<script>");
-                    out.print("alert('" + name + " 회원님의 비밀번호가 임시 비밀번호 [ jyp1234 ] 로 초기화되었습니다. 로그인 후 변경해 주세요.');");
+                    out.print("alert('" + name + " 様のパスワードが仮パスワード [ jyp1234 ] に初期化されました。ログイン後に変更してください。');");
                     out.print("location.href='" + request.getContextPath() + "/wls/login.jsp';");
                     out.print("</script>");
                 } else {
-                    out.print("<script>alert('입력하신 회원 정보가 데이터베이스와 일치하지 않습니다.'); history.back();</script>");
+                    out.print("<script>alert('入力された会員情報がデータベースと一致しません。'); history.back();</script>");
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            out.print("<script>alert('서버 오류 발생: " + e.getMessage() + "'); history.back();</script>");
+            out.print("<script>alert('サーバーエラー発生: " + e.getMessage() + "'); history.back();</script>");
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException ex) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}

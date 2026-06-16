@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-// 💡 수정 완료 요청을 처리할 가상 서블릿 주소 매핑
+// 💡 変更完了リクエストを処理する仮想サーブレットアドレスのマッピング
 @WebServlet("/memberModifyAction")
 public class MemberModifyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // 비밀번호 SHA-256 단방향 해시 암호화 알고리즘 탑재
+    // パスワード SHA-256 単方向ハッシュ暗号化アルゴリズムの搭載
     public String encryptSHA256(String base) {
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
@@ -38,7 +38,7 @@ public class MemberModifyServlet extends HttpServlet {
         }
     }
 
-    // 정보수정 폼(memberModify.jsp)을 서버 내부 보안 터널로 열어주는 GET 통로
+    // 情報変更フォーム(memberModify.jsp)をサーバー内部のセキュリティトンネル経由で開く GET パス
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -46,11 +46,11 @@ public class MemberModifyServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String sessionUserId = (String) session.getAttribute("sessionUserId");
         if (sessionUserId == null) {
-            response.getWriter().print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='login.jsp';</script>");
+            response.getWriter().print("<script>alert('ログインが必要なサービスです。'); location.href='login.jsp';</script>");
             return;
         }
 
-        // 기존 가입 정보 조회 후 폼에 채워주기 위한 데이터 전송 처리
+        // 既存の登録情報を照会し、フォームに埋め込むためのデータ転送処理
         String dbUrl = "jdbc:oracle:thin:@localhost:1521:orcl"; 
         String dbUser = "scott";                 
         String dbPass = "tiger";
@@ -69,7 +69,7 @@ public class MemberModifyServlet extends HttpServlet {
                 request.setAttribute("phone", rs.getString("member_phone"));
                 request.setAttribute("address", rs.getString("member_address"));
             }
-            // 💡 wls 안의 수정 폼 jsp 화면 강제 렌더링 호출
+            // 💡 wls 内の変更フォーム jsp 画面を強制レンダリング呼び出し
             request.getRequestDispatcher("/wls/memberModify.jsp").forward(request, response);
         } catch(Exception e) { e.printStackTrace(); }
         finally {
@@ -79,7 +79,7 @@ public class MemberModifyServlet extends HttpServlet {
         }
     }
 
-    // 실제 데이터를 받아서 수정을 확정 짓는 데이터 가공 처리단 (POST 방식)
+    // 実際のデータを受け取って変更を確定するデータ加工処理（POST 方式）
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
@@ -106,7 +106,7 @@ public class MemberModifyServlet extends HttpServlet {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
-            // 비밀번호 1차 대조 검증
+            // パスワードの 1 次照合検証
             String checkSql = "SELECT COUNT(*) FROM member WHERE member_id = ? AND member_pw = ?";
             pstmt = conn.prepareStatement(checkSql);
             pstmt.setString(1, sessionUserId);
@@ -115,13 +115,13 @@ public class MemberModifyServlet extends HttpServlet {
             
             int count = 0; if(rs.next()) { count = rs.getInt(1); }
             if (count == 0) {
-                out.print("<script>alert('비밀번호가 일치하지 않습니다.'); history.back();</script>");
+                out.print("<script>alert('パスワードが一致しません。'); history.back();</script>");
                 return;
             }
             
             if (pstmt != null) pstmt.close();
             
-            // 회원정보 UPDATE 실행
+            // 会員情報の UPDATE 実行
             String updateSql = "UPDATE member SET member_name = ?, member_email = ?, member_phone = ?, member_address = ? WHERE member_id = ?";
             pstmt = conn.prepareStatement(updateSql);
             pstmt.setString(1, nameKo);
@@ -133,14 +133,14 @@ public class MemberModifyServlet extends HttpServlet {
             int result = pstmt.executeUpdate();
             
             if(result > 0) {
-                session.setAttribute("sessionUserName", nameKo); // 세션 동기화
-                out.print("<script>alert('회원 정보가 성공적으로 변경되었습니다.'); location.href='" + request.getContextPath() + "/myPage';</script>");
+                session.setAttribute("sessionUserName", nameKo); // セッションの同期化
+                out.print("<script>alert('会員情報が正常に変更されました。'); location.href='" + request.getContextPath() + "/myPage';</script>");
             } else {
-                out.print("<script>alert('정보 수정 실패'); history.back();</script>");
+                out.print("<script>alert('情報の変更に失敗しました。'); history.back();</script>");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            out.print("<script>alert('에러: " + e.getMessage() + "'); history.back();</script>");
+            out.print("<script>alert('エラー: " + e.getMessage() + "'); history.back();</script>");
         } finally {
             if (rs != null) try { rs.close(); } catch (SQLException ex) {}
             if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) {}

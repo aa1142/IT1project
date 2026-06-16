@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>회원정보 입력 | JYP HOTEL</title>
+<title>会員情報入力 | JYP HOTEL</title>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
@@ -23,7 +23,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:"Noto Sans KR",sans-serif;
+  font-family:"Noto Sans JP",sans-serif;
 }
 
 body{
@@ -223,32 +223,32 @@ footer{
 </header>
 
 <div class="step-wrap">
-  <div class="step active">01 회원정보 입력</div>
-  <div class="step">02 가입완료</div>
+  <div class="step active">01 会員情報の入力</div>
+  <div class="step">02 登録完了</div>
 </div>
 
 <div class="container">
 
 <form id="signupForm" action="<%= request.getContextPath() %>/signupAction" method="post">
 
-<h2>회원정보 입력</h2>
+<h2>会員情報入力</h2>
 
 <table>
 <tr>
-  <th>성명 (국문) <span class="required">*</span></th>
+  <th>お名前 <span class="required">*</span></th>
   <td>
     <div class="inline">
       <select id="gender" name="gender">
-        <option>남</option>
-        <option>여</option>
+        <option>男</option>
+        <option>女</option>
       </select>
-      <input type="text" id="name" name="name" placeholder="이름을 입력해주세요">
+      <input type="text" id="name" name="name" placeholder="お名前を入力してください">
     </div>
   </td>
 </tr>
 
 <tr>
-  <th>성명 (영문) <span class="required">*</span></th>
+  <th>お名前（ローマ字） <span class="required">*</span></th>
   <td>
     <div class="inline">
       <input type="text" name="firstname" placeholder="First name">
@@ -258,21 +258,21 @@ footer{
 </tr>
 
 <tr>
-  <th>생년월일 <span class="required">*</span></th>
+  <th>生年月日 <span class="required">*</span></th>
   <td>
     <input type="date" id="birthdate" name="birthdate" style="width:220px;">
   </td>
 </tr>
 
 <tr>
-  <th>이메일 <span class="required">*</span></th>
+  <th>メールアドレス <span class="required">*</span></th>
   <td>
-    <input type="text" id="email" name="email" placeholder="이메일을 입력해주세요">
+    <input type="text" id="email" name="email" placeholder="メールアドレスを入力してください">
   </td>
 </tr>
 
 <tr>
-  <th>휴대전화 <span class="required">*</span></th>
+  <th>携帯電話番号 <span class="required">*</span></th>
   <td>
     <div class="inline">
       <select name="phone1">
@@ -290,42 +290,42 @@ footer{
 </tr>
 
 <tr>
-  <th>자택주소</th>
+  <th>ご住所</th>
   <td>
     <div class="inline">
-      <input type="text" id="address" name="address" style="width:300px" readonly placeholder="주소찾기를 이용해주세요">
-      <button type="button" class="btn" onclick="openAddressSearch()">주소찾기</button>
+      <input type="text" id="address" name="address" style="width:300px" readonly placeholder="住所検索をご利用ください">
+      <button type="button" class="btn" onclick="openAddressSearch()">住所検索</button>
     </div>
     <div style="margin-top:10px">
-      <input type="text" name="address_detail" style="width:100%" placeholder="상세주소를 입력해주세요">
+      <input type="text" name="address_detail" style="width:100%" placeholder="詳細住所を入力してください">
     </div>
   </td>
 </tr>
 </table>
 
-<div class="section-title">웹사이트 비밀번호 입력</div>
+<div class="section-title">ログイン情報の入力</div>
 
 <table>
 <tr>
-  <th>아이디 <span class="required">*</span></th>
+  <th>ユーザーID <span class="required">*</span></th>
   <td>
     <div class="inline">
       <input type="text" id="userid" name="userid">
-      <button type="button" class="btn" onclick="checkDuplicateId()">중복확인</button>
+      <button type="button" class="btn" onclick="checkDuplicateId()">重複確認</button>
     </div>
   </td>
 </tr>
 
 <tr>
-  <th>비밀번호 <span class="required">*</span></th>
+  <th>パスワード <span class="required">*</span></th>
   <td>
-    <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요">
-    <span class="info">8~15자 영문/숫자</span>
+    <input type="password" id="password" name="password" placeholder="パスワードを入力してください">
+    <span class="info">8〜15文字の半角英数字の組み合わせ</span>
   </td>
 </tr>
 
 <tr>
-  <th>비밀번호 확인 <span class="required">*</span></th>
+  <th>パスワード確認 <span class="required">*</span></th>
   <td>
     <input type="password" id="pw2" style="width:320px">
   </td>
@@ -333,7 +333,7 @@ footer{
 </table>
 
 <div class="submit-wrap">
-  <button type="button" class="submit" onclick="submitForm()">가입 완료</button>
+  <button type="button" class="submit" onclick="submitForm()">登録完了</button>
 </div>
 
 </form>
@@ -360,7 +360,7 @@ function checkDuplicateId() {
   const userid = document.getElementById("userid").value;
   
   if (userid.trim() === "") {
-    alert("아이디를 입력해주세요.");
+    alert("ユーザーIDを入力してください。");
     return;
   }
 
@@ -370,23 +370,23 @@ function checkDuplicateId() {
       const result = data.trim();
       
       if (result === "usable") {
-        alert("사용 가능한 아이디입니다.");
+        alert("使用可能なユーザーIDです。");
         isIdChecked = true;
         checkedId = userid; 
       } else if (result === "duplicated") {
-        alert("이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요.");
+        alert("既に存在するユーザーIDです。別のユーザーIDを入力してください。");
         isIdChecked = false;
       } else if (result === "empty") {
-        alert("아이디를 올바르게 입력해주세요.");
+        alert("ユーザーIDを正しく入力してください。");
         isIdChecked = false;
       } else {
-        alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+        alert("サーバーエラーが発生しました。もう一度お試しください。");
         isIdChecked = false;
       }
     })
     .catch(error => {
       console.error("Error:", error);
-      alert("요청 처리 중 문제가 발생했습니다.");
+      alert("リクエスト処理中に問題が発生しました。");
       isIdChecked = false;
     });
 }
@@ -410,43 +410,43 @@ function submitForm(){
   const pw2 = pw2Element.value;
 
   if (name === "") {
-    alert("이름을 입력해 주세요.");
+    alert("お名前を入力してください。");
     nameElement.focus();
     return;
   }
 
   if (email === "") {
-    alert("이메일을 입력해 주세요.");
+    alert("メールアドレスを入力してください。");
     emailElement.focus();
     return;
   }
 
   if (userid === "") {
-    alert("아이디를 입력해 주세요.");
+    alert("ユーザーIDを入力してください。");
     useridElement.focus();
     return;
   }
 
   if (!isIdChecked || userid !== checkedId) {
-    alert("아이디 중복확인을 완료해주세요.");
+    alert("ユーザーIDの重複確認を行ってください。");
     return;
   }
 
   if (password === "") {
-    alert("비밀번호를 입력해 주세요.");
+    alert("パスワードを入力してください。");
     passwordElement.focus();
     return;
   }
 
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/;
   if (!passwordRegex.test(password)) {
-    alert("비밀번호 규격이 올바르지 않습니다.\n(영문문자 + 숫자 조합의 8자 ~ 15자 사이로 입력해 주세요.)");
+    alert("パスワードの規格が正しくありません。\n（半角英字と数字を組み合わせた8文字〜15文字の範囲で入力してください。）");
     passwordElement.focus();
     return;
   }
 
   if (password !== pw2) {
-    alert("비밀번호가 일치하지 않습니다.");
+    alert("パスワードが一致しません。");
     pw2Element.focus();
     return;
   }

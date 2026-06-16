@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>계정 찾기 | JYP HOTEL</title>
+<title>アカウント検出 | JYP HOTEL</title>
 <style>
   @import url("https://googleapis.com");
   :root {
@@ -14,7 +14,7 @@
     --bg: #f8f6f2;
     --text: #222222;
   }
-  * { margin:0; padding:0; box-sizing:border-box; font-family:"Noto Sans KR",sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Noto Sans JP",sans-serif; }
   body { background: var(--bg); color: var(--text); }
   
   header { height:80px; background:#333; display:flex; align-items:center; padding:0 40px; }
@@ -52,52 +52,49 @@
 </header>
 
 <div class="container">
-  <!-- 상단 탭 스위치 버튼 -->
   <div class="tab-menu">
-    <div class="tab-btn active" onclick="switchTab(0)">아이디 찾기</div>
-    <div class="tab-btn" onclick="switchTab(1)">비밀번호 찾기</div>
+    <div class="tab-btn active" onclick="switchTab(0)">IDをお忘れの方</div>
+    <div class="tab-btn" onclick="switchTab(1)">パスワードをお忘れの方</div>
   </div>
 
-  <!-- 🆔 1. 아이디 찾기 폼 구역 -->
   <div id="tab-id" class="tab-content active">
     <h2>Find ID</h2>
    <form action="<%= request.getContextPath() %>/findAccountAction" method="post">
       <input type="hidden" name="findType" value="id">
       <div class="input-group">
-        <label>성명 (국문)</label>
-        <input type="text" name="name" placeholder="가입하신 성명을 입력해주세요" required>
+        <label>お名前（全角）</label>
+        <input type="text" name="name" placeholder="ご登録いただいたお名前を入力してください" required>
       </div>
       <div class="input-group">
-        <label>이메일 주소</label>
-        <input type="email" name="email" placeholder="가입하신 이메일을 입력해주세요" required>
+        <label>メールアドレス</label>
+        <input type="email" name="email" placeholder="ご登録いただいたメールアドレスを入力してください" required>
       </div>
-      <button type="submit" class="btn-submit">아이디 찾기</button>
+      <button type="submit" class="btn-submit">IDを確認する</button>
     </form>
   </div>
 
-  <!-- 🔒 2. 비밀번호 찾기 폼 구역 -->
   <div id="tab-pw" class="tab-content">
     <h2>Find Password</h2>
    <form action="<%= request.getContextPath() %>/findAccountAction" method="post">
       <input type="hidden" name="findType" value="pw">
       <div class="input-group">
-        <label>아이디</label>
-        <input type="text" name="userid" placeholder="아이디를 입력해주세요" required>
+        <label>ユーザーID</label>
+        <input type="text" name="userid" placeholder="ユーザーIDを入力してください" required>
       </div>
       <div class="input-group">
-        <label>성명 (국문)</label>
-        <input type="text" name="name" placeholder="가입하신 성명을 입력해주세요" required>
+        <label>お名前（全角）</label>
+        <input type="text" name="name" placeholder="ご登録いただいたお名前を入力してください" required>
       </div>
       <div class="input-group">
-        <label>이메일 주소</label>
-        <input type="email" name="email" placeholder="가입하신 이메일을 입력해주세요" required>
+        <label>メールアドレス</label>
+        <input type="email" name="email" placeholder="ご登録いただいたメールアドレスを入力してください" required>
       </div>
-      <button type="submit" class="btn-submit">임시 비밀번호 발급</button>
+      <button type="submit" class="btn-submit">仮パスワードを発行する</button>
     </form>
   </div>
 
   <div class="link-wrap">
-    <a href="login.jsp">로그인 화면으로 돌아가기</a>
+    <a href="login.jsp">ログイン画面に戻る</a>
   </div>
 </div>
 

@@ -1,20 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
 <%
-    // 로그인 보안 검증
+    // ログインセキュリティ検証
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     String sessionUserName = (String) session.getAttribute("sessionUserName");
     
     if (sessionUserId == null) {
-        out.print("<script>alert('로그인이 필요한 서비스입니다.'); location.href='login.jsp';</script>");
+        out.print("<script>alert('ログインが必要なサービスです。'); location.href='login.jsp';</script>");
         return;
     }
 %>
 <!doctype html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>비밀번호 변경 | JYP HOTEL</title>
+<title>パスワード変更 | JYP HOTEL</title>
 <style>
   @import url("https://googleapis.com");
   :root {
@@ -24,7 +24,7 @@
     --bg: #f8f6f2;
     --text: #222222;
   }
-  * { margin:0; padding:0; box-sizing:border-box; font-family:"Noto Sans KR",sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Noto Sans JP",sans-serif; }
   body { background: var(--bg); color: var(--text); }
   
   header { height:80px; background:#333; display:flex; align-items:center; justify-content:space-between; padding:0 40px; }
@@ -56,28 +56,28 @@
 </header>
 
 <div class="container">
-  <h2>비밀번호 변경</h2>
+  <h2>パスワード変更</h2>
   
   <form action="<%= request.getContextPath() %>/changePasswordAction" method="post" onsubmit="return validateForm()">
     <div class="input-group">
-      <label>현재 비밀번호</label>
-      <input type="password" id="currentPw" name="currentPw" placeholder="현재 비밀번호를 입력해주세요">
+      <label>現在のパスワード</label>
+      <input type="password" id="currentPw" name="currentPw" placeholder="現在のパスワードを入力してください">
     </div>
     
     <div class="input-group">
-      <label>새 비밀번호</label>
-      <input type="password" id="newPw" name="newPw" placeholder="새 비밀번호를 입력해주세요">
-      <span class="info-text">8~15자 영문/숫자 조합</span>
+      <label>新しいパスワード</label>
+      <input type="password" id="newPw" name="newPw" placeholder="新しいパスワードを入力してください">
+      <span class="info-text">8〜15文字の半角英数字の組み合わせ</span>
     </div>
     
     <div class="input-group">
-      <label>새 비밀번호 확인</label>
-      <input type="password" id="newPwConfirm" name="newPwConfirm" placeholder="새 비밀번호를 다시 입력해주세요">
+      <label>新しいパスワード（確認）</label>
+      <input type="password" id="newPwConfirm" name="newPwConfirm" placeholder="新しいパスワードをもう一度入力してください">
     </div>
     
     <div class="submit-wrap">
-      <button type="submit" class="btn-submit btn-save">변경 완료</button>
-      <button type="button" class="btn-submit btn-cancel" onclick="history.back()">취소</button>
+      <button type="submit" class="btn-submit btn-save">変更完了</button>
+      <button type="button" class="btn-submit btn-cancel" onclick="history.back()">キャンセル</button>
     </div>
   </form>
 </div>
@@ -88,17 +88,17 @@ function validateForm() {
   const newPw = document.getElementById("newPw").value;
   const newPwConfirm = document.getElementById("newPwConfirm").value;
 
-  if(currentPw.trim() === "") { alert("현재 비밀번호를 입력해주세요."); return false; }
-  if(newPw.trim() === "") { alert("새 비밀번호를 입력해주세요."); return false; }
-  if(newPwConfirm.trim() === "") { alert("새 비밀번호 확인을 입력해주세요."); return false; }
+  if(currentPw.trim() === "") { alert("現在のパスワードを入力してください。"); return false; }
+  if(newPw.trim() === "") { alert("新しいパスワードを入力してください。"); return false; }
+  if(newPwConfirm.trim() === "") { alert("新しいパスワード（確認）を入力してください。"); return false; }
   
   if(newPw === currentPw) {
-    alert("새 비밀번호는 현재 비밀번호와 다르게 설정해야 합니다.");
+    alert("新しいパスワードは現在のパスワードと異なるものを設定してください。");
     return false;
   }
   
   if(newPw !== newPwConfirm) {
-    alert("새 비밀번호가 서로 일치하지 않습니다.");
+    alert("新しいパスワードが一致しません。");
     return false;
   }
   
