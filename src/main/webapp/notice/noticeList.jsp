@@ -25,6 +25,9 @@
     </style>
 </head>
 <body>
+<div style="max-width:1140px; margin:0 auto 20px auto;">
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+</div>
 <div class="container">
     <h2 class="mb-4 fw-bold text-center">공지사항 관리</h2>
 

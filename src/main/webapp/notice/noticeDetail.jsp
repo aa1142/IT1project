@@ -70,6 +70,9 @@
     </style>
 </head>
 <body>
+<div style="max-width:800px; margin:0 auto 20px auto;">
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+</div>
 <div class="detail-card">
     <h2 class="detail-title">
         <% if (important) { %>

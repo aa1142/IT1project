@@ -42,6 +42,9 @@
     </style>
 </head>
 <body>
+<div style="max-width:1200px; margin:0 auto 20px auto;">
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+</div>
 <%
     ArrayList<ReviewDto> reviewList = (ArrayList<ReviewDto>) request.getAttribute("reviewList");
     int reviewCount = reviewList == null ? 0 : reviewList.size();

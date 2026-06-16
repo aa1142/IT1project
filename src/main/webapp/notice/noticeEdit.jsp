@@ -24,6 +24,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+<div class="container pt-4" style="max-width: 700px;">
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+</div>
 <div class="container py-5" style="max-width: 700px;">
     <div class="card shadow-sm p-4">
         <h3 class="fw-bold mb-4">공지 수정</h3>
