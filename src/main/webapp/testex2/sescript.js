@@ -4,10 +4,14 @@ var selectedCheckin = null;
 var currentCalendarDate = new Date();
 var selectedRoomClass = '스탠다드';
 
+function pad2(n) {
+    return n < 10 ? '0' + n : '' + n;
+}
+
 function formatDate(date) {
     var y = date.getFullYear();
-    var m = String(date.getMonth() + 1).padStart(2, '0');
-    var d = String(date.getDate()).padStart(2, '0');
+    var m = pad2(date.getMonth() + 1);
+    var d = pad2(date.getDate());
     return y + '-' + m + '-' + d;
 }
 
@@ -76,16 +80,23 @@ function updateInfoBox() {
     var childrenEl = document.getElementById('children');
     if (!nightsEl) return;
 
-    document.getElementById('infoNights').textContent = nightsEl.value;
-    document.getElementById('infoAdults').textContent = adultsEl.value;
-    document.getElementById('infoChildren').textContent = childrenEl.value;
-    document.getElementById('infoRoomClass').textContent = selectedRoomClass;
+    var infoNights = document.getElementById('infoNights');
+    var infoAdults = document.getElementById('infoAdults');
+    var infoChildren = document.getElementById('infoChildren');
+    var infoRoomClass = document.getElementById('infoRoomClass');
+    var infoCheckout = document.getElementById('infoCheckout');
+    var infoCheckin = document.getElementById('infoCheckin');
+
+    if (infoNights) infoNights.textContent = nightsEl.value;
+    if (adultsEl && infoAdults) infoAdults.textContent = adultsEl.value;
+    if (childrenEl && infoChildren) infoChildren.textContent = childrenEl.value;
+    if (infoRoomClass) infoRoomClass.textContent = selectedRoomClass;
 
     if (selectedCheckin) {
         var co = new Date(selectedCheckin);
         co.setDate(co.getDate() + parseInt(nightsEl.value, 10));
-        document.getElementById('infoCheckout').textContent = formatDate(co);
-        document.getElementById('infoCheckin').textContent = formatDate(selectedCheckin);
+        if (infoCheckout) infoCheckout.textContent = formatDate(co);
+        if (infoCheckin) infoCheckin.textContent = formatDate(selectedCheckin);
     }
 }
 
@@ -106,15 +117,34 @@ function initCalendar() {
 
     renderCalendar();
 
+    function isInsidePicker(target) {
+        if (!target) return false;
+        return target === input || cal.contains(target);
+    }
+
     input.addEventListener('click', function(e) {
         e.stopPropagation();
         cal.classList.toggle('active');
     });
+
+    var label = document.querySelector('label[for="checkinDate"]');
+    if (label) {
+        label.addEventListener('click', function(e) {
+            e.stopPropagation();
+            setTimeout(function() {
+                cal.classList.add('active');
+            }, 0);
+        });
+    }
+
     cal.addEventListener('click', function(e) {
         e.stopPropagation();
     });
-    document.addEventListener('click', function() {
-        cal.classList.remove('active');
+
+    document.addEventListener('click', function(e) {
+        if (!isInsidePicker(e.target)) {
+            cal.classList.remove('active');
+        }
     });
 }
 
@@ -157,7 +187,19 @@ function renderCalendar() {
     var daysEl = cal.querySelector('.days');
     if (daysEl) {
         daysEl.onclick = function(e) {
-            var day = e.target.closest('.day');
+            var target = e.target;
+            var day = null;
+            if (target.closest) {
+                day = target.closest('.day');
+            } else {
+                while (target && target !== daysEl) {
+                    if (target.classList && target.classList.contains('day')) {
+                        day = target;
+                        break;
+                    }
+                    target = target.parentElement;
+                }
+            }
             if (!day || day.classList.contains('disabled')) return;
             var ds = day.getAttribute('data-date');
             if (ds) selectDate(ds);
@@ -166,11 +208,16 @@ function renderCalendar() {
 }
 
 function selectDate(dateStr) {
+    var input = document.getElementById('checkinDate');
+    var cal = document.getElementById('checkinCalendar');
+    var infoCheckin = document.getElementById('infoCheckin');
+    if (!input || !cal) return;
+
     selectedCheckin = parseLocalDate(dateStr);
-    document.getElementById('checkinDate').value = dateStr;
-    document.getElementById('infoCheckin').textContent = dateStr;
+    input.value = dateStr;
+    if (infoCheckin) infoCheckin.textContent = dateStr;
     updateInfoBox();
-    document.getElementById('checkinCalendar').classList.remove('active');
+    cal.classList.remove('active');
     renderCalendar();
 }
 
@@ -318,7 +365,11 @@ function initImageCarousels() {
 }
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'Escape') {
+        closeLightbox();
+        var cal = document.getElementById('checkinCalendar');
+        if (cal) cal.classList.remove('active');
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -330,33 +381,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initHotelOptions();
     initCalendar();
-
-    if (typeof initNights !== 'undefined' && initNights > 0) {
-        var nightsEl = document.getElementById('nights');
-        if (nightsEl) nightsEl.value = initNights;
-    }
-    if (typeof initAdults !== 'undefined' && initAdults > 0) {
-        var adultsEl = document.getElementById('adults');
-        if (adultsEl) adultsEl.value = initAdults;
-    }
-    if (typeof initChildren !== 'undefined' && initChildren >= 0) {
-        var childrenEl = document.getElementById('children');
-        if (childrenEl) childrenEl.value = initChildren;
-    }
-
-    if (typeof initCheckin !== 'undefined' && initCheckin) {
-        selectDate(initCheckin);
-    } else {
-        selectDate(formatDate(getToday()));
-    }
-
-    if (typeof initCheckout !== 'undefined' && initCheckout && document.getElementById('infoCheckout')) {
-        document.getElementById('infoCheckout').textContent = initCheckout;
-    }
-
-    updateInfoBox();
     initHotelGalleries();
     initImageCarousels();
+
+    try {
+        if (typeof initNights !== 'undefined' && initNights > 0) {
+            var nightsEl = document.getElementById('nights');
+            if (nightsEl) nightsEl.value = initNights;
+        }
+        if (typeof initAdults !== 'undefined' && initAdults > 0) {
+            var adultsEl = document.getElementById('adults');
+            if (adultsEl) adultsEl.value = initAdults;
+        }
+        if (typeof initChildren !== 'undefined' && initChildren >= 0) {
+            var childrenEl = document.getElementById('children');
+            if (childrenEl) childrenEl.value = initChildren;
+        }
+
+        if (typeof initCheckin !== 'undefined' && initCheckin) {
+            selectDate(initCheckin);
+        } else {
+            selectDate(formatDate(getToday()));
+        }
+
+        if (typeof initCheckout !== 'undefined' && initCheckout) {
+            var infoCheckout = document.getElementById('infoCheckout');
+            if (infoCheckout) infoCheckout.textContent = initCheckout;
+        }
+
+        updateInfoBox();
+    } catch (err) {
+        console.error('[hotelsearch] date init failed:', err);
+    }
 
     var searchForm = document.getElementById('searchForm');
     if (searchForm) {

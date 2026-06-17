@@ -261,7 +261,7 @@
         /* ════════════════════════════════
            달력 (체크인 날짜 선택)
            ════════════════════════════════ */
-        .date-picker-container { position: relative; }
+        .date-picker-container { position: relative; overflow: visible; }
         .date-input { cursor: pointer; }
 
         .calendar {
@@ -270,7 +270,7 @@
             border: 1px solid var(--sidebar-border);
             border-radius: 6px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.14);
-            z-index: 1000;
+            z-index: 2000;
             min-width: 280px;
             display: none;
             padding: 16px;
