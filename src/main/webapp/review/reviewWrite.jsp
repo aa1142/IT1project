@@ -1,4 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    String selectedBootNo = request.getParameter("bootNo");
+    String selectedBranch = request.getParameter("branch");
+    String selectedRoomGrade = request.getParameter("roomgrade");
+    String selectedRoomType = request.getParameter("roomtype");
+    boolean hasReservationInfo = selectedBootNo != null && !selectedBootNo.trim().isEmpty();
+
+    if (selectedBranch == null) selectedBranch = "";
+    if (selectedRoomGrade == null) selectedRoomGrade = "";
+    if (selectedRoomType == null) selectedRoomType = "";
+
+    String selectedBranchName = selectedBranch;
+    if ("1".equals(selectedBranch)) selectedBranchName = "JYP 호텔 도쿄";
+    else if ("2".equals(selectedBranch)) selectedBranchName = "JYP 호텔 신주쿠";
+    else if ("3".equals(selectedBranch)) selectedBranchName = "JYP 호텔 요코하마";
+
+    String selectedRoomTypeName = selectedRoomType;
+    if ("1".equals(selectedRoomType)) selectedRoomTypeName = "싱글";
+    else if ("2".equals(selectedRoomType)) selectedRoomTypeName = "더블";
+    else if ("3".equals(selectedRoomType)) selectedRoomTypeName = "트윈";
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -25,6 +46,9 @@
         .btn-group-row { display: flex; gap: 12px; margin-top: 35px; }
         .btn-submit-custom { background-color: #1f2d3d; color: #fff; flex: 1; padding: 14px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; }
         .btn-cancel-custom { background-color: #fff; color: #495057; border: 1px solid #ced4da; flex: 1; padding: 14px; border-radius: 6px; font-weight: bold; font-size: 1rem; text-align: center; text-decoration: none; }
+        .reservation-summary { background: #eef3f8; border: 1px solid #d8e2ec; color: #1f2d3d; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .reservation-summary-title { font-weight: bold; margin-bottom: 8px; }
+        .reservation-summary-detail { color: #495057; line-height: 1.7; }
     </style>
 </head>
 <body>
@@ -33,35 +57,50 @@
     <div class="page-title">JYP 호텔 리뷰 작성</div>
 
     <form id="reviewForm" method="POST" action="<%= request.getContextPath() %>/review/reviewInsert">
+        <% if (hasReservationInfo) { %>
+            <div class="reservation-summary">
+                <div class="reservation-summary-title">선택한 예약 정보</div>
+                <div class="reservation-summary-detail">
+                    예약번호: <%= selectedBootNo %><br>
+                    지점: <%= selectedBranchName %><br>
+                    객실: <%= selectedRoomGrade %> / <%= selectedRoomTypeName %>
+                </div>
+            </div>
+            <input type="hidden" name="bootNo" value="<%= selectedBootNo %>">
+            <input type="hidden" name="branch" value="<%= selectedBranch %>">
+            <input type="hidden" name="roomgrade" value="<%= selectedRoomGrade %>">
+            <input type="hidden" name="roomtype" value="<%= selectedRoomType %>">
+        <% } else { %>
         <div class="form-section">
             <div class="section-label"><i class="fas fa-map-marker-alt text-danger"></i> 방문 지점 선택</div>
             <select class="form-select-custom" name="branch" required>
-                <option value="" disabled selected>지점을 선택해주세요</option>
-                <option value="1">JYP 호텔 도쿄</option>
-                <option value="2">JYP 호텔 신주쿠</option>
-                <option value="3">JYP 호텔 요코하마</option>
+                <option value="" disabled <%= selectedBranch.isEmpty() ? "selected" : "" %>>지점을 선택해주세요</option>
+                <option value="1" <%= "1".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 도쿄</option>
+                <option value="2" <%= "2".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 신주쿠</option>
+                <option value="3" <%= "3".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 요코하마</option>
             </select>
         </div>
 
         <div class="form-section">
             <div class="section-label"><i class="fas fa-bed"></i> 이용 객실 등급 선택</div>
             <select class="form-select-custom" name="roomgrade" required>
-                <option value="" disabled selected>이용하신 객실 등급을 선택해주세요</option>
-                <option value="standard">Standard</option>
-                <option value="deluxe">Deluxe</option>
-                <option value="suite">Suite</option>
+                <option value="" disabled <%= selectedRoomGrade.isEmpty() ? "selected" : "" %>>이용하신 객실 등급을 선택해주세요</option>
+                <option value="standard" <%= "standard".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Standard</option>
+                <option value="deluxe" <%= "deluxe".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Deluxe</option>
+                <option value="suite" <%= "suite".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Suite</option>
             </select>
         </div>
 
         <div class="form-section">
             <div class="section-label"><i class="fas fa-door-open"></i> 객실 타입 선택</div>
             <select class="form-select-custom" name="roomtype" required>
-                <option value="" disabled selected>객실 타입을 선택해주세요</option>
-                <option value="1">싱글</option>
-                <option value="2">더블</option>
-                <option value="3">트윈</option>
+                <option value="" disabled <%= selectedRoomType.isEmpty() ? "selected" : "" %>>객실 타입을 선택해주세요</option>
+                <option value="1" <%= "1".equals(selectedRoomType) ? "selected" : "" %>>싱글</option>
+                <option value="2" <%= "2".equals(selectedRoomType) ? "selected" : "" %>>더블</option>
+                <option value="3" <%= "3".equals(selectedRoomType) ? "selected" : "" %>>트윈</option>
             </select>
         </div>
+        <% } %>
 
         <div class="form-section">
             <div class="section-label justify-content-center" style="font-size: 0.9rem; color: #555;">만족도 별점</div>

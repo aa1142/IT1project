@@ -11,6 +11,7 @@ public class ReviewDto {
     private int roomType;    // 객실 유형
     private int rating;      // 평점
     private Date regDate;       // 작성일
+    private String bootNo;
     private String roomgrade;
     private String memberid;
     private int score_location;
@@ -38,6 +39,14 @@ public class ReviewDto {
 	public void setCompanyNo(int companyNo) {
 		this.companyNo = companyNo;
 	}
+
+    public String getBootNo() {
+        return bootNo;
+    }
+
+    public void setBootNo(String bootNo) {
+        this.bootNo = bootNo;
+    }
 
 	public String getTitle() {
         return title;

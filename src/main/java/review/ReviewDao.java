@@ -11,6 +11,7 @@ public class ReviewDao {
     private ReviewDto mapReview(ResultSet rs) throws SQLException {
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setReviewNo(rs.getInt("REVIEW_NO"));
+        reviewDto.setBootNo(rs.getString("BOOT_NO"));
         reviewDto.setMemberid(rs.getString("MEMBER_ID"));
         reviewDto.setCompanyNo(rs.getInt("COMPANY_NO"));
         reviewDto.setBranch(rs.getInt("COMPANY_NO"));
@@ -29,24 +30,25 @@ public class ReviewDao {
 
     public int insertReview(ReviewDto dto) {
         String sql = "INSERT INTO REVIEW "
-                + "(REVIEW_NO, MEMBER_ID, COMPANY_NO, ROOM_GRADE, ROOM_TYPE, RATING, "
+                + "(REVIEW_NO, BOOT_NO, MEMBER_ID, COMPANY_NO, ROOM_GRADE, ROOM_TYPE, RATING, "
                 + "SCORE_LOCATION, SCORE_CLEANLINESS, SCORE_SERVICE, SCORE_PRICE, SCORE_FACILITIES, REVIEW_CONTENT) "
-                + "VALUES (REVIEW_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (REVIEW_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ReviewDbUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, dto.getMemberid());
-            pstmt.setInt(2, dto.getCompanyNo());
-            pstmt.setString(3, dto.getRoomgrade());
-            pstmt.setInt(4, dto.getRoomType());
-            pstmt.setInt(5, dto.getRating());
-            pstmt.setInt(6, dto.getScore_location());
-            pstmt.setInt(7, dto.getScore_cleanliness());
-            pstmt.setInt(8, dto.getScore_service());
-            pstmt.setInt(9, dto.getScore_price());
-            pstmt.setInt(10, dto.getScore_facilities());
-            pstmt.setString(11, dto.getContent());
+            pstmt.setString(1, dto.getBootNo());
+            pstmt.setString(2, dto.getMemberid());
+            pstmt.setInt(3, dto.getCompanyNo());
+            pstmt.setString(4, dto.getRoomgrade());
+            pstmt.setInt(5, dto.getRoomType());
+            pstmt.setInt(6, dto.getRating());
+            pstmt.setInt(7, dto.getScore_location());
+            pstmt.setInt(8, dto.getScore_cleanliness());
+            pstmt.setInt(9, dto.getScore_service());
+            pstmt.setInt(10, dto.getScore_price());
+            pstmt.setInt(11, dto.getScore_facilities());
+            pstmt.setString(12, dto.getContent());
 
             return pstmt.executeUpdate();
         } catch (SQLException e) {

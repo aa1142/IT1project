@@ -22,7 +22,6 @@
         .gauge-label-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; font-weight: 500; }
         .progress { height: 10px; background-color: #eaeded; border-radius: 5px; }
         .progress-bar { background-color: #1f2d3d; }
-        .btn-write-review { background-color: #1f2d3d; color: #fff; width: 100%; padding: 14px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; margin-top: 25px; display: block; text-align: center; text-decoration: none; }
         .right-content { width: 65%; }
         .list-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2d3d; padding-bottom: 10px; margin-bottom: 20px; }
         .list-title { font-size: 1.2rem; font-weight: bold; }
@@ -94,7 +93,6 @@
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
 
-        <a href="reviewWrite.jsp" class="btn-write-review">리뷰 작성하기</a>
     </div>
 
     <div class="right-content">
