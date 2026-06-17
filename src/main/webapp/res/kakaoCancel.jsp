@@ -1,9 +1,9 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>결제 취소 (BOOT)</title>
+<title>決済キャンセル (BOOT)</title>
 <style>
     body { margin: 0; font-family: Arial, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #222; }
     main { max-width: 550px; margin: 100px auto; padding: 40px; background: #fff; border: 1px solid #ddd; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -19,12 +19,12 @@
 <body>
 <main>
   <div class="cancel-icon">!</div>
-  <h1>결제가 취소되었습니다</h1>
-  <p class="notice">카카오페이 결제 진행 중 사용자에 의해 결제가 취소되었습니다.<br>다시 예약을 진행하시려면 아래 버튼을 눌러주세요.</p>
+  <h1>決済がキャンセルされました</h1>
+  <p class="notice">カカオペイ決済中にユーザーによって決済がキャンセルされました。<br>再度予約を進める場合は下のボタンを押してください。</p>
 
   <div class="btn-group">
-    <a class="btn btn-light" href="${pageContext.request.contextPath}.../wls/index.jsp">메인으로</a>
-    <a class="btn btn-dark" href="javascript:history.back();">이전 화면으로</a>
+    <a class="btn btn-light" href="${pageContext.request.contextPath}.../wls/index.jsp">メインへ</a>
+    <a class="btn btn-dark" href="javascript:history.back();">前の画面へ</a>
   </div>
 </main>
 </body>

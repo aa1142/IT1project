@@ -13,7 +13,7 @@
     if (bootNo == null || bootPayCheck == null || bootNo.isEmpty()) {
 %>
     <script>
-        alert("결제 통신 전송 파라미터가 유실되었습니다. 처음부터 다시 시도해 주세요.");
+        alert("決済通信パラメータが失われました。最初から再度お試しください。");
         location.href = "<%= request.getContextPath() %>/testex2/hotelsearch.jsp";
     </script>
 <%
@@ -23,7 +23,7 @@
     String cid = "TC0ONETIME"; 
     String partnerOrderId = bootNo;
     String partnerUserId = "JYP_HOTEL_GUEST";
-    String itemName = "호텔 객실 예약 결제";
+    String itemName = "ホテル客室予約決済";
     String quantity = "1";
     String totalAmount = bootPayCheck;
     String taxFreeAmount = "0";
@@ -101,7 +101,7 @@
     } else {
 %>
     <script>
-        alert("카카오 결제 서버와의 통신 준비 단계에서 예외가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+        alert("カカオ決済サーバーとの通信準備中に例外が発生しました。しばらくしてから再度お試しください。");
         history.go(-1);
     </script>
 <%

@@ -22,7 +22,7 @@
     if (pgToken == null || tid == null || bootNo == null) {
 %>
     <script>
-        alert("결제 승인 정보가 유실되었습니다.");
+        alert("決済承認情報が失われました。");
         location.href = "<%= request.getContextPath() %>/res/BootSearch.jsp";
     </script>
 <%
@@ -118,7 +118,7 @@
     } else {
 %>
     <script>
-        alert("카카오페이 결제 승인에 실패했습니다. 돈이 출금되지 않았습니다.");
+        alert("カカオペイ決済承認に失敗しました。金額は引き落とされていません。");
         location.href = "<%= request.getContextPath() %>/res/BootSearch.jsp";
     </script>
 <%
@@ -126,20 +126,20 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>결제 완료</title>
+    <title>決済完了</title>
 </head>
 <body style="text-align: center; padding: 50px; font-family: sans-serif;">
     <div style="border: 1px solid #ddd; padding: 30px; display: inline-block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-        <h1 style="color: #2bc366;">결제가 완료되었습니다</h1>
-        <p>카카오페이 결제가 정상 처리되었습니다.</p>
-        <p>호텔 관리자가 객실을 배정하면 예약이 최종 확정됩니다.</p>
-        <p><strong>예약 번호:</strong> <%= bootNo %></p>
-        <p><strong>결제 승인금액:</strong> ₩<%= String.format("%,d", amount) %></p>
-        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 16px;">예약 접수 내역 보기</a>
-        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" style="display: inline-block; padding: 10px 20px; background: #fee500; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">예약 조회하러 가기</a>
+        <h1 style="color: #2bc366;">決済が完了しました</h1>
+        <p>カカオペイ決済が正常に処理されました。</p>
+        <p>ホテル管理者が客室を割り当てると予約が最終確定されます。</p>
+        <p><strong>予約番号:</strong> <%= bootNo %></p>
+        <p><strong>決済承認金額:</strong> ¥<%= String.format("%,d", amount) %></p>
+        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 16px;">予約受付内訳を見る</a>
+        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" style="display: inline-block; padding: 10px 20px; background: #fee500; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">予約照会へ移動</a>
     </div>
 </body>
 </html>

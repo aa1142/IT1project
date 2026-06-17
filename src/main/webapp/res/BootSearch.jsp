@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JYP HOTEL - 예약 조회</title>
+    <title>JYP HOTEL - 予約照会</title>
     <style>
         body { font-family: sans-serif; background: #f5f6f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .search-box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.07); width: 100%; max-width: 400px; text-align: center; }
@@ -23,7 +23,7 @@
 
 <div class="search-box">
     <div class="logo">JYP HOTEL</div>
-    <h3 style="margin-bottom: 25px; color: #444;">비회원 예약 확인</h3>
+    <h3 style="margin-bottom: 25px; color: #444;">非会員予約確認</h3>
     
     <% if (request.getAttribute("errorMessage") != null) { %>
         <div class="error-msg">⚠️ <%= request.getAttribute("errorMessage") %></div>
@@ -31,20 +31,20 @@
     
     <form action="${pageContext.request.contextPath}/bootSearch" method="post">
         <div class="input-group">
-            <label for="reservationCode">예약코드 (통신고유코드)</label>
-            <input type="text" id="reservationCode" name="reservationCode" placeholder="KPC- 등으로 시작하는 고유코드 입력" required>
+            <label for="reservationCode">予約コード（通信固有コード）</label>
+            <input type="text" id="reservationCode" name="reservationCode" placeholder="KPC-で始まる固有コードを入力" required>
         </div>
         
         <div class="input-group">
-            <label for="bootKeyword">검증용 키워드 (전화번호 또는 이메일)</label>
-            <input type="text" id="bootKeyword" name="bootKeyword" placeholder="예약 시 입력한 이메일 또는 전화번호" required>
+            <label for="bootKeyword">検証キーワード（電話番号またはメール）</label>
+            <input type="text" id="bootKeyword" name="bootKeyword" placeholder="予約時に入力したメールまたは電話番号" required>
         </div>
 
-        <button type="submit" class="btn-search">예약 조회하기</button>
+        <button type="submit" class="btn-search">予約を照会する</button>
     </form>
     
     <div class="footer-link">
-        <a href="${pageContext.request.contextPath}/testex2/hotelsearch.jsp">◀ 홈으로 돌아가기</a>
+        <a href="${pageContext.request.contextPath}/testex2/hotelsearch.jsp">◀ ホームへ戻る</a>
     </div>
 </div>
 

@@ -3,14 +3,14 @@
     request.setCharacterEncoding("UTF-8");
     String errorMessage = (String) request.getAttribute("errorMessage");
     if (errorMessage == null || errorMessage.trim().isEmpty()) {
-        errorMessage = "알 수 없는 결제 시스템 오류가 발생했습니다. 관리자에게 문의해 주세요.";
+        errorMessage = "不明な決済システムエラーが発生しました。管理者にお問い合わせください。";
     }
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>결제 실패 (BOOT)</title>
+<title>決済失敗 (BOOT)</title>
 <style>
     body { margin: 0; font-family: Arial, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #222; }
     main { max-width: 550px; margin: 100px auto; padding: 40px; background: #fff; border: 1px solid #d9383a; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -24,15 +24,15 @@
 <body>
 <main>
   <div class="fail-icon">✕</div>
-  <h1>결제 및 예약 실패</h1>
-  <p class="notice">처리 도중 문제가 발생하여 결제가 완료되지 못했습니다.</p>
+  <h1>決済および予約失敗</h1>
+  <p class="notice">処理中に問題が発生し、決済を完了できませんでした。</p>
 
   <div class="error-box">
     <strong>Error Log:</strong><br>
     <%= errorMessage %>
   </div>
 
-  <a class="home-button" href="${pageContext.request.contextPath}/index.jsp">메인 화면으로 이동</a>
+  <a class="home-button" href="${pageContext.request.contextPath}/index.jsp">メイン画面へ移動</a>
 </main>
 </body>
 </html>
