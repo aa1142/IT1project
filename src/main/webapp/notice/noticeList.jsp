@@ -28,6 +28,14 @@
 <div style="max-width:1140px; margin:0 auto 20px auto;">
     <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
 </div>
+<%
+if(request.getSession().getAttribute("adminId")!=null){
+	
+%>
+<div style="max-width:1140px; margin:0 auto 20px auto;">
+    <a href="<%= request.getContextPath() %>/Admin/bootmng" class="btn btn-outline-dark btn-sm">예약관리</a>
+</div>
+<%} %>
 <div class="container">
     <h2 class="mb-4 fw-bold text-center">공지사항 관리</h2>
 
@@ -57,7 +65,7 @@
                     String title = dto.getTitle() == null ? "" : dto.getTitle();
                     boolean important = title.startsWith("[중요공지]");
                     String displayTitle = important ? title.replaceFirst("^\\[중요공지\\]\\s*", "") : title;
-        %>
+        %>	
             <tr>
                 <td><%= dto.getNoticeNo() %></td>
                 <td class="text-center">

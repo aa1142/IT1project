@@ -28,9 +28,7 @@
     </style>
 </head>
 <body>
-<div style="max-width:680px; margin:0 auto 20px auto;">
-    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
-</div>
+
 <div class="write-container">
     <div class="page-title">JYP 호텔 리뷰 작성</div>
 

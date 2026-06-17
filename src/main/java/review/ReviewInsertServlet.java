@@ -21,7 +21,10 @@ public class ReviewInsertServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession httpSession = request.getSession();
-        String memberId = (String) httpSession.getAttribute("userId");
+        String memberId = (String) httpSession.getAttribute("sessionUserId");
+        if (memberId == null) {
+            memberId = (String) httpSession.getAttribute("userId");
+        }
         if (memberId == null) {
             memberId = "testUser";
         }
@@ -54,8 +57,13 @@ public class ReviewInsertServlet extends HttpServlet {
         reviewDto.setScore_facilities(scoreFacilities);
 
         ReviewDao reviewDao = new ReviewDao();
-        reviewDao.insertReview(reviewDto);
+        int result = reviewDao.insertReview(reviewDto);
 
-        response.sendRedirect(request.getContextPath() + "/review/reviewList");
+        if (result > 0) {
+            response.sendRedirect(request.getContextPath() + "/review/reviewList");
+        } else {
+            response.setContentType("text/html; charset=UTF-8");
+            response.getWriter().println("<script>alert('리뷰 등록에 실패했습니다. Tomcat 콘솔 오류를 확인하세요.'); history.back();</script>");
+        }
     }
 }

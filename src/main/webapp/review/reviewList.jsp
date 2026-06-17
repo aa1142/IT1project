@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="review.ReviewDao" %>
 <%@ page import="review.ReviewDto" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -47,6 +48,10 @@
 </div>
 <%
     ArrayList<ReviewDto> reviewList = (ArrayList<ReviewDto>) request.getAttribute("reviewList");
+    if (reviewList == null) {
+        ReviewDao reviewDao = new ReviewDao();
+        reviewList = reviewDao.getReviewList();
+    }
     int reviewCount = reviewList == null ? 0 : reviewList.size();
     double avgRating = 0;
 
