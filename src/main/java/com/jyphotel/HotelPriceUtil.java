@@ -99,6 +99,20 @@ public class HotelPriceUtil {
         }
     }
 
+    /** boot_please 화면 요약 — 朝食 / アーリーチェックイン / 合計 (HTML data 속성용 한 줄) */
+    public static String formatPleaseSummary(String boot_please) {
+        if (boot_please == null || boot_please.trim().isEmpty()) {
+            return "なし";
+        }
+        boolean breakfast = parsePleaseFlag(boot_please, "조식");
+        boolean fastCheckin = parsePleaseFlag(boot_please, "빠른체크인");
+        int total = parsePleaseAmount(boot_please, "총요금");
+
+        return "朝食: " + (breakfast ? "あり" : "なし")
+                + " / アーリーチェックイン: " + (fastCheckin ? "あり" : "なし")
+                + " / 合計: ¥" + String.format("%,d", total);
+    }
+
     public static String normalizeBootPhone(String phone) {
         if (phone == null) {
             return "";

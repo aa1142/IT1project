@@ -1,4 +1,5 @@
-﻿<%@ page import="com.hotel.reservation.BootDTO" %> <%-- 1. 가방 클래스 임포트 정상화 --%>
+﻿<%@ page import="com.hotel.reservation.BootDTO" %>
+<%@ page import="com.jyphotel.HotelPriceUtil" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     request.setCharacterEncoding("UTF-8");
@@ -35,6 +36,8 @@
     } else {
         displayStatus = "その他状態 (" + bootConfirm + ")";
     }
+
+    String pleaseSummary = HotelPriceUtil.formatPleaseSummary(reservation.getBootPlease());
 %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -165,8 +168,8 @@
         
         <% if (reservation.getBootPlease() != null && !reservation.getBootPlease().trim().isEmpty()) { %>
         <div class="detail-row">
-            <div class="detail-label">要望事項</div>
-            <div class="detail-value"><%= reservation.getBootPlease() %></div>
+            <div class="detail-label">オプション・合計</div>
+            <div class="detail-value"><%= pleaseSummary %></div>
         </div>
         <% } %>
     </div>

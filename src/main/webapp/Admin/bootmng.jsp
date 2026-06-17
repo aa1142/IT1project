@@ -2,6 +2,7 @@
 <%@ include file="/adminTem/headTem.jsp" %>
 <%@ page import="java.util.List, java.util.ArrayList, java.util.Map, java.util.HashMap" %>
 <%@ page import="dto.BootDto,dto.RoomDto" %>
+<%@ page import="com.jyphotel.HotelPriceUtil" %>
 <%
     List<BootDto> bootList = (List<BootDto>) request.getAttribute("bootList");
     if (bootList == null) bootList = new ArrayList<>();
@@ -100,7 +101,7 @@
                                 class="btn btn-info btn-sm" 
                                 onclick="openManageModal(this, '<%= boot.getBootNo() %>')" 
                                 data-room-grade="<%= boot.getRoomGrade() != null ? boot.getRoomGrade() : "" %>" 
-                                data-please="<%= boot.getBootPlease() != null ? boot.getBootPlease().replace("\"", "&quot;").replace("\r\n", " ") : "" %>" 
+                                data-please="<%= HotelPriceUtil.formatPleaseSummary(boot.getBootPlease()) %>" 
                                 data-checkin="<%= cleanCheckIn %>" 
                                 data-checkout="<%= cleanCheckOut %>" 
                                 data-room-type-text="<%= boot.getRoomType() == 1 ? "シングル" : boot.getRoomType() == 2 ? "ツイン" : "ファミリー" %>">

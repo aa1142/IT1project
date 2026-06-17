@@ -2,6 +2,7 @@
 <%@ include file="/adminTem/headTem.jsp" %>
 <%@ page import="java.util.List, java.util.ArrayList" %>
 <%@ page import="dto.BootDto" %>
+<%@ page import="com.jyphotel.HotelPriceUtil" %>
 
 <%
     // 서블릿에서 보낸 동적 데이터 수신
@@ -113,7 +114,7 @@
                                 data-room-type-text="<%= (boot.getRoomType()==1?"シングル":boot.getRoomType()==2?"ツイン":"ファミリー") %>"
                                 data-checkin="<%= cleanCheckIn %>"
                                 data-checkout="<%= cleanCheckOut %>"
-                                data-please="<%= boot.getBootPlease() %>">
+                                data-please="<%= HotelPriceUtil.formatPleaseSummary(boot.getBootPlease()) %>">
                             管理
                         </button>
                     </td>
