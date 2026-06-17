@@ -37,11 +37,11 @@ function handlePaymentMethodChange() {
     }
     if (btnNote) {
         btnNote.textContent = method === 'online'
-            ? '카카오페이 결제 화면으로 이동합니다.'
-            : '현장 결제로 예약을 신청을 합니다.';
+            ? 'カカオペイ決済画面へ移動します。'
+            : '現地決済で予約を申し込みます。';
     }
     if (btn) {
-        btn.textContent = method === 'online' ? '카카오페이 결제하기' : '현장 결제 예약하기';
+        btn.textContent = method === 'online' ? 'カカオペイで決済する' : '現地決済で予約する';
     }
 }
 
@@ -94,8 +94,8 @@ function toggleOption(optionId) {
     }
 }
 
-function formatWon(amount) {
-    return '₩' + (amount || 0).toLocaleString('ko-KR');
+function formatYen(amount) {
+    return '¥' + (amount || 0).toLocaleString('ja-JP');
 }
 
 function updateTotal() {
@@ -122,7 +122,7 @@ function updateTotal() {
 
     var totalEl = document.getElementById('reserveTotal');
     if (totalEl) {
-        totalEl.textContent = formatWon(total);
+        totalEl.textContent = formatYen(total);
     }
 }
 
@@ -168,10 +168,10 @@ function handleLoadMemberInfo() {
     var cfg = window.resConfig || {};
 
     if (checked && !cfg.isLoggedIn) {
-        alert('회원 정보 불러오기는 로그인 후 이용할 수 있습니다.');
+        alert('会員情報の読み込みはログイン後にご利用いただけます。');
         cb.checked = false;
         if (cfg.loginUrl) {
-            if (confirm('로그인 페이지로 이동할까요?')) {
+            if (confirm('ログインページへ移動しますか？')) {
                 location.href = cfg.loginUrl;
             }
         }
@@ -179,7 +179,7 @@ function handleLoadMemberInfo() {
     }
 
     if (checked && !hasMemberProfile(cfg)) {
-        alert('불러올 회원 정보가 없습니다.\n회원가입·마이페이지에서 정보를 등록했는지 확인해 주세요.');
+        alert('読み込む会員情報がありません。\n会員登録・マイページで情報を登録したかご確認ください。');
         cb.checked = false;
         return;
     }
@@ -205,22 +205,22 @@ function submitReserveForm() {
         'booker_last_name', 'booker_first_name', 'boot_phone', 'boot_email', 'boot_email_confirm'];
     for (var i = 0; i < ids.length; i++) {
         if (!document.getElementById(ids[i]).value.trim()) {
-            alert('필수 항목을 모두 입력해주세요.');
+            alert('必須項目をすべて入力してください。');
             return false;
         }
     }
     if (document.getElementById('boot_email').value !== document.getElementById('boot_email_confirm').value) {
-        alert('이메일 주소가 일치하지 않습니다.');
+        alert('メールアドレスが一致しません。');
         return false;
     }
     if (!document.getElementById('agreeTerms').checked) {
-        alert('숙박약관에 동의해주세요.');
+        alert('宿泊規約に同意してください。');
         return false;
     }
 
     var btn = document.getElementById('reserveBtn');
     btn.disabled = true;
-    btn.textContent = getSelectedPaymentMethod() === 'online' ? '결제창으로 이동 중...' : '예약 처리 중...';
+    btn.textContent = getSelectedPaymentMethod() === 'online' ? '決済画面へ移動中...' : '予約処理中...';
     return true;
 }
 

@@ -24,7 +24,7 @@
 
     int guestCount = HotelPriceUtil.getGuestCount(boot_adult, boot_child);
     int roomTotal = HotelPriceUtil.calcRoomTotal(room.getRoom_price(), nights, boot_adult, boot_child);
-    java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.KOREA);
+    java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.JAPAN);
 
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     MemberVO member = null;
@@ -72,11 +72,11 @@
     String mAddrJs = mAddr.replace("\\", "\\\\").replace("'", "\\'").replace("\r", " ").replace("\n", " ");
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JYP 호텔 | 예약</title>
+  <title>JYP HOTEL | 予約</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="hotel-common.css" type="text/css" rel="stylesheet">
@@ -96,10 +96,10 @@
     </div>
     <div class="progress-bar">
       <div class="progress-bar-content">
-        <span>호텔 선택</span><span class="arrow">→</span>
-        <span>객실 선택</span><span class="arrow">→</span>
-        <span class="active">예약 정보 입력</span><span class="arrow">→</span>
-        <span>예약 완료</span>
+        <span>ホテル選択</span><span class="arrow">→</span>
+        <span>客室選択</span><span class="arrow">→</span>
+        <span class="active">予約情報入力</span><span class="arrow">→</span>
+        <span>予約完了</span>
       </div>
     </div>
   </header>
@@ -126,112 +126,112 @@
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title">예약자 정보</div>
+              <div class="card-title">予約者情報</div>
             </div>
             <div class="card-content">
               <div class="checkbox-wrapper" style="margin-bottom:16px;">
                 <input type="checkbox" id="loadMemberInfo" onchange="handleLoadMemberInfo()"<%= isLoggedIn ? "" : " disabled" %>>
-                <label for="loadMemberInfo">회원 정보 불러오기</label>
+                <label for="loadMemberInfo">会員情報を読み込む</label>
               </div>
               <% if (!isLoggedIn) { %>
-              <p style="font-size:12px;color:#b45309;margin:-8px 0 12px;">로그인 후 회원 정보를 불러올 수 있습니다.</p>
+              <p style="font-size:12px;color:#b45309;margin:-8px 0 12px;">ログイン後に会員情報を読み込めます。</p>
               <% } else if (!hasMemberData) { %>
-              <p style="font-size:12px;color:#71717a;margin:-8px 0 12px;">저장된 회원 정보가 없습니다. 직접 입력해 주세요.</p>
+              <p style="font-size:12px;color:#71717a;margin:-8px 0 12px;">保存された会員情報がありません。直接入力してください。</p>
               <% } %>
               <div class="form-row">
                 <div class="form-group">
-                  <label>성 *</label>
-                  <input type="text" id="booker_last_name" name="booker_last_name" placeholder="홍">
+                  <label>姓 *</label>
+                  <input type="text" id="booker_last_name" name="booker_last_name" placeholder="山田">
                 </div>
                 <div class="form-group">
-                  <label>이름 *</label>
-                  <input type="text" id="booker_first_name" name="booker_first_name" placeholder="길동">
+                  <label>名 *</label>
+                  <input type="text" id="booker_first_name" name="booker_first_name" placeholder="太郎">
                 </div>
               </div>
               <div class="form-group">
-                <label>전화번호 *</label>
+                <label>電話番号 *</label>
                 <input type="tel" id="boot_phone" name="boot_phone" placeholder="010-1234-5678">
               </div>
               <div class="form-group">
-                <label>이메일 *</label>
+                <label>メールアドレス *</label>
                 <input type="email" id="boot_email" name="boot_email" placeholder="example@email.com">
               </div>
               <div class="form-group">
-                <label>이메일 확인 *</label>
-                <input type="email" id="boot_email_confirm" placeholder="이메일 재입력">
+                <label>メールアドレス（確認） *</label>
+                <input type="email" id="boot_email_confirm" placeholder="メールアドレスを再入力">
               </div>
               <div class="form-group">
-                <label>주소</label>
-                <input type="text" id="member_address" name="member_address" placeholder="주소">
+                <label>住所</label>
+                <input type="text" id="member_address" name="member_address" placeholder="住所">
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title">숙박자 정보</div>
+              <div class="card-title">宿泊者情報</div>
             </div>
             <div class="card-content">
               <div class="checkbox-wrapper" style="margin-bottom:16px;">
                 <input type="checkbox" id="sameAsBooker" onchange="handleSameAsBooker()">
-                <label for="sameAsBooker">예약자와 동일</label>
+                <label for="sameAsBooker">予約者と同じ</label>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>성 *</label>
-                  <input type="text" id="guest_last_name" name="guest_last_name" placeholder="홍">
+                  <label>姓 *</label>
+                  <input type="text" id="guest_last_name" name="guest_last_name" placeholder="山田">
                 </div>
                 <div class="form-group">
-                  <label>이름 *</label>
-                  <input type="text" id="guest_first_name" name="guest_first_name" placeholder="길동">
+                  <label>名 *</label>
+                  <input type="text" id="guest_first_name" name="guest_first_name" placeholder="太郎">
                 </div>
               </div>
               <div class="form-group">
-                <label>전화번호 *</label>
+                <label>電話番号 *</label>
                 <input type="tel" id="guest_phone" name="guest_phone" placeholder="010-1234-5678">
               </div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-header"><div class="card-title">추가 옵션</div></div>
+            <div class="card-header"><div class="card-title">追加オプション</div></div>
             <div class="card-content">
               <button type="button" class="option-card" id="option-breakfast">
                 <div class="option-card-content">
                   <div class="option-info">
-                    <span class="option-title">조식 뷔페</span>
-                    <span class="option-unit-price">₩<%= breakfastUnit %> / 1인 1박</span>
+                    <span class="option-title">朝食ビュッフェ</span>
+                    <span class="option-unit-price">¥<%= breakfastUnit %> / 1名1泊</span>
                   </div>
                 </div>
               </button>
               <div class="price-row" id="price-breakfast" style="display:none;">
-                <span>+ ₩<%= nf.format(breakfastTotal) %></span>
+                <span>+ ¥<%= nf.format(breakfastTotal) %></span>
               </div>
               <button type="button" class="option-card" id="option-fastCheckin">
                 <div class="option-card-content">
                   <div class="option-info">
-                    <span class="option-title">빠른 체크인</span>
-                    <span class="option-unit-price">₩<%= fastCheckinUnit %> <span class="option-note">· 13시부터 체크인 가능</span></span>
+                    <span class="option-title">アーリーチェックイン</span>
+                    <span class="option-unit-price">¥<%= fastCheckinUnit %> <span class="option-note">· 13時からチェックイン可能</span></span>
                   </div>
                 </div>
               </button>
               <div class="price-row" id="price-fastCheckin" style="display:none;">
-                <span>+ ₩<%= nf.format(fastCheckinUnit) %></span>
+                <span>+ ¥<%= nf.format(fastCheckinUnit) %></span>
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title">결제 방법</div>
+              <div class="card-title">お支払い方法</div>
             </div>
             <div class="card-content">
               <label class="radio-card selected" id="payCardOnline">
                 <input type="radio" name="payment_method" value="online" checked onchange="handlePaymentMethodChange()">
                 <div class="radio-card-content">
                   <div class="radio-card-text">
-                    <p>카카오페이 온라인 결제</p>
-                    <p>결제 완료 후 예약이 확정됩니다.</p>
+                    <p>カカオペイ オンライン決済</p>
+                    <p>決済完了後、予約が確定します。</p>
                   </div>
                 </div>
               </label>
@@ -239,64 +239,64 @@
                 <input type="radio" name="payment_method" value="onsite" onchange="handlePaymentMethodChange()">
                 <div class="radio-card-content">
                   <div class="radio-card-text">
-                    <p>현장 결제</p>
-                    <p>체크인 시 프론트에서 결제합니다.</p>
+                    <p>現地決済</p>
+                    <p>チェックイン時にフロントでお支払いください。</p>
                   </div>
                 </div>
               </label>
-              <p class="payment-note" id="paymentNoteOnline">카카오페이 결제 후 관리자가 객실을 배정하면 예약이 최종 확정됩니다.</p>
-              <p class="payment-note" id="paymentNoteOnsite" style="display:none;">현장 결제는 예약 신청만 접수됩니다. 관리자 확인·객실 배정 후 체크인 시 결제해 주세요.</p>
+              <p class="payment-note" id="paymentNoteOnline">カカオペイ決済後、管理者が客室を割り当てると予約が最終確定されます。</p>
+              <p class="payment-note" id="paymentNoteOnsite" style="display:none;">現地決済は予約申込のみ受付します。管理者確認・客室割当後、チェックイン時にお支払いください。</p>
             </div>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <div class="card-title">숙박 약관 동의</div>
+              <div class="card-title">宿泊規約への同意</div>
             </div>
             <div class="card-content">
               <div class="terms-box">
-                <p class="title">JYP HOTEL 숙박약관</p>
-                <p><strong>제1조 (예약 및 이용)</strong></p>
+                <p class="title">JYP HOTEL 宿泊規約</p>
+                <p><strong>第1条（予約およびご利用）</strong></p>
                 <ul>
-                  <li>예약은 성인 1명 이상의 정확한 정보로 진행해야 하며, 예약자와 실제 투숙객 정보가 다를 경우 사전에 알려 주셔야 합니다.</li>
-                  <li>체크인은 15:00부터, 체크아웃은 11:00까지입니다. 빠른 체크인 옵션을 선택한 경우 별도 안내 시간에 따라 이용 가능합니다.</li>
-                  <li>미성년자는 법정대리인 동반 또는 동의 없이 단독 투숙할 수 없습니다.</li>
+                  <li>予約は大人1名以上の正確な情報で行う必要があり、予約者と実際の宿泊者の情報が異なる場合は事前にお知らせください。</li>
+                  <li>チェックインは15:00から、チェックアウトは11:00までです。アーリーチェックインオプションを選択した場合は別途ご案内の時間に従ってご利用いただけます。</li>
+                  <li>未成年者は法定代理人の同伴または同意なく単独での宿泊はできません。</li>
                 </ul>
-                <p><strong>제2조 (요금 및 결제)</strong></p>
+                <p><strong>第2条（料金およびお支払い）</strong></p>
                 <ul>
-                  <li>객실 요금은 선택한 인원(성인·어린이), 숙박 일수, 객실 수를 기준으로 산정됩니다.</li>
-                  <li>조식 등 추가 옵션은 선택 시 안내된 금액이 총 요금에 포함됩니다.</li>
-                  <li>현장에서 추가 인원 투숙, 연장 숙박, 미고지 옵션 이용 시 추가 요금이 발생할 수 있습니다.</li>
+                  <li>客室料金は選択した人数（大人・子供）、宿泊日数、客室数を基準に算出されます。</li>
+                  <li>朝食などの追加オプションは選択時に案内された金額が総料金に含まれます。</li>
+                  <li>現地での追加人数宿泊、延長宿泊、未申告オプションの利用時は追加料金が発生する場合があります。</li>
                 </ul>
-                <p><strong>제3조 (예약 변경 및 취소)</strong></p>
+                <p><strong>第3条（予約変更およびキャンセル）</strong></p>
                 <ul>
-                  <li>예약 변경·취소는 마이페이지 또는 고객센터를 통해 신청할 수 있습니다.</li>
-                  <li>취소 수수료는 아래 기준에 따릅니다.</li>
-                  <li>체크인 7일 전까지: 무료 취소</li>
-                  <li>체크인 3~6일 전: 숙박 요금의 20%</li>
-                  <li>체크인 2일 전: 숙박 요금의 50%</li>
-                  <li>체크인 전일·당일 취소 및 노쇼: 숙박 요금의 100%</li>
+                  <li>予約の変更・キャンセルはマイページまたはカスタマーセンターを通じて申請できます。</li>
+                  <li>キャンセル料は以下の基準に従います。</li>
+                  <li>チェックイン7日前まで：無料キャンセル</li>
+                  <li>チェックイン3〜6日前：宿泊料金の20%</li>
+                  <li>チェックイン2日前：宿泊料金の50%</li>
+                  <li>チェックイン前日・当日キャンセルおよびノーショー：宿泊料金の100%</li>
                 </ul>
-                <p><strong>제4조 (투숙객의 의무)</strong></p>
+                <p><strong>第4条（宿泊者の義務）</strong></p>
                 <ul>
-                  <li>타 객실 손님에게 피해를 주는 소음, 흡연, 반려동물 동반(안내 동물 제외)은 금지됩니다.</li>
-                  <li>객실 비품 파손·분실 시 실비가 청구될 수 있습니다.</li>
-                  <li>호텔은 안전과 질서 유지를 위해 필요한 경우 투숙을 제한하거나 퇴실을 요청할 수 있습니다.</li>
+                  <li>他の客室のお客様に迷惑をかける騒音、喫煙、同伴動物（介助動物を除く）の持ち込みは禁止です。</li>
+                  <li>客室備品の破損・紛失時は実費が請求される場合があります。</li>
+                  <li>ホテルは安全と秩序維持のため必要な場合、宿泊を制限または退去をお願いすることがあります。</li>
                 </ul>
-                <p><strong>제5조 (개인정보 처리)</strong></p>
+                <p><strong>第5条（個人情報の取扱い）</strong></p>
                 <ul>
-                  <li>수집된 예약자·투숙객 정보는 예약 확인, 고객 응대, 숙박 서비스 제공 목적으로만 사용됩니다.</li>
-                  <li>관련 법령에 따라 보관 기간 경과 후 안전하게 파기합니다.</li>
+                  <li>収集した予約者・宿泊者情報は予約確認、お客様対応、宿泊サービス提供の目的にのみ使用されます。</li>
+                  <li>関連法令に従い保管期間経過後は安全に破棄します。</li>
                 </ul>
-                <p><strong>제6조 (면책 및 기타)</strong></p>
+                <p><strong>第6条（免責およびその他）</strong></p>
                 <ul>
-                  <li>천재지변, 시설 점검, 불가항력 사유로 서비스 제공이 어려운 경우 호텔은 고객에게 사전 또는 사후 안내를 드립니다.</li>
-                  <li>본 약관에 명시되지 않은 사항은 관련 법령 및 호텔 운영 정책을 따릅니다.</li>
+                  <li>天災、施設点検、不可抗力によりサービス提供が困難な場合、ホテルはお客様に事前または事後にご案内いたします。</li>
+                  <li>本規約に明記されていない事項は関連法令およびホテル運営方針に従います。</li>
                 </ul>
               </div>
               <div class="checkbox-wrapper">
                 <input type="checkbox" id="agreeTerms">
-                <label for="agreeTerms">위 숙박약관 및 개인정보 처리방침에 동의합니다. <span style="color:#c00;">*</span></label>
+                <label for="agreeTerms">上記宿泊規約および個人情報処理方針に同意します。 <span style="color:#c00;">*</span></label>
               </div>
             </div>
           </div>
@@ -305,34 +305,34 @@
         <div class="sidebar">
           <div class="sidebar-inner">
             <div class="card">
-              <div class="sidebar-header"><h2>예약 내용</h2></div>
+              <div class="sidebar-header"><h2>予約内容</h2></div>
               <div class="sidebar-info">
                 <p><strong><%= company.getCompany_name() %></strong></p>
                 <p><%= RoomTypeUtil.toUiGrade(room_grade) %> · <%= RoomTypeUtil.getDisplayName(room_grade, room_type) %></p>
-                <p>체크인 <%= boot_checkin %></p>
-                <p>체크아웃 <%= boot_checkout %></p>
-                <p><%= nights %>박 · 성인 <%= boot_adult %> / 어린이 <%= boot_child %></p>
+                <p>チェックイン <%= boot_checkin %></p>
+                <p>チェックアウト <%= boot_checkout %></p>
+                <p><%= nights %>泊 · 大人 <%= boot_adult %> / 子供 <%= boot_child %></p>
               </div>
               <div class="card-content">
                 <div class="price-row">
-                  <span>객실 요금 (<%= guestCount %>인 × <%= nights %>박)</span>
-                  <span id="roomPrice">₩<%= nf.format(roomTotal) %></span>
+                  <span>客室料金 (<%= guestCount %>名 × <%= nights %>泊)</span>
+                  <span id="roomPrice">¥<%= nf.format(roomTotal) %></span>
                 </div>
                 <div class="price-row" id="sidebar-breakfast" style="display:none;">
-                  <span>조식 뷔페 (<%= guestCount %>인 × <%= nights %>박)</span>
-                  <span id="sidebarBreakfastPrice">₩<%= nf.format(breakfastTotal) %></span>
+                  <span>朝食ビュッフェ (<%= guestCount %>名 × <%= nights %>泊)</span>
+                  <span id="sidebarBreakfastPrice">¥<%= nf.format(breakfastTotal) %></span>
                 </div>
                 <div class="price-row" id="sidebar-fastCheckin" style="display:none;">
-                  <span>빠른 체크인</span>
-                  <span id="sidebarFastCheckinPrice">₩<%= nf.format(fastCheckinUnit) %></span>
+                  <span>アーリーチェックイン</span>
+                  <span id="sidebarFastCheckinPrice">¥<%= nf.format(fastCheckinUnit) %></span>
                 </div>
                 <div class="separator"></div>
                 <div class="price-total-row">
-                  <span>합계</span>
-                  <span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span>
+                  <span>合計</span>
+                  <span class="value" id="reserveTotal">¥<%= nf.format(roomTotal) %></span>
                 </div>
-                <button type="submit" class="btn-primary" id="reserveBtn" style="margin-top:16px;">예약하기</button>
-                <p class="btn-note" id="reserveBtnNote" style="margin-top:8px;font-size:12px;color:#71717a;text-align:center;">카카오페이 결제 화면으로 이동합니다</p>
+                <button type="submit" class="btn-primary" id="reserveBtn" style="margin-top:16px;">予約する</button>
+                <p class="btn-note" id="reserveBtnNote" style="margin-top:8px;font-size:12px;color:#71717a;text-align:center;">カカオペイ決済画面へ移動します</p>
               </div>
             </div>
           </div>
@@ -341,7 +341,7 @@
     </form>
   </main>
 
-  <script type="text/javascript" src="reservation.js?v=5"></script>
+  <script type="text/javascript" src="reservation.js?v=7"></script>
   <script>
   window.resConfig = {
     isLoggedIn: <%= isLoggedIn %>,

@@ -12,27 +12,27 @@ public class HotelDisplay {
         }
         switch (resolveBranchKey(c)) {
             case "tokyo":
-                c.setLocation("도쿄역 도보 5분 · 긴자·丸の内 접근 편리");
-                c.setFeature("도심 비즈니스·관광에 최적화된 프리미엄 호텔입니다.");
-                c.setMeal_info("조식 뷔페 07:00~10:00 (별도 요금)");
+                c.setLocation("東京駅徒歩5分 · 銀座・丸の内へのアクセス便利");
+                c.setFeature("都心のビジネス・観光に最適なプレミアムホテルです。");
+                c.setMeal_info("朝食ビュッフェ 07:00~10:00（別料金）");
                 c.setCover_image("/images/tokyo.png");
                 break;
             case "shinjuku":
-                c.setLocation("신주쿠역 서쪽 출구 도보 3분");
-                c.setFeature("쇼핑·야경·교통이 편리한 신주쿠 중심 호텔입니다.");
-                c.setMeal_info("조식 뷔페 07:00~10:30");
+                c.setLocation("新宿駅西口徒歩3分");
+                c.setFeature("ショッピング・夜景・交通に便利な新宿中心のホテルです。");
+                c.setMeal_info("朝食ビュッフェ 07:00~10:30");
                 c.setCover_image("/images/shinjuku.png");
                 break;
             case "yokohama":
-                c.setLocation("요코하마역·미나토미라이 인근");
-                c.setFeature("항구 도시의 여유로운 분위기와 넓은 객실을 제공합니다.");
-                c.setMeal_info("조식 뷔페 07:00~10:00");
+                c.setLocation("横浜駅・みなとみらい近郊");
+                c.setFeature("港町のゆったりした雰囲気と広い客室を提供します。");
+                c.setMeal_info("朝食ビュッフェ 07:00~10:00");
                 c.setCover_image("/images/yokohama.png");
                 break;
             default:
-                c.setLocation("일본");
-                c.setFeature("JYP HOTEL 지점");
-                c.setMeal_info("조식 안내는 프론트 문의");
+                c.setLocation("日本");
+                c.setFeature("JYP HOTEL 支店");
+                c.setMeal_info("朝食のご案内はフロントへお問い合わせください");
                 c.setCover_image("/images/yokohama.png");
                 break;
         }

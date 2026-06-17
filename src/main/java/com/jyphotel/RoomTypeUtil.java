@@ -1,6 +1,6 @@
 package com.jyphotel;
 
-// 화면용 등급/타입 변환 (UI: 한글 ↔ DB: STANDARD/DELUXE/SUITE)
+// 화면용 등급/타입 변환 (UI: STANDARD/DELUXE/SUITE ↔ DB 동일)
 
 public class RoomTypeUtil {
 
@@ -9,13 +9,13 @@ public class RoomTypeUtil {
             return true;
         }
         String g = uiGrade.trim();
-        return g.isEmpty() || "전체".equals(g);
+        return g.isEmpty() || "전체".equals(g) || "すべて".equals(g);
     }
 
-    /** 화면 등급 기본값 — 전체/빈 값은 스탠다드 */
+    /** 화면 등급 기본값 — 전체/빈 값은 STANDARD */
     public static String normalizeUiGrade(String uiGrade) {
         if (isAllGrade(uiGrade)) {
-            return "스탠다드";
+            return "STANDARD";
         }
         return toUiGrade(uiGrade);
     }
@@ -38,20 +38,20 @@ public class RoomTypeUtil {
         return g.toUpperCase();
     }
 
-    /** DB 등급 → UI 한글 */
+    /** DB 등급 → UI (STANDARD, DELUXE, SUITE) */
     public static String toUiGrade(String dbGrade) {
         if (dbGrade == null) {
             return "";
         }
-        String g = dbGrade.trim();
-        if ("SUITE".equals(g) || "스윗트".equals(g) || "스위트".equals(g)) {
-            return "스위트";
+        String db = toDbGrade(dbGrade);
+        if ("SUITE".equals(db)) {
+            return "SUITE";
         }
-        if ("DELUXE".equals(g) || "디럭스".equals(g)) {
-            return "디럭스";
+        if ("DELUXE".equals(db)) {
+            return "DELUXE";
         }
-        if ("STANDARD".equals(g) || "스탠다드".equals(g)) {
-            return "스탠다드";
+        if ("STANDARD".equals(db)) {
+            return "STANDARD";
         }
         return dbGrade.trim();
     }
@@ -93,15 +93,15 @@ public class RoomTypeUtil {
 
     public static String getRoomTypeName(int room_type) {
         if (room_type == 1) {
-            return "싱글";
+            return "シングル";
         }
         if (room_type == 2) {
-            return "트윈";
+            return "ツイン";
         }
         if (room_type == 5) {
-            return "패밀리";
+            return "ファミリー";
         }
-        return "객실";
+        return "客室";
     }
 
     public static int getMaxGuests(int room_type) {
@@ -118,13 +118,14 @@ public class RoomTypeUtil {
     }
 
     public static String getCapacityLabel(int room_type) {
-        return "최대 " + getMaxGuests(room_type) + "인 1박";
+        return "最大 " + getMaxGuests(room_type) + "名 1泊";
     }
 
     public static final int ROOM_TYPE_SINGLE = 1;
 
-    /** 싱글룸 노출: 어린이 0명이고 성인 1명일 때만 */
+    /** シングルルーム表示: 子供0名かつ大人1名のときのみ */
     public static boolean canShowSingleRoom(int boot_adult, int boot_child) {
         return boot_child == 0 && boot_adult == 1;
     }
 }
+

@@ -104,11 +104,11 @@
     if (dbError == null) dbError = "";
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>호텔 예약 사이트</title>
+    <title>ホテル予約 | JYP HOTEL</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="hotel-common.css" type="text/css" rel="stylesheet">
     <link href="sestyle.css?v=8" type="text/css" rel="stylesheet">
@@ -130,24 +130,24 @@
     </div>
 
     <header>
-        <h1>호텔 예약 사이트</h1>
-        <p>호텔을 선택하고 방을 예약하세요</p>
+        <h1>ホテル予約</h1>
+        <p>ホテルを選んで客室をご予約ください</p>
     </header>
 
     <div class="main-container">
         <div class="sidebar-left">
-            <h2>예약 검색</h2>
+            <h2>予約検索</h2>
 
             <form method="post" action="searchProc.jsp" id="searchForm" onsubmit="return validateSearchForm()">
                 <div class="hotel-search-section sidebar-section">
-                    <h3>호텔 지점 선택</h3>
+                    <h3>ホテル支店選択</h3>
                     <div class="hotel-list">
                         <% if (companyList.isEmpty()) { %>
                             <div style="padding:12px;color:#71717a;text-align:center;font-size:13px;line-height:1.6;">
-                                등록된 지점이 없습니다.<br>
-                                <span style="font-size:12px;">proid 계정에 company 데이터가 있는지, Tomcat을 재시작했는지 확인해 주세요.</span>
+                                登録された支店がありません。<br>
+                                <span style="font-size:12px;">proidアカウントにcompanyデータがあるか、Tomcatを再起動したかご確認ください。</span>
                                 <% if (!dbError.isEmpty()) { %>
-                                <br><span style="font-size:11px;color:#b91c1c;margin-top:6px;display:inline-block;">DB 오류: <%= dbError %></span>
+                                <br><span style="font-size:11px;color:#b91c1c;margin-top:6px;display:inline-block;">DBエラー: <%= dbError %></span>
                                 <% } %>
                             </div>
                         <% } else {
@@ -163,7 +163,7 @@
                             <div class="hotel-option-name"><%= c.getCompany_name() %></div>
                             <div class="hotel-option-info">
                                 <span>⭐ <%= String.format("%.1f", c.getRating()) %>/5.0</span>
-                                <span>🏨 <%= c.getRoom_type_count() %>가지 객실</span>
+                                <span>🏨 <%= c.getRoom_type_count() %>タイプの客室</span>
                             </div>
                         </label>
                         <%   }
@@ -172,26 +172,26 @@
                 </div>
 
                 <div class="sidebar-section">
-                    <h3>객실 등급</h3>
+                    <h3>客室グレード</h3>
                     <input type="hidden" name="room_grade" id="room_grade" value="<%= room_grade %>">
                     <div class="room-class-selector">
                         <div class="room-class-buttons">
-                            <button type="button" class="room-class-btn<%= "스탠다드".equals(room_grade)?" selected":"" %>" data-class="스탠다드" onclick="selectRoomClass('스탠다드')">스탠다드</button>
-                            <button type="button" class="room-class-btn<%= "디럭스".equals(room_grade)?" selected":"" %>" data-class="디럭스" onclick="selectRoomClass('디럭스')">디럭스</button>
-                            <button type="button" class="room-class-btn<%= "스위트".equals(room_grade)?" selected":"" %>" data-class="스위트" onclick="selectRoomClass('스위트')">스위트</button>
+                            <button type="button" class="room-class-btn<%= "STANDARD".equals(room_grade)?" selected":"" %>" data-class="STANDARD" onclick="selectRoomClass('STANDARD')">STANDARD</button>
+                            <button type="button" class="room-class-btn<%= "DELUXE".equals(room_grade)?" selected":"" %>" data-class="DELUXE" onclick="selectRoomClass('DELUXE')">DELUXE</button>
+                            <button type="button" class="room-class-btn<%= "SUITE".equals(room_grade)?" selected":"" %>" data-class="SUITE" onclick="selectRoomClass('SUITE')">SUITE</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="sidebar-section">
-                    <h3>날짜 및 인원</h3>
+                    <h3>日程・人数</h3>
                     <div class="form-group date-picker-container">
-                        <label for="checkinDate">체크인 날짜</label>
+                        <label for="checkinDate">チェックイン日</label>
                         <input type="text" name="boot_checkin" id="checkinDate" class="date-input" readonly value="<%= boot_checkin %>">
                         <div class="calendar" id="checkinCalendar"></div>
                     </div>
                     <div class="form-group">
-                        <label>숙박 일수</label>
+                        <label>宿泊日数</label>
                         <div class="counter-input">
                             <button type="button" onclick="changeCount('nights',-1,1,30)">−</button>
                             <input type="number" name="nights" id="nights" value="<%= nights %>" min="1" max="30" readonly>
@@ -200,7 +200,7 @@
                     </div>
                     <div class="counter-group">
                         <div class="counter">
-                            <label>성인</label>
+                            <label>大人</label>
                             <div class="counter-input">
                                 <button type="button" onclick="changeCount('adults',-1,1,20)">−</button>
                                 <input type="number" name="boot_adult" id="adults" value="<%= boot_adult %>" min="1" max="20" readonly>
@@ -210,7 +210,7 @@
                     </div>
                     <div class="counter-group">
                         <div class="counter">
-                            <label>어린이</label>
+                            <label>子供</label>
                             <div class="counter-input">
                                 <button type="button" onclick="changeCount('children',-1,0,20)">−</button>
                                 <input type="number" name="boot_child" id="children" value="<%= boot_child %>" min="0" max="20" readonly>
@@ -219,16 +219,16 @@
                         </div>
                     </div>
                     <div class="info-box">
-                        <strong>예약 정보:</strong><br>
-                        호텔: <span id="infoHotelName"><%= hotelNameInfo %></span><br>
-                        체크인: <span id="infoCheckin"><%= boot_checkin.equals("")?"-":boot_checkin %></span><br>
-                        체크아웃: <span id="infoCheckout"><%= boot_checkout.equals("")?"-":boot_checkout %></span><br>
-                        숙박: <span id="infoNights"><%= nights %></span>박<br>
-                        인원: 성인 <span id="infoAdults"><%= boot_adult %></span>명, 어린이 <span id="infoChildren"><%= boot_child %></span>명<br>
-                        객실 등급: <span id="infoRoomClass"><%= room_grade %></span>
+                        <strong>予約情報:</strong><br>
+                        ホテル: <span id="infoHotelName"><%= hotelNameInfo %></span><br>
+                        チェックイン: <span id="infoCheckin"><%= boot_checkin.equals("")?"-":boot_checkin %></span><br>
+                        チェックアウト: <span id="infoCheckout"><%= boot_checkout.equals("")?"-":boot_checkout %></span><br>
+                        宿泊: <span id="infoNights"><%= nights %></span>泊<br>
+                        人数: 大人 <span id="infoAdults"><%= boot_adult %></span>名、子供 <span id="infoChildren"><%= boot_child %></span>名<br>
+                        客室グレード: <span id="infoRoomClass"><%= room_grade %></span>
                     </div>
                     <div class="button-group">
-                        <button type="submit" class="btn-search">검색</button>
+                        <button type="submit" class="btn-search">検索</button>
                     </div>
                 </div>
             </form>
@@ -238,12 +238,12 @@
             <% if ("Y".equals(searchDone) && selectedCompany != null) { %>
                 <jsp:include page="searchResult.jsp" />
             <% } else if ("Y".equals(searchDone)) { %>
-                <div class="no-results">DB에 호텔(company) 데이터가 없습니다. seed_data.sql 을 실행해 주세요.</div>
+                <div class="no-results">DBにホテル(company)データがありません。seed_data.sql を実行してください。</div>
             <% } else { %>
-                <div class="no-results">왼쪽에서 호텔 지점을 선택하고 검색하세요</div>
+                <div class="no-results">左側でホテル支店を選んで検索してください</div>
             <% } %>
         </div>
     </div>
-    <script type="text/javascript" src="sescript.js?v=7"></script>
+    <script type="text/javascript" src="sescript.js?v=8"></script>
 </body>
 </html>

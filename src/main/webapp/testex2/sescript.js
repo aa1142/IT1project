@@ -2,7 +2,7 @@
 
 var selectedCheckin = null;
 var currentCalendarDate = new Date();
-var selectedRoomClass = '스탠다드';
+var selectedRoomClass = 'STANDARD';
 
 function pad2(n) {
     return n < 10 ? '0' + n : '' + n;
@@ -160,11 +160,11 @@ function renderCalendar() {
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 
     var html = '<div class="calendar-header">'
-        + '<button type="button" onclick="previousMonth()">← 이전</button>'
-        + '<h3>' + year + '년 ' + (month + 1) + '월</h3>'
-        + '<button type="button" onclick="nextMonth()">다음 →</button>'
+        + '<button type="button" onclick="previousMonth()">← 前月</button>'
+        + '<h3>' + year + '年 ' + (month + 1) + '月</h3>'
+        + '<button type="button" onclick="nextMonth()">翌月 →</button>'
         + '</div>'
-        + '<div class="weekdays"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>'
+        + '<div class="weekdays"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>'
         + '<div class="days">';
 
     for (var i = 0; i < 42; i++) {
@@ -234,12 +234,12 @@ function nextMonth() {
 function validateSearchForm() {
     var companyRadio = document.querySelector('input[name="company_no"]:checked');
     if (!companyRadio) {
-        alert('호텔 지점을 선택해주세요.');
+        alert('ホテル支店を選択してください。');
         return false;
     }
     var checkin = document.getElementById('checkinDate').value;
     if (!checkin) {
-        alert('체크인 날짜를 선택해주세요.');
+        alert('チェックイン日を選択してください。');
         return false;
     }
     return true;
@@ -251,7 +251,7 @@ function toggleExpand(id) {
     el.classList.toggle('expanded');
     var btn = el.nextElementSibling;
     if (btn) {
-        btn.textContent = el.classList.contains('expanded') ? '접기 ▲' : '더보기 ▼';
+        btn.textContent = el.classList.contains('expanded') ? '閉じる ▲' : 'もっと見る ▼';
     }
 }
 
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof initRoomGrade !== 'undefined' && initRoomGrade) {
         selectRoomClass(initRoomGrade);
     } else {
-        selectRoomClass('스탠다드');
+        selectRoomClass('STANDARD');
     }
 
     initHotelOptions();
