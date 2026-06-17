@@ -1,12 +1,8 @@
 package com.jyphotel;
 
-
-
-// 화면용 등급/타입 변환
+// 화면용 등급/타입 변환 (UI: 한글 ↔ DB: STANDARD/DELUXE/SUITE)
 
 public class RoomTypeUtil {
-
-
 
     public static boolean isAllGrade(String uiGrade) {
         if (uiGrade == null) {
@@ -21,39 +17,57 @@ public class RoomTypeUtil {
         if (isAllGrade(uiGrade)) {
             return "스탠다드";
         }
-        return uiGrade.trim();
+        return toUiGrade(uiGrade);
     }
 
+    /** UI 등급 → DB room_grade (STANDARD, DELUXE, SUITE) */
     public static String toDbGrade(String uiGrade) {
+        if (uiGrade == null) {
+            return "STANDARD";
+        }
+        String g = uiGrade.trim();
+        if ("스위트".equals(g) || "스윗트".equals(g) || "SUITE".equalsIgnoreCase(g)) {
+            return "SUITE";
+        }
+        if ("디럭스".equals(g) || "DELUXE".equalsIgnoreCase(g)) {
+            return "DELUXE";
+        }
+        if ("스탠다드".equals(g) || "STANDARD".equalsIgnoreCase(g)) {
+            return "STANDARD";
+        }
+        return g.toUpperCase();
+    }
 
-        String g = normalizeUiGrade(uiGrade);
-        if ("스위트".equals(g) || "스윗트".equals(g)) {
-            return "스윗트";
+    /** DB 등급 → UI 한글 */
+    public static String toUiGrade(String dbGrade) {
+        if (dbGrade == null) {
+            return "";
         }
-        if ("스탠다드".equals(g) || "Standard".equalsIgnoreCase(g)) {
-            return "스탠다드";
+        String g = dbGrade.trim();
+        if ("SUITE".equals(g) || "스윗트".equals(g) || "스위트".equals(g)) {
+            return "스위트";
         }
-        if ("디럭스".equals(g) || "Deluxe".equalsIgnoreCase(g)) {
+        if ("DELUXE".equals(g) || "디럭스".equals(g)) {
             return "디럭스";
         }
-
-        return g;
-
+        if ("STANDARD".equals(g) || "스탠다드".equals(g)) {
+            return "스탠다드";
+        }
+        return dbGrade.trim();
     }
 
-    /** UI 등급 → DB room_grade CHECK 값 ('스탠다드','디럭스','스윗트') */
     public static String[] getGradeSearchValues(String uiGrade) {
-        String base = toDbGrade(uiGrade);
-        if ("스탠다드".equals(base)) {
-            return new String[] { "스탠다드" };
+        String db = toDbGrade(uiGrade);
+        if ("STANDARD".equals(db)) {
+            return new String[] { "STANDARD", "스탠다드" };
         }
-        if ("디럭스".equals(base)) {
-            return new String[] { "디럭스" };
+        if ("DELUXE".equals(db)) {
+            return new String[] { "DELUXE", "디럭스" };
         }
-        if ("스윗트".equals(base)) {
-            return new String[] { "스윗트" };
+        if ("SUITE".equals(db)) {
+            return new String[] { "SUITE", "스윗트", "스위트" };
         }
-        return new String[] { base };
+        return new String[] { db };
     }
 
     public static String buildGradeInSql(String uiGrade, java.util.List<String> gradeParams) {
@@ -73,61 +87,23 @@ public class RoomTypeUtil {
         return sb.toString();
     }
 
-
-
-    public static String toUiGrade(String dbGrade) {
-
-        if (dbGrade == null) {
-
-            return "";
-
-        }
-
-        if ("스윗트".equals(dbGrade.trim())) {
-
-            return "스위트";
-
-        }
-
-        return dbGrade.trim();
-
-    }
-
-
-
     public static String getDisplayName(String room_grade, int room_type) {
-
         return getRoomTypeName(room_type);
-
     }
-
-
 
     public static String getRoomTypeName(int room_type) {
-
         if (room_type == 1) {
-
             return "싱글";
-
         }
-
         if (room_type == 2) {
-
             return "트윈";
-
         }
-
         if (room_type == 5) {
-
             return "패밀리";
-
         }
-
         return "객실";
-
     }
 
-    /** 타입별 최대 수용 인원 (싱글 1, 더블 2, 패밀리 5) */
     public static int getMaxGuests(int room_type) {
         if (room_type == 1) {
             return 1;
@@ -141,17 +117,14 @@ public class RoomTypeUtil {
         return 1;
     }
 
-    /** 화면용 수용 안내 (예: 최대 2인 1박) */
     public static String getCapacityLabel(int room_type) {
         return "최대 " + getMaxGuests(room_type) + "인 1박";
     }
 
     public static final int ROOM_TYPE_SINGLE = 1;
 
-    /** 싱글룸 노출: 어린이 0명이고 성인 수 = 방 수일 때만 */
-    public static boolean canShowSingleRoom(int boot_adult, int boot_child, int rooms) {
-        return boot_child == 0 && boot_adult == rooms;
+    /** 싱글룸 노출: 어린이 0명이고 성인 1명일 때만 */
+    public static boolean canShowSingleRoom(int boot_adult, int boot_child) {
+        return boot_child == 0 && boot_adult == 1;
     }
-
 }
-

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.hotel.mail.MailService;
-import com.hotel.reservation.BootDAO;
+import com.jyphotel.HotelDAO;
 
 @WebServlet("/kakaoApprove")
 public class KakaoApproveServlet extends HttpServlet {
@@ -88,29 +88,12 @@ public class KakaoApproveServlet extends HttpServlet {
 
         try {
             PaymentDAO paymentDAO = new PaymentDAO();
-            
-            // 1. 먼저 기존 결제 상태 업데이트를 시도합니다.
-            int payResult = paymentDAO.updatePaymentStatus(bootNo, "PAID");
-            System.out.println("[검증 로그] 오라클 PAYMENT 테이블 업데이트 반영 건수: " + payResult + "건");
+            paymentDAO.completeKakaoPayment(bootNo, tid, amount);
+            System.out.println("[검증 로그] PAYMENT 결제 완료 처리");
 
-            // [추가] 만약 업데이트된 행이 0건이라면, 신규 결제 내역이므로 테이블에 INSERT 합니다.
-            if (payResult == 0) {
-                System.out.println("[검증 로그] 기존 결제 레코드가 없으므로 신규 결제 레코드를 INSERT합니다.");
-                PaymentDTO paymentDTO = new PaymentDTO();
-                paymentDTO.setBootNo(bootNo);
-                paymentDTO.setTid(tid);
-                paymentDTO.setPartnerOrderId(partnerOrderId);
-                paymentDTO.setPaymentMethod("KAKAOPAY");
-                paymentDTO.setAmount(amount);
-                paymentDTO.setPaymentStatus("PAID");
-                
-                int insertResult = paymentDAO.insertPayment(paymentDTO);
-                System.out.println("[검증 로그] 신규 결제 레코드 INSERT 완료: " + insertResult + "건");
-            }
-
-            BootDAO bootDAO = new BootDAO();
-            bootDAO.updateReservationStatus(bootNo, 1);
-            System.out.println("[검증 로그] BootDAO 상태 변경 실행 완료");
+            HotelDAO hotelDAO = new HotelDAO();
+            hotelDAO.appendBootPaymentNote(bootNo, "|카카오페이완료(TID:" + tid + ")");
+            System.out.println("[검증 로그] BOOT 예약 확정 완료");
 
         } catch (Exception e) {
             System.out.println("[💥 검증 로그 에러 발생] 오라클 타격 도중 자바 예외가 발생했습니다!");

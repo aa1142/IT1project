@@ -34,8 +34,4 @@ public class RoomVO {
     public String getCapacity_label() {
         return RoomTypeUtil.getCapacityLabel(room_type);
     }
-
-    public int getMax_guests() {
-        return RoomTypeUtil.getMaxGuests(room_type);
-    }
 }

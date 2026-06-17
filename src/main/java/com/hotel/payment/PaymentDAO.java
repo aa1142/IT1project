@@ -7,14 +7,22 @@ import java.sql.ResultSet;
 
 public class PaymentDAO {
 
-    // 데이터베이스 연결 커넥션 획득 메소드 (SCOTT / tiger 정품 엔진 탑재)
     private Connection getConnection() throws Exception {
         Class.forName("oracle.jdbc.OracleDriver");
         return DriverManager.getConnection(
             "jdbc:oracle:thin:@localhost:1521:orcl",
-            "SCOTT",
-            "tiger"
+            "proid",
+            "3431"
         );
+    }
+
+  /** PAYMENT.RESERVATION_ID = boot_no (NUMBER) */
+    private void bindReservationId(PreparedStatement pstmt, int index, String bootNo) throws Exception {
+        if (bootNo == null || bootNo.trim().isEmpty()) {
+            pstmt.setNull(index, java.sql.Types.NUMERIC);
+            return;
+        }
+        pstmt.setLong(index, Long.parseLong(bootNo.trim()));
     }
 
     /**
@@ -28,7 +36,7 @@ public class PaymentDAO {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            pstmt.setString(1, bootNo);
+            bindReservationId(pstmt, 1, bootNo);
             
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -48,7 +56,7 @@ public class PaymentDAO {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, dto.getBootNo());
+            bindReservationId(pstmt, 1, dto.getBootNo());
             pstmt.setString(2, dto.getTid());
             pstmt.setString(3, dto.getPartnerOrderId());
             pstmt.setString(4, dto.getPaymentMethod());
@@ -57,6 +65,69 @@ public class PaymentDAO {
 
             return pstmt.executeUpdate();
         }
+    }
+
+    /**
+     * 예약 직후 결제 대기 건 등록 (온라인 결제 — 카카오페이 승인 전)
+     */
+    public int insertPendingPayment(String bootNo, int amount, String paymentMethod) throws Exception {
+        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
+                + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, ?, ?, 'PENDING')";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            bindReservationId(pstmt, 1, bootNo);
+            pstmt.setString(2, bootNo);
+            pstmt.setString(3, paymentMethod);
+            pstmt.setInt(4, amount);
+            return pstmt.executeUpdate();
+        }
+    }
+
+    /**
+     * 현장 결제 예약 — 결제 완료 전 현장 수납 예정 건
+     */
+    public int insertOnsitePayment(String bootNo, int amount) throws Exception {
+        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
+                + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, 'ONSITE', ?, 'AWAITING')";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            bindReservationId(pstmt, 1, bootNo);
+            pstmt.setString(2, bootNo);
+            pstmt.setInt(3, amount);
+            return pstmt.executeUpdate();
+        }
+    }
+
+    /**
+     * 카카오페이 승인 완료 — PENDING 건을 PAID 로 갱신 (없으면 신규 INSERT)
+     */
+    public int completeKakaoPayment(String bootNo, String tid, int amount) throws Exception {
+        String updateSql = "UPDATE PAYMENT SET TID = ?, PAYMENT_STATUS = 'PAID', APPROVED_AT = SYSDATE "
+                + "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS IN ('PENDING', 'AWAITING')";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+
+            pstmt.setString(1, tid);
+            bindReservationId(pstmt, 2, bootNo);
+            int updated = pstmt.executeUpdate();
+            if (updated > 0) {
+                return updated;
+            }
+        }
+
+        PaymentDTO dto = new PaymentDTO();
+        dto.setBootNo(bootNo);
+        dto.setTid(tid);
+        dto.setPartnerOrderId(bootNo);
+        dto.setPaymentMethod("KAKAOPAY");
+        dto.setAmount(amount);
+        dto.setPaymentStatus("PAID");
+        return insertPayment(dto);
     }
 
     /**
@@ -71,7 +142,7 @@ public class PaymentDAO {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, bootNo);
+            bindReservationId(pstmt, 1, bootNo);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -104,8 +175,8 @@ public class PaymentDAO {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, status); 
-            pstmt.setString(2, bootNo);
+            pstmt.setString(1, status);
+            bindReservationId(pstmt, 2, bootNo);
 
             return pstmt.executeUpdate();
         }

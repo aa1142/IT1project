@@ -30,7 +30,6 @@
     if (boot_child < 0) {
         boot_child = HotelPriceUtil.toInt(request.getParameter("child"), 0);
     }
-    int rooms = HotelPriceUtil.toInt(request.getParameter("rooms"), 1);
 
     int company_no = HotelPriceUtil.toInt(request.getParameter("company_no"), 0);
     if (company_no <= 0 && !dest.equals("")) {
@@ -50,7 +49,6 @@
     url.append("&boot_checkin=").append(java.net.URLEncoder.encode(boot_checkin, "UTF-8"));
     url.append("&boot_checkout=").append(java.net.URLEncoder.encode(checkout, "UTF-8"));
     url.append("&nights=").append(nights);
-    url.append("&rooms=").append(rooms);
     url.append("&boot_adult=").append(boot_adult);
     url.append("&boot_child=").append(boot_child);
     url.append("&room_grade=").append(java.net.URLEncoder.encode(room_grade, "UTF-8"));

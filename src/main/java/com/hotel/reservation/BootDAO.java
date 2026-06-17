@@ -13,8 +13,8 @@ public class BootDAO {
         Class.forName("oracle.jdbc.OracleDriver");
         return DriverManager.getConnection(
             "jdbc:oracle:thin:@localhost:1521:orcl",
-            "SCOTT",
-            "tiger"
+            "proid",
+            "3431"
         );
     }
     

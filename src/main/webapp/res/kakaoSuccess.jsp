@@ -4,11 +4,7 @@
 <%@ page import="java.io.OutputStream" %>
 <%@ page import="java.net.HttpURLConnection" %>
 <%@ page import="java.net.URL" %>
-<%@ page import="java.sql.Connection" %>
-<%@ page import="java.sql.DriverManager" %>
-<%@ page import="java.sql.PreparedStatement" %>
 <%@ page import="com.hotel.payment.PaymentDAO" %>
-<%@ page import="com.hotel.payment.PaymentDTO" %>
 <%@ page import="com.jyphotel.BootVO" %>
 <%@ page import="com.jyphotel.HotelDAO" %>
 <%
@@ -77,45 +73,25 @@
     }
 
     if (isSuccess) {
-        
+
         try {
-            PaymentDTO payDto = new PaymentDTO();
-            payDto.setBootNo(bootNo);               
-            payDto.setTid(tid);                     
-            payDto.setPartnerOrderId(bootNo);       
-            payDto.setPaymentMethod("KAKAOPAY");    
-            payDto.setAmount(amount);               
-            payDto.setPaymentStatus("PAID");        
-            
             PaymentDAO payDao = new PaymentDAO();
-            payDao.insertPayment(payDto); 
-            System.out.println("[성공] PAYMENT 테이블 영수증 적재 완료!");
+            payDao.completeKakaoPayment(bootNo, tid, amount);
+            System.out.println("[성공] PAYMENT 테이블 결제 완료 처리!");
         } catch (Exception e) {
             System.out.println("[오류] PAYMENT 테이블 적재 중 실패: " + e.getMessage());
             e.printStackTrace();
         }
 
-        Connection dbConn = null;
-        PreparedStatement pstmt = null;
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            dbConn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "SCOTT", "tiger");
-            
-            String sql = "UPDATE BOOT SET BOOT_CONFIRM = 1, BOOT_PLEASE = BOOT_PLEASE || ? WHERE BOOT_NO = ?";
-            pstmt = dbConn.prepareStatement(sql);
-            pstmt.setString(1, "|카카오페이완료(TID:" + tid + ")");
-            pstmt.setString(2, bootNo);
-            pstmt.executeUpdate();
-            System.out.println("[성공] BOOT 테이블 예약 상태 완료(1) 변경 성공!");
-        } catch(Exception e) {
+            HotelDAO hotelDao = new HotelDAO();
+            hotelDao.appendBootPaymentNote(bootNo, "|카카오페이완료(TID:" + tid + ")");
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if(pstmt != null) try{ pstmt.close(); }catch(Exception e){}
-            if(dbConn != null) try{ dbConn.close(); }catch(Exception e){}
         }
 
         // -----------------------------------------------------------
-        // 📧 [수정 완료] RESERVATION_CODE 컬럼 값을 예약번호 파라미터로 매핑
+        // 결제 완료 메일 발송
         // -----------------------------------------------------------
         try {
             HotelDAO hotelDao = new HotelDAO();
@@ -157,11 +133,12 @@
 </head>
 <body style="text-align: center; padding: 50px; font-family: sans-serif;">
     <div style="border: 1px solid #ddd; padding: 30px; display: inline-block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-        <h1 style="color: #2bc366;">🎉 결제가 정상 완료되었습니다!</h1>
-        <p>호텔 예약 및 결제 영수증 발행이 완료되었습니다.</p>
-        <p>입력하신 메일 주소로 확정 내역서가 전송되었습니다.</p>
+        <h1 style="color: #2bc366;">결제가 완료되었습니다</h1>
+        <p>카카오페이 결제가 정상 처리되었습니다.</p>
+        <p>호텔 관리자가 객실을 배정하면 예약이 최종 확정됩니다.</p>
         <p><strong>예약 번호:</strong> <%= bootNo %></p>
         <p><strong>결제 승인금액:</strong> ₩<%= String.format("%,d", amount) %></p>
+        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 16px;">예약 접수 내역 보기</a>
         <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" style="display: inline-block; padding: 10px 20px; background: #fee500; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">예약 조회하러 가기</a>
     </div>
 </body>

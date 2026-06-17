@@ -10,15 +10,11 @@
     String boot_checkin = request.getParameter("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
     int nights = HotelPriceUtil.toInt(request.getParameter("nights"), 1);
-    int rooms = HotelPriceUtil.toInt(request.getParameter("rooms"), 1);
     int boot_adult = HotelPriceUtil.toInt(request.getParameter("boot_adult"), 1);
     int boot_child = HotelPriceUtil.toInt(request.getParameter("boot_child"), 0);
     String boot_checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
 
-    // 🚨 [변경 1] getOneRoom -> selectSingleRoomTypePriceInfo 개명 반영
     RoomVO room = dao.selectSingleRoomTypePriceInfo(company_no, room_grade, room_type, boot_checkin, boot_checkout);
-    
-    // 🚨 [변경 2] getCompany -> selectBranchDetailByNo 개명 반영
     CompanyVO company = dao.selectBranchDetailByNo(company_no);
 
     if (room == null || company == null) {
@@ -27,13 +23,12 @@
     }
 
     int guestCount = HotelPriceUtil.getGuestCount(boot_adult, boot_child);
-    int roomTotal = HotelPriceUtil.calcRoomTotal(room.getRoom_price(), nights, rooms, boot_adult, boot_child);
+    int roomTotal = HotelPriceUtil.calcRoomTotal(room.getRoom_price(), nights, boot_adult, boot_child);
     java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.KOREA);
 
     String sessionUserId = (String) session.getAttribute("sessionUserId");
     MemberVO member = null;
     if (sessionUserId != null) {
-        // 🚨 [변경 3] getMember -> selectClientProfile 개명 반영
         member = dao.selectClientProfile(sessionUserId);
     }
 
@@ -110,7 +105,7 @@
   </header>
 
   <main>
-    <form method="post" action="reservationProc.jsp" id="reserveForm"
+    <form method="post" action="<%= request.getContextPath() %>/testex2/reservationProc" id="reserveForm"
           data-room-total="<%= roomTotal %>"
           data-breakfast-total="<%= breakfastTotal %>"
           data-fastcheckin-unit="<%= fastCheckinUnit %>"
@@ -119,8 +114,8 @@
       <input type="hidden" name="room_type" value="<%= room_type %>">
       <input type="hidden" name="room_grade" value="<%= room_grade %>">
       <input type="hidden" name="boot_checkin" value="<%= boot_checkin %>">
+      <input type="hidden" name="boot_checkout" value="<%= boot_checkout %>">
       <input type="hidden" name="nights" value="<%= nights %>">
-      <input type="hidden" name="rooms" value="<%= rooms %>">
       <input type="hidden" name="boot_adult" value="<%= boot_adult %>">
       <input type="hidden" name="boot_child" value="<%= boot_child %>">
       <input type="hidden" name="breakfast_yn" id="breakfast_yn" value="N">
@@ -249,8 +244,8 @@
                   </div>
                 </div>
               </label>
-              <p class="payment-note" id="paymentNoteOnline">온라인 결제를 선택하면 카카오페이 결제 화면으로 이동합니다.</p>
-              <p class="payment-note" id="paymentNoteOnsite" style="display:none;">현장 결제 예약은 예약 신청 후 예약이 확정이 나면 체크인 시 현장에서 결제합니다.</p>
+              <p class="payment-note" id="paymentNoteOnline">카카오페이 결제 후 관리자가 객실을 배정하면 예약이 최종 확정됩니다.</p>
+              <p class="payment-note" id="paymentNoteOnsite" style="display:none;">현장 결제는 예약 신청만 접수됩니다. 관리자 확인·객실 배정 후 체크인 시 결제해 주세요.</p>
             </div>
           </div>
 

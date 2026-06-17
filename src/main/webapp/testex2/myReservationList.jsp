@@ -43,13 +43,19 @@
         for (int i = 0; i < list.size(); i++) {
             BootVO b = list.get(i);
             int nights = HotelPriceUtil.calcNights(b.getBoot_checkin(), b.getBoot_checkout());
+            String resCode = b.getReservation_code();
+            String listTitle = (resCode != null && !resCode.trim().isEmpty())
+                    ? resCode : ("예약번호 " + b.getBoot_no());
+            boolean onsitePending = b.getBoot_pay_check() == 1 && b.getBoot_confirm() == 0
+                    && (resCode == null || resCode.trim().isEmpty());
     %>
       <div class="res-item">
-        <h3><%= b.getCompany_name() %> · <%= b.getReservation_code() %></h3>
+        <h3><%= b.getCompany_name() %> · <%= listTitle %></h3>
         <p><%= b.getRoom_grade_ui() %> <%= b.getRoom_type_name() %> · <%= nights %>박</p>
         <p><%= b.getBoot_checkin() %> ~ <%= b.getBoot_checkout() %></p>
         <p>예약자: <%= b.getBoot_name() %>
-          <% if (b.getBoot_confirm() == 0) { %><span style="color:#b45309;"> · 결제대기</span><% } else { %><span style="color:#15803d;"> · 확정</span><% } %>
+          <% if (onsitePending) { %><span style="color:#b45309;"> · 승인 대기</span>
+          <% } else if (b.getBoot_confirm() == 0) { %><span style="color:#b45309;"> · 결제대기</span><% } else { %><span style="color:#15803d;"> · 확정</span><% } %>
         </p>
         <p><a href="reservationcomplete.jsp?boot_no=<%= b.getBoot_no() %>">상세 보기</a></p>
       </div>

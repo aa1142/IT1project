@@ -10,7 +10,7 @@
     <div>
       <a href="<%= navCtx %>/wls/index.jsp"><strong>JYP HOTEL</strong></a>
       <a href="<%= navCtx %>/testex2/hotelsearch.jsp">호텔 예약</a>
-      <a href="<%= navCtx %>/res/bootSearch.jsp">예약 조회</a>
+      <a href="<%= navCtx %>/res/BootSearch.jsp">예약 조회</a>
     </div>
     <div>
       <% if (!navLogin) { %>

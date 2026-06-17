@@ -39,7 +39,7 @@
     
     if (vo != null) {
         // 팀원의 요금 산출 방식 규칙인 vo 내의 객실 요금이나 세션 값을 최우선으로 반영합니다.
-        // 현재 reservationProc.jsp에서 세션에 "amount"라는 이름으로 grandTotal을 저장해두었습니다.
+        // ReservationProcServlet 에서 세션에 저장한 총 결제 금액
         if (session.getAttribute("amount") != null) {
             roomTotal = (Integer) session.getAttribute("amount");
         }
@@ -54,7 +54,7 @@
     String bootName = vo.getBoot_name();
     String itemName = vo.getRoom_grade() + " 객실 예약금";
 %>
-<!DOCTYPE html>f
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -71,8 +71,8 @@
         <div class="row"><strong>통신용 고유코드</strong><span><%= reservationCode %></span></div>
         <div class="row"><strong>예약자명</strong><span><%= bootName %></span></div>
         <div class="row"><strong>상품명</strong><span><%= itemName %></span></div>
-        <div class="row"><strong>部屋数</strong><span>1</span></div>
-        <div class="row"><strong>合計(</strong><span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span></div>
+        <div class="row"><strong>수량</strong><span>1</span></div>
+        <div class="row"><strong>결제금액</strong><span class="value" id="reserveTotal">₩<%= nf.format(roomTotal) %></span></div>
     </div>
 
     <form action="${pageContext.request.contextPath}/res/kakaoReady.jsp" method="post">

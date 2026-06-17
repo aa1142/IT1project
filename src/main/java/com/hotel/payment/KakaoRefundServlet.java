@@ -115,7 +115,7 @@ public class KakaoRefundServlet extends HttpServlet {
      */
     private void updateBootTableToCancel(String bootNo) {
         String sql = "UPDATE BOOT SET BOOT_CONFIRM = 2, BOOT_PLEASE = BOOT_PLEASE || ? WHERE BOOT_NO = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "SCOTT", "tiger");
+        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "proid", "3431");
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, "|카카오환불완료");

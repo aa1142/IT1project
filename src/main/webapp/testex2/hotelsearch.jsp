@@ -38,16 +38,11 @@
     if (boot_checkout == null) boot_checkout = request.getParameter("boot_checkout");
     if (boot_checkout == null) boot_checkout = "";
 
-    int nights = 1, rooms = 1, boot_adult = 1, boot_child = 0;
+    int nights = 1, boot_adult = 1, boot_child = 0;
     if (request.getAttribute("nights") != null) {
         nights = (Integer) request.getAttribute("nights");
     } else {
         nights = HotelPriceUtil.toInt(request.getParameter("nights"), 1);
-    }
-    if (request.getAttribute("rooms") != null) {
-        rooms = (Integer) request.getAttribute("rooms");
-    } else {
-        rooms = HotelPriceUtil.toInt(request.getParameter("rooms"), 1);
     }
     if (request.getAttribute("boot_adult") != null) {
         boot_adult = (Integer) request.getAttribute("boot_adult");
@@ -85,7 +80,7 @@
         }
         if (selectedCompany != null) {
             Vector<RoomVO> roomList = dao.selectAvailableRoomTypeList(company_no, room_grade,
-                    boot_checkin, boot_checkout, boot_adult, boot_child, rooms);
+                    boot_checkin, boot_checkout, boot_adult, boot_child);
             searchDone = "Y";
             request.setAttribute("company", selectedCompany);
             request.setAttribute("roomList", roomList);
@@ -95,7 +90,6 @@
             request.setAttribute("boot_checkin", boot_checkin);
             request.setAttribute("boot_checkout", boot_checkout);
             request.setAttribute("nights", nights);
-            request.setAttribute("rooms", rooms);
             request.setAttribute("boot_adult", boot_adult);
             request.setAttribute("boot_child", boot_child);
         }
@@ -121,6 +115,10 @@
     <script type="text/javascript">
         var initRoomGrade = '<%= room_grade %>';
         var initCheckin = '<%= boot_checkin %>';
+        var initCheckout = '<%= boot_checkout %>';
+        var initNights = <%= nights %>;
+        var initAdults = <%= boot_adult %>;
+        var initChildren = <%= boot_child %>;
     </script>
     <script type="text/javascript" src="sescript.js?v=6"></script>
 </head>
@@ -201,14 +199,6 @@
                             <button type="button" onclick="changeCount('nights',1,1,30)">+</button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>방 수</label>
-                        <div class="counter-input">
-                            <button type="button" onclick="changeCount('rooms',-1,1,10)">−</button>
-                            <input type="number" name="rooms" id="rooms" value="<%= rooms %>" min="1" max="10" readonly>
-                            <button type="button" onclick="changeCount('rooms',1,1,10)">+</button>
-                        </div>
-                    </div>
                     <div class="counter-group">
                         <div class="counter">
                             <label>성인</label>
@@ -235,7 +225,6 @@
                         체크인: <span id="infoCheckin"><%= boot_checkin.equals("")?"-":boot_checkin %></span><br>
                         체크아웃: <span id="infoCheckout"><%= boot_checkout.equals("")?"-":boot_checkout %></span><br>
                         숙박: <span id="infoNights"><%= nights %></span>박<br>
-                        방: <span id="infoRooms"><%= rooms %></span>개<br>
                         인원: 성인 <span id="infoAdults"><%= boot_adult %></span>명, 어린이 <span id="infoChildren"><%= boot_child %></span>명<br>
                         객실 등급: <span id="infoRoomClass"><%= room_grade %></span>
                     </div>

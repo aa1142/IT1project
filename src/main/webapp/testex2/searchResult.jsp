@@ -14,19 +14,20 @@
         return;
     }
 
-    int nights = 1, rooms = 1, boot_adult = 1, boot_child = 0;
+    int nights = 1, boot_adult = 1, boot_child = 0;
     if (request.getAttribute("nights") != null) nights = (Integer) request.getAttribute("nights");
-    if (request.getAttribute("rooms") != null) rooms = (Integer) request.getAttribute("rooms");
     if (request.getAttribute("boot_adult") != null) boot_adult = (Integer) request.getAttribute("boot_adult");
     if (request.getAttribute("boot_child") != null) boot_child = (Integer) request.getAttribute("boot_child");
 
     String boot_checkin = (String) request.getAttribute("boot_checkin");
     if (boot_checkin == null) boot_checkin = "";
+    String boot_checkout = (String) request.getAttribute("boot_checkout");
+    if (boot_checkout == null) boot_checkout = "";
     String room_grade = RoomTypeUtil.normalizeUiGrade((String) request.getAttribute("room_grade"));
 
     java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.KOREA);
     String ctx = request.getContextPath();
-    String[] hotelImages = HotelDisplay.getHotelGalleryPaths(company.getCompany_no());
+    String[] hotelImages = HotelDisplay.getHotelGalleryPaths(company);
 %>
 <div id="resultsContainer">
     <div class="results-header"><h2>예약 정보</h2></div>
@@ -88,11 +89,12 @@
             <% } else {
                 for (int i = 0; i < roomList.size(); i++) {
                     RoomVO room = roomList.get(i);
-                    int total = HotelPriceUtil.calcRoomTotal(room.getRoom_price(), nights, rooms, boot_adult, boot_child);
+                    int total = HotelPriceUtil.calcRoomTotal(room.getRoom_price(), nights, boot_adult, boot_child);
                     String[] roomImages = HotelDisplay.getRoomImagePaths(
                             room.getCompany_no(), room.getRoom_grade(), room.getRoom_type());
                     String carouselId = "room-carousel-" + i;
-                    String firstRoomImg = HotelDisplay.toUrl(ctx, roomImages[0]);
+                    String firstRoomImg = roomImages.length > 0
+                            ? HotelDisplay.toUrl(ctx, roomImages[0]) : "";
                     StringBuilder imagesJson = new StringBuilder("[");
                     for (int ri = 0; ri < roomImages.length; ri++) {
                         if (ri > 0) imagesJson.append(",");
@@ -141,8 +143,8 @@
                                     <input type="hidden" name="room_type" value="<%= room.getRoom_type() %>">
                                     <input type="hidden" name="room_grade" value="<%= room.getRoom_grade() %>">
                                     <input type="hidden" name="boot_checkin" value="<%= boot_checkin %>">
+                                    <input type="hidden" name="boot_checkout" value="<%= boot_checkout %>">
                                     <input type="hidden" name="nights" value="<%= nights %>">
-                                    <input type="hidden" name="rooms" value="<%= rooms %>">
                                     <input type="hidden" name="boot_adult" value="<%= boot_adult %>">
                                     <input type="hidden" name="boot_child" value="<%= boot_child %>">
                                     <button type="submit" class="btn-book-room">예약하기</button>

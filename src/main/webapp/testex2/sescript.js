@@ -72,13 +72,11 @@ function selectRoomClass(roomClass) {
 
 function updateInfoBox() {
     var nightsEl = document.getElementById('nights');
-    var roomsEl = document.getElementById('rooms');
     var adultsEl = document.getElementById('adults');
     var childrenEl = document.getElementById('children');
     if (!nightsEl) return;
 
     document.getElementById('infoNights').textContent = nightsEl.value;
-    document.getElementById('infoRooms').textContent = roomsEl.value;
     document.getElementById('infoAdults').textContent = adultsEl.value;
     document.getElementById('infoChildren').textContent = childrenEl.value;
     document.getElementById('infoRoomClass').textContent = selectedRoomClass;
@@ -333,10 +331,27 @@ document.addEventListener('DOMContentLoaded', function() {
     initHotelOptions();
     initCalendar();
 
+    if (typeof initNights !== 'undefined' && initNights > 0) {
+        var nightsEl = document.getElementById('nights');
+        if (nightsEl) nightsEl.value = initNights;
+    }
+    if (typeof initAdults !== 'undefined' && initAdults > 0) {
+        var adultsEl = document.getElementById('adults');
+        if (adultsEl) adultsEl.value = initAdults;
+    }
+    if (typeof initChildren !== 'undefined' && initChildren >= 0) {
+        var childrenEl = document.getElementById('children');
+        if (childrenEl) childrenEl.value = initChildren;
+    }
+
     if (typeof initCheckin !== 'undefined' && initCheckin) {
         selectDate(initCheckin);
     } else {
         selectDate(formatDate(getToday()));
+    }
+
+    if (typeof initCheckout !== 'undefined' && initCheckout && document.getElementById('infoCheckout')) {
+        document.getElementById('infoCheckout').textContent = initCheckout;
     }
 
     updateInfoBox();

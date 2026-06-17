@@ -25,6 +25,10 @@
     boolean hasFastCheckin = HotelPriceUtil.parsePleaseFlag(please, "빠른체크인");
     int guestCount = HotelPriceUtil.getGuestCount(boot.getBoot_adult(), boot.getBoot_child());
 
+    boolean isOnsite = boot.getBoot_pay_check() == 1;
+    boolean isConfirmed = boot.getBoot_confirm() == 1;
+    String resCode = boot.getReservation_code();
+    boolean hasResCode = resCode != null && !resCode.trim().isEmpty();
     java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(java.util.Locale.KOREA);
 %>
 <!DOCTYPE html>
@@ -50,11 +54,22 @@
 
   <main class="complete-page">
     <div class="card success-banner">
-      <h2>예약이 완료되었습니다</h2>
-      <p>예약코드 <strong><%= boot.getReservation_code() %></strong></p>
-      <% if (boot.getBoot_confirm() == 0) { %>
-      <p style="color:#b45309;margin-top:8px;">결제 대기 중입니다. 미결제 시 예약이 취소될 수 있습니다.</p>
+      <% if (isConfirmed) { %>
+      <h2>예약이 확정되었습니다</h2>
+      <% } else if (isOnsite) { %>
+      <h2>예약 신청이 접수되었습니다</h2>
+      <p style="color:#b45309;margin-top:8px;">관리자가 예약을 확인하고 객실을 배정하면 최종 확정됩니다. 체크인 시 현장에서 결제해 주세요.</p>
+      <% } else { %>
+      <h2>예약이 접수되었습니다</h2>
+      <p style="color:#b45309;margin-top:8px;">온라인 결제 완료 후 관리자가 객실을 배정하면 예약이 최종 확정됩니다.</p>
       <% } %>
+      <p>예약번호 <strong><%= boot.getBoot_no() %></strong>
+        <% if (hasResCode) { %>
+        · 예약코드 <strong><%= resCode %></strong>
+        <% } else if (isOnsite && !isConfirmed) { %>
+        <br><span style="font-size:13px;color:#71717a;">예약코드는 관리자 승인 후 이메일로 안내됩니다.</span>
+        <% } %>
+      </p>
     </div>
 
     <div class="card" style="padding:24px;">
@@ -82,7 +97,7 @@
       <div class="complete-actions">
         <a href="myReservationList.jsp" class="btn-list">예약 내역</a>
         <a href="hotelsearch.jsp" class="btn-list">다른 예약</a>
-        <a href="<%= request.getContextPath() %>/res/bootSearch.jsp" class="btn-list">예약 조회</a>
+        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" class="btn-list">예약 조회</a>
         <a href="../wls/index.jsp" class="btn-home">홈으로</a>
       </div>
     </div>
