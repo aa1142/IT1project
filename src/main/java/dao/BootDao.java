@@ -90,8 +90,8 @@ public class BootDao {
     public int assignRoom(BootDto bootDto) {
     	int result = 0;
     	String assignRoomSql = "INSERT INTO boot (boot_no, room_grade, room_type, room_no, company_no, boot_phone, boot_name, boot_checkin, boot_checkout, boot_adult, boot_child, boot_pay_check, boot_please, boot_confirm) "
-    			+ "VALUES (?, ?, ?, ?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), TO_DATE(?, 'YYYY-MM-DD'), ?, ?, 1, NULL, 1)";
-    	Object[] changRoomParams = {bootDto.getBootNo(), bootDto.getRoomGrade(), bootDto.getRoomType(), bootDto.getRoomNo(), bootDto.getCompanyNo(), bootDto.getBootPhone(), bootDto.getBootName(), bootDto.getBootCheckin(), bootDto.getBootCheckout(), bootDto.getBootAdult(), bootDto.getBootChild()};
+    			+ "VALUES (boot_seq.nextval, ?, ?, ?, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), TO_DATE(?, 'YYYY-MM-DD'), ?, ?, 1, NULL, 1)";
+    	Object[] changRoomParams = {bootDto.getRoomGrade(), bootDto.getRoomType(), bootDto.getRoomNo(), bootDto.getCompanyNo(), bootDto.getBootPhone(), bootDto.getBootName(), bootDto.getBootCheckin(), bootDto.getBootCheckout(), bootDto.getBootAdult(), bootDto.getBootChild()};
     	result = db.updateTemplate(assignRoomSql, changRoomParams);
     	
 
@@ -177,10 +177,19 @@ public class BootDao {
         	return resultDto; //최종반환
     }
     
-    public int updateBootCode(String bootCode, int bootNo, int companyNo) {
-    	String sql = "update boot set reservation_code=? where boot_no = ? and company_no=?";
-    	Object[] params = {bootCode, bootNo, companyNo};
+    public int updateBootCode(String bootCode, String bootNo) {
+    	String sql = "update boot set reservation_code=? where boot_no = ?";
+    	Object[] params = {bootCode, bootNo};
     	int result = db.updateTemplate(sql, params);
+    	return result;
+    }
+    
+    public int updateMemberCountUp(String memberId) {
+    	String sql = "update member set member_count = member_count + 1 where member_id = ?";
+    	Object[] params = {memberId};
+    	int result =db.updateTemplate(sql, params);
+    	
+    	
     	return result;
     }
     

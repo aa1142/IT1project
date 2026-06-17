@@ -30,7 +30,6 @@ public class CountingBootServlet extends HttpServlet {
         
         // 임시로 세팅할 회사 번호 (실제 구현 시 세션 등에서 가져오거나 파라미터로 받으세요)
         Integer companyNo = (Integer)session.getAttribute("companyNo"); 
-        companyNo= 1;
         // 4. 기존에 만든 DAO 메서드 호출하여 예약된 방 개수 가져오기
         // (주의: 객체 생성이나 싱글톤 호출은 본인의 프로젝트 구조에 맞게 수정하세요)
          RoomDao roomdao = new RoomDao();

@@ -24,7 +24,7 @@ public class Bootmng extends HttpServlet {
         // 1. 요청 및 응답 인코딩을 최상단에서 완벽하게 정의
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        
+        HttpSession session = request.getSession();
         // =========================================================================
         // 일반 페이지 로딩 (HTML / 테이블 리스트 출력) 로직 영역
         // =========================================================================
@@ -34,7 +34,8 @@ public class Bootmng extends HttpServlet {
         if(bootTime == null) bootTime = "upcoming";
         
         BootDao bootDao = new BootDao();
-        int companyNo = 1;
+        Integer companyNo= (Integer)session.getAttribute("adminId");
+//        int companyNo = 1;
         int pageSize = 5; 
         
         int currentPage = 1; 

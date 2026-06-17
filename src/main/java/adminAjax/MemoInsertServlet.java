@@ -25,8 +25,8 @@ public class MemoInsertServlet extends HttpServlet {
         String adminId = (String) session.getAttribute("adminId");
         
         // 테스트용 임시 데이터 설정
-        companyNo = 1;
-        adminId = "admin01";
+//        companyNo = 1;
+//        adminId = "admin01";
         
         // 파라미터 수집
         String memoPhone = request.getParameter("memoPhone");

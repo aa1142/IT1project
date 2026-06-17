@@ -59,7 +59,7 @@
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/roomStatus">客室割り当て・状況</a></li>
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/bootStatus">予約状況</a></li>
                 <li class="nav-item"><a class="nav-link" href="/HotelReservation/Admin/onsitePayment">現地決済</a></li>
-                <li class="nav-item"><a class="nav-link" href="/HotelReservation/notice/noticeList.jsp">not</a></li>
+                <li class="nav-item"><a class="nav-link" href="/HotelReservation/notice/noticeList.jsp">お知らせ</a></li>
             </ul>
             <span class="navbar-text text-white">
                 ${not empty adminData ? adminData.adminName : '管理者'}様

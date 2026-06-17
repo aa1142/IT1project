@@ -33,7 +33,7 @@ public class AdminFilter implements Filter {
         
         // 🎯 [공통 로직] 모든 관리자 페이지에 데이터 주입
 //        String adminId = "admin01"; // 임시 하드코딩 (추후 세션 로그인 정보로 대체 가능)
-        String adminId = (String)session.getAttribute("adminId");// 임시 하드코딩 (추후 세션 로그인 정보로 대체 가능)
+        String adminId = (String)session.getAttribute("adminId");
         AdminDao adminDao = new AdminDao(); 
         AdminDto resultAdmin = adminDao.selectAdmin(adminId); 
         

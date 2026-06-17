@@ -28,8 +28,6 @@ public class AssignRoomServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         Integer companyNo = (Integer) session.getAttribute("companyNo");
-        // 임시 데이터
-        companyNo = 1;
         
         BootDao bootDao = new BootDao();
         String bootNoStr = request.getParameter("bootNo");
@@ -71,8 +69,13 @@ public class AssignRoomServlet extends HttpServlet {
                     try {
                         MailService mailService = new MailService();
                         String reservationCode = "Hotel-" + System.currentTimeMillis(); // 고유코드 조합 예시
-                        bootDao.updateBootCode(reservationCode, currentBoot.getRoomNo(), currentBoot.getCompanyNo());
-                        
+                          int resultUp = bootDao.updateBootCode(reservationCode, currentBoot.getBootNo());
+                          if(resultUp>0 && currentBoot.getMemberId()!=null) {
+                        	  resultUp = bootDao.updateMemberCountUp(currentBoot.getMemberId());
+                			}
+                        if(resultUp>0) {
+                        	
+                      
                         int roomTypeNo = currentBoot.getRoomType();
                         
                         String roomName ="";
@@ -100,6 +103,7 @@ public class AssignRoomServlet extends HttpServlet {
                             currentBoot.getRoomGrade(),   // 객실 등급
                             roomName          // 방 타입
                         );
+                        }
                         System.out.println("📬 [자동 발송 성공] 현장결제 고객(" + currentBoot.getBootEmail() + ")에게 확정 메일을 보냈습니다.");
                     } catch (Exception e) {
                         System.err.println("❌ [자동 발송 실패] 메일 컴포넌트 에러: " + e.getMessage());

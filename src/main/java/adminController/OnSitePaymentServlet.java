@@ -42,7 +42,7 @@ public class OnSitePaymentServlet extends HttpServlet {
         // 기본 설정 값
         HttpSession session = request.getSession();
         Integer companyNo = (Integer)session.getAttribute("companyNo");
-        companyNo = 1;
+//        companyNo = 1;
         BootDao bootDao = new BootDao();
         int pageSize = 5; 
         int payCheck = 1; // 🎯 현장 결제 건만 필터링하기 위한 고유 조건 값

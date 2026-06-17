@@ -124,7 +124,7 @@
             dataType: 'json',
             success: function(res) {
                 if (res.status === "success") {
-                    alert("メモ가 정상적으로 등록되었습니다.");
+                    alert("メモが正常に登録されました。");
                     document.getElementById('newMemoText').value = ""; // 입력창 비우기
                     loadMemoHistory(phone); // 등록 성공 후 리스트 즉시 갱신!
                 } else {

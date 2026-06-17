@@ -41,7 +41,6 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	    // 세션 및 더미데이터
 	    Integer companyObj = (Integer) session.getAttribute("companyNo");
 	    int company = (companyObj != null) ? companyObj : 0;
-	    company = 1; // 테스트용 더미
 	    
 	    int result = 0;//성공 여부
 	    

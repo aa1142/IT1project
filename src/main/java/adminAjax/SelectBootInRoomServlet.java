@@ -36,7 +36,7 @@ public class SelectBootInRoomServlet extends HttpServlet {
 		}
 		
 		// [더미데이터] 테스트용 유지
-		companyNo = 1;
+//		companyNo = 1;
 		
 		// 3. DB에서 데이터 조회 (이전 단계에서 추천한 소문자 메서드명 반영)
 		BootDto bootDto = bootDao.SelectOneBootInRoom(roomNo, companyNo);

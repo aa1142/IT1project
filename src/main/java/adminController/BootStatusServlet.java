@@ -23,7 +23,7 @@ public class BootStatusServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		Integer companyNo= (Integer)session.getAttribute("companyNo");
 		//회사 더미데이터
-		companyNo = 1;
+//		companyNo = 1;
 		RoomDao roomDao = new RoomDao();
 		List<RoomDto> priceList = roomDao.selectRoomPrice(companyNo);
 		

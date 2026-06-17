@@ -27,8 +27,6 @@ public class MemoHistoryServlet extends HttpServlet {
     	// 1. 파라미터 수집
         String memoPhone = request.getParameter("memoPhone");
         String adminId = (String)session.getAttribute("adminId");
-        //더미데이터
-        adminId = "admin01";
         // 2. DAO를 통해 해당 전화번호를 가진 고객의 메모 전체 조회 (ArrayList)
         MemoDao memoDao = new MemoDao();
         ArrayList<HistoryMemoVo> list = memoDao.selectAllMemo(memoPhone, adminId);

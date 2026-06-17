@@ -112,7 +112,6 @@ public class MailService {
 
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress("rkfqo12@gmail.com", "JYP HOTEL", "UTF-8"));
-        toEmail="tsk511@naver.com";
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
         
         // 제목 변경

@@ -41,8 +41,6 @@ public class RoomSearchServlet extends HttpServlet {
 	        }
 	        
 	        
-	        //회사 임시데이터
-	        companyNo = 1;
 	        RoomDao roomDao = new RoomDao();
 	        List<RoomDto> list = roomDao.selectAvailableRooms(grade, type, checkIn, checkOut, companyNo);
 
