@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 @WebServlet("/insertNotice.do")
@@ -23,6 +24,10 @@ public class NoticeWriteServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        if (!isNoticeAdmin(request)) {
+            denyAccess(request, response);
+            return;
+        }
 
         String title = request.getParameter("title");
         String content = request.getParameter("content");
@@ -85,5 +90,21 @@ public class NoticeWriteServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    private boolean isNoticeAdmin(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
+        }
+
+        String userGrade = (String) session.getAttribute("sessionUserGrade");
+        return "管理者".equals(userGrade)
+                || "관리자".equals(userGrade);
+    }
+
+    private void denyAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        response.getWriter().println("<script>alert('관리자만 공지사항을 작성할 수 있습니다.'); location.href='" + request.getContextPath() + "/notice/noticeList.jsp';</script>");
     }
 }

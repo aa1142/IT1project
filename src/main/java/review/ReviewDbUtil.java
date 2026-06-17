@@ -8,9 +8,9 @@ public class ReviewDbUtil {
     private static final String USER = "proid";
     private static final String PASS = "3431";
     private static final String[] URLS = {
-            "jdbc:oracle:thin:@localhost:1521:xe",
+           // "jdbc:oracle:thin:@localhost:1521:xe",
             "jdbc:oracle:thin:@localhost:1521:orcl",
-            "jdbc:oracle:thin:@//localhost:1521/XEPDB1"
+            //"jdbc:oracle:thin:@//localhost:1521/XEPDB1"
     };
 
     static {

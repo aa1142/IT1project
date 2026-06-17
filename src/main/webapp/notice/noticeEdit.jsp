@@ -2,6 +2,20 @@
 <%@ page import="myNotice.NoticeDao" %>
 <%@ page import="myNotice.NoticeDto" %>
 <%
+    String noticeUserGrade = (String) session.getAttribute("sessionUserGrade");
+    boolean noticeAdmin = "管理者".equals(noticeUserGrade)
+            || "관리자".equals(noticeUserGrade);
+
+    if (!noticeAdmin) {
+%>
+        <script>
+            alert("관리자만 공지사항을 수정할 수 있습니다.");
+            location.href = "noticeList.jsp";
+        </script>
+<%
+        return;
+    }
+
     int noticeNo = Integer.parseInt(request.getParameter("no"));
     NoticeDao dao = new NoticeDao();
     NoticeDto dto = dao.getNoticeDetail(noticeNo);

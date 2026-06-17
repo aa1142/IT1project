@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import myNotice.NoticeDao;
 import myNotice.NoticeDto;
@@ -26,6 +27,10 @@ public class NoticeUpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
+        if (!isNoticeAdmin(request)) {
+            denyAccess(request, response);
+            return;
+        }
         
         // 1. 파라미터 값 꺼내기
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
@@ -88,5 +93,21 @@ public class NoticeUpdateServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    private boolean isNoticeAdmin(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
+        }
+
+        String userGrade = (String) session.getAttribute("sessionUserGrade");
+        return "管理者".equals(userGrade)
+                || "관리자".equals(userGrade);
+    }
+
+    private void denyAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        response.getWriter().println("<script>alert('관리자만 공지사항을 수정할 수 있습니다.'); location.href='" + request.getContextPath() + "/notice/noticeList.jsp';</script>");
     }
 }

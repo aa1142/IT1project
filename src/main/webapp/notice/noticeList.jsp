@@ -2,6 +2,11 @@
 <%@ page import="myNotice.NoticeDao" %>
 <%@ page import="myNotice.NoticeDto" %>
 <%@ page import="java.util.List" %>
+<%
+    String noticeUserGrade = (String) session.getAttribute("sessionUserGrade");
+    boolean noticeAdmin = "管理者".equals(noticeUserGrade)
+            || "관리자".equals(noticeUserGrade);
+%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -28,16 +33,13 @@
 <div style="max-width:1140px; margin:0 auto 20px auto;">
     <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
 </div>
-<%
-if(request.getSession().getAttribute("adminId")!=null){
-	
-%>
+<% if (noticeAdmin) { %>
 <div style="max-width:1140px; margin:0 auto 20px auto;">
     <a href="<%= request.getContextPath() %>/Admin/bootmng" class="btn btn-outline-dark btn-sm">예약관리</a>
 </div>
 <%} %>
 <div class="container">
-    <h2 class="mb-4 fw-bold text-center">공지사항 관리</h2>
+    <h2 class="mb-4 fw-bold text-center"><%= noticeAdmin ? "공지사항 관리" : "공지사항" %></h2>
 
     <table class="table table-hover text-center">
         <thead>
@@ -46,7 +48,9 @@ if(request.getSession().getAttribute("adminId")!=null){
                 <th style="width: 50%;">제목</th>
                 <th>작성일</th>
                 <th>조회수</th>
-                <th>관리</th>
+                <% if (noticeAdmin) { %>
+                    <th>관리</th>
+                <% } %>
             </tr>
         </thead>
         <tbody>
@@ -57,7 +61,7 @@ if(request.getSession().getAttribute("adminId")!=null){
             if (list == null || list.isEmpty()) {
         %>
             <tr>
-                <td colspan="5">등록된 공지가 없습니다.</td>
+                <td colspan="<%= noticeAdmin ? 5 : 4 %>">등록된 공지가 없습니다.</td>
             </tr>
         <%
             } else {
@@ -78,12 +82,14 @@ if(request.getSession().getAttribute("adminId")!=null){
                 </td>
                 <td><%= dto.getRegDate() %></td>
                 <td><%= dto.getHit() %></td>
-                <td>
-                    <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-sm btn-outline-primary">수정</a>
-                    <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
-                       class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('정말 삭제할까요?')">삭제</a>
-                </td>
+                <% if (noticeAdmin) { %>
+                    <td>
+                        <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-sm btn-outline-primary">수정</a>
+                        <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('정말 삭제할까요?')">삭제</a>
+                    </td>
+                <% } %>
             </tr>
         <%
                 }
@@ -92,9 +98,11 @@ if(request.getSession().getAttribute("adminId")!=null){
         </tbody>
     </table>
 
-    <div class="text-end mt-4">
-        <a href="noticeWrite.jsp" class="btn btn-dark">공지 등록</a>
-    </div>
+    <% if (noticeAdmin) { %>
+        <div class="text-end mt-4">
+            <a href="noticeWrite.jsp" class="btn btn-dark">공지 등록</a>
+        </div>
+    <% } %>
 </div>
 </body>
 </html>

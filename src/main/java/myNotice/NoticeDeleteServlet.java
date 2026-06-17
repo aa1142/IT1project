@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import myNotice.NoticeDao;
 
 @WebServlet("/deleteNotice.do")
@@ -17,6 +18,10 @@ public class NoticeDeleteServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 인코딩 설정
         request.setCharacterEncoding("UTF-8");
+        if (!isNoticeAdmin(request)) {
+            denyAccess(request, response);
+            return;
+        }
         
         // jsp에서 보낸 파라미터 값(?noticeNo=번호) 가로채기
         int noticeNo = Integer.parseInt(request.getParameter("noticeNo"));
@@ -39,5 +44,21 @@ public class NoticeDeleteServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
+    }
+
+    private boolean isNoticeAdmin(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
+        }
+
+        String userGrade = (String) session.getAttribute("sessionUserGrade");
+        return "管理者".equals(userGrade)
+                || "관리자".equals(userGrade);
+    }
+
+    private void denyAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        response.getWriter().println("<script>alert('관리자만 공지사항을 삭제할 수 있습니다.'); location.href='" + request.getContextPath() + "/notice/noticeList.jsp';</script>");
     }
 }
