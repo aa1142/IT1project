@@ -9,11 +9,6 @@
     request.setCharacterEncoding("UTF-8");
 
     Vector<CompanyVO> companyList;
-    if (request.getAttribute("companyList") != null) {
-        companyList = (Vector<CompanyVO>) request.getAttribute("companyList");
-    } else {
-    	companyList = dao.selectActiveBranchList("");
-    }
 
     int company_no = 0;
     if (request.getAttribute("company_no") != null) {
@@ -57,6 +52,19 @@
 
     if (boot_checkout.equals("") && !boot_checkin.equals("")) {
         boot_checkout = HotelPriceUtil.calcCheckout(boot_checkin, nights);
+    }
+
+    if (request.getAttribute("companyList") != null) {
+        companyList = (Vector<CompanyVO>) request.getAttribute("companyList");
+    } else {
+        String listCheckin = boot_checkin;
+        String listCheckout = boot_checkout;
+        if (listCheckin.equals("")) {
+            listCheckin = java.time.LocalDate.now().format(
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            listCheckout = HotelPriceUtil.calcCheckout(listCheckin, nights);
+        }
+        companyList = dao.selectActiveBranchList("", listCheckin, listCheckout, boot_adult, boot_child);
     }
 
     CompanyVO selectedCompany = (CompanyVO) request.getAttribute("company");

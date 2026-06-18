@@ -105,9 +105,18 @@ public class HotelDAO {
     }
 
     /**
-     * 지점 목록 조회
+     * 지점 목록 조회 (등록된 객실 타입 수 — 날짜 미지정)
      */
     public Vector<CompanyVO> selectActiveBranchList(String keyword) {
+        return selectActiveBranchList(keyword, "", "", 1, 0);
+    }
+
+    /**
+     * 지점 목록 조회 — 체크인·인원이 있으면 예약 가능 (등급+타입) 수로 room_type_count 갱신
+     */
+    public Vector<CompanyVO> selectActiveBranchList(String keyword,
+            String boot_checkin, String boot_checkout,
+            int boot_adult, int boot_child) {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -143,6 +152,20 @@ public class HotelDAO {
                 HotelDisplay.setCompanyInfo(vo);
                 list.addElement(vo);
             }
+
+            boolean useAvailability = boot_checkin != null && !boot_checkin.trim().isEmpty();
+            if (useAvailability) {
+                String checkout = boot_checkout;
+                if (checkout == null || checkout.trim().isEmpty()) {
+                    checkout = HotelPriceUtil.calcCheckout(boot_checkin.trim(), 1);
+                }
+                for (int i = 0; i < list.size(); i++) {
+                    CompanyVO vo = list.elementAt(i);
+                    vo.setRoom_type_count(countAvailableRoomTypes(
+                            vo.getCompany_no(), boot_checkin.trim(), checkout.trim(),
+                            boot_adult, boot_child));
+                }
+            }
         } catch (Exception e) {
             if (lastDbError == null || lastDbError.isEmpty()) {
                 lastDbError = e.getMessage();
@@ -155,6 +178,57 @@ public class HotelDAO {
             if (con != null) try { con.close(); } catch (SQLException s) { s.printStackTrace(); }
         }
         return list;
+    }
+
+    /** 지점별 예약 가능 (room_grade + room_type) 조합 수 — selectAvailableRoomTypeList 와 동일 조건, 전 등급 */
+    public int countAvailableRoomTypes(int company_no, String boot_checkin, String boot_checkout,
+            int boot_adult, int boot_child) {
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int count = 0;
+
+        try {
+            con = dbDirectConnect();
+            String sql = "SELECT r.room_type, COUNT(*) AS cnt "
+                    + "FROM room r "
+                    + "WHERE r.company_no = ? "
+                    + ROOM_OK
+                    + BOOT_ROOM_BUSY
+                    + "GROUP BY r.room_grade, r.room_type ";
+
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, company_no);
+            pstmt.setString(2, boot_checkout);
+            pstmt.setString(3, boot_checkin);
+            rs = pstmt.executeQuery();
+
+            boolean showSingle = RoomTypeUtil.canShowSingleRoom(boot_adult, boot_child);
+            int guestCount = boot_adult + boot_child;
+
+            while (rs.next()) {
+                int room_type = rs.getInt("room_type");
+                int cnt = rs.getInt("cnt");
+                if (cnt <= 0) {
+                    continue;
+                }
+                if (room_type == RoomTypeUtil.ROOM_TYPE_SINGLE && !showSingle) {
+                    continue;
+                }
+                if (guestCount > RoomTypeUtil.getMaxGuests(room_type)) {
+                    continue;
+                }
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException s) { s.printStackTrace(); }
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException s) { s.printStackTrace(); }
+            if (con != null) try { con.close(); } catch (SQLException s) { s.printStackTrace(); }
+        }
+        return count;
     }
 
     /** 특정 지점 단건 정보 조회 */
