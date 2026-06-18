@@ -9,7 +9,6 @@
     if (!noticeAdmin) {
 %>
         <script>
-            alert("관리자만 공지사항을 수정할 수 있습니다.");
             location.href = "noticeList.jsp";
         </script>
 <%

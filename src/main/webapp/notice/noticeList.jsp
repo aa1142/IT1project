@@ -8,10 +8,10 @@
             || "관리자".equals(noticeUserGrade);
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JYP 호텔 - 공지사항</title>
+    <title>JYPホテル - お知らせ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { padding: 50px; font-family: 'Pretendard', sans-serif; }
@@ -31,25 +31,25 @@
 </head>
 <body>
 <div style="max-width:1140px; margin:0 auto 20px auto;">
-    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
 </div>
 <% if (noticeAdmin) { %>
 <div style="max-width:1140px; margin:0 auto 20px auto;">
-    <a href="<%= request.getContextPath() %>/Admin/bootmng" class="btn btn-outline-dark btn-sm">예약관리</a>
+    <a href="<%= request.getContextPath() %>/Admin/bootmng" class="btn btn-outline-dark btn-sm">予約管理</a>
 </div>
 <%} %>
 <div class="container">
-    <h2 class="mb-4 fw-bold text-center"><%= noticeAdmin ? "공지사항 관리" : "공지사항" %></h2>
+    <h2 class="mb-4 fw-bold text-center"><%= noticeAdmin ? "お知らせ管理" : "お知らせ" %></h2>
 
     <table class="table table-hover text-center">
         <thead>
             <tr>
-                <th>번호</th>
-                <th style="width: 50%;">제목</th>
-                <th>작성일</th>
-                <th>조회수</th>
+                <th>No.</th>
+                <th style="width: 50%;">タイトル</th>
+                <th>登録日</th>
+                <th>照会数</th>
                 <% if (noticeAdmin) { %>
-                    <th>관리</th>
+                    <th>管理</th>
                 <% } %>
             </tr>
         </thead>
@@ -61,21 +61,25 @@
             if (list == null || list.isEmpty()) {
         %>
             <tr>
-                <td colspan="<%= noticeAdmin ? 5 : 4 %>">등록된 공지가 없습니다.</td>
+                <td colspan="<%= noticeAdmin ? 5 : 4 %>">登録されたお知らせがありません。</td>
             </tr>
         <%
             } else {
                 for (NoticeDto dto : list) {
                     String title = dto.getTitle() == null ? "" : dto.getTitle();
-                    boolean important = title.startsWith("[중요공지]");
-                    String displayTitle = important ? title.replaceFirst("^\\[중요공지\\]\\s*", "") : title;
+                    // DB에 "[중요공지]" 또는 "[重要]" 등으로 저장되어 있을 경우를 위해 둘 다 체크하거나, 일본어 기준인 [重要]로 판단하도록 수정했습니다.
+                    boolean important = title.startsWith("[중요공지]") || title.startsWith("[重要]");
+                    String displayTitle = title;
+                    if (important) {
+                        displayTitle = title.replaceFirst("^\\[중요공지\\]\\s*", "").replaceFirst("^\\[重要\\]\\s*", "");
+                    }
         %>	
             <tr>
                 <td><%= dto.getNoticeNo() %></td>
                 <td class="text-center">
                     <a href="noticeDetail.jsp?no=<%= dto.getNoticeNo() %>" class="text-decoration-none text-dark">
                         <% if (important) { %>
-                            <span class="important-badge">중요공지</span>
+                            <span class="important-badge">重要</span>
                         <% } %>
                         <%= displayTitle %>
                     </a>
@@ -84,10 +88,10 @@
                 <td><%= dto.getHit() %></td>
                 <% if (noticeAdmin) { %>
                     <td>
-                        <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-sm btn-outline-primary">수정</a>
+                        <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-sm btn-outline-primary">修正</a>
                         <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
                            class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('정말 삭제할까요?')">삭제</a>
+                           onclick="return confirm('本当に削除しますか？')">削除</a>
                     </td>
                 <% } %>
             </tr>
@@ -100,7 +104,7 @@
 
     <% if (noticeAdmin) { %>
         <div class="text-end mt-4">
-            <a href="noticeWrite.jsp" class="btn btn-dark">공지 등록</a>
+            <a href="noticeWrite.jsp" class="btn btn-dark">新規登録</a>
         </div>
     <% } %>
 </div>

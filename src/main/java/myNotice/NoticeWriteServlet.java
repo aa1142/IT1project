@@ -105,6 +105,6 @@ public class NoticeWriteServlet extends HttpServlet {
 
     private void denyAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=UTF-8");
-        response.getWriter().println("<script>alert('관리자만 공지사항을 작성할 수 있습니다.'); location.href='" + request.getContextPath() + "/notice/noticeList.jsp';</script>");
+        response.getWriter().println("<script>location.href='" + request.getContextPath() + "/notice/noticeList.jsp';</script>");
     }
 }

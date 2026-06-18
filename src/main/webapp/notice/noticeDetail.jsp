@@ -2,6 +2,10 @@
 <%@ page import="myNotice.NoticeDao" %>
 <%@ page import="myNotice.NoticeDto" %>
 <%
+    String noticeUserGrade = (String) session.getAttribute("sessionUserGrade");
+    boolean noticeAdmin = "管理者".equals(noticeUserGrade)
+            || "관리자".equals(noticeUserGrade);
+
     String noParam = request.getParameter("no");
     if (noParam == null || noParam.trim().isEmpty()) {
 %>
@@ -97,10 +101,12 @@
 
     <div class="d-flex gap-2 mt-4 pt-3 border-top">
         <a href="noticeList.jsp" class="btn btn-light border">목록</a>
-        <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-outline-primary">수정</a>
-        <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
-           class="btn btn-outline-danger"
-           onclick="return confirm('정말 삭제할까요?')">삭제</a>
+        <% if (noticeAdmin) { %>
+            <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-outline-primary">수정</a>
+            <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
+               class="btn btn-outline-danger"
+               onclick="return confirm('정말 삭제할까요?')">삭제</a>
+        <% } %>
     </div>
 </div>
 </body>
