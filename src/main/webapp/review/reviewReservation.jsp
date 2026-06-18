@@ -19,10 +19,10 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>리뷰 작성 예약 선택</title>
+    <title>レビュー作成 - 予約選択</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -46,8 +46,8 @@
 </head>
 <body>
 <div class="reservation-container">
-    <div class="page-title">리뷰를 작성할 예약 선택</div>
-    <div class="page-desc">예약 내역을 선택하면 지점과 객실 정보가 자동으로 입력됩니다.</div>
+    <div class="page-title">レビューを書く予約の選択</div>
+    <div class="page-desc">予約履歴を選択すると、店舗と客室の情報が自動的に入力されます。</div>
 
     <%
             String sql = "select * from boot where member_id = ? ";
@@ -69,17 +69,28 @@
                         while (rs.next()) {
                             hasReservation = true;
                             String bootNo = rs.getString("BOOT_NO");
+                            
+                            // 원본 데이터 변수 처리 및 영어 치환 로직 추가
                             String roomGrade = rs.getString("ROOM_GRADE");
+                            String displayGrade = (roomGrade == null) ? "" : roomGrade;
+                            
+                            // DB 데이터가 한국어 또는 일본어일 경우를 모두 대비하여 영어로 매핑합니다.
+                            if (displayGrade.contains("스탠다드") || displayGrade.toUpperCase().contains("STANDARD") || displayGrade.contains("スタンダード")) {
+                                displayGrade = "Standard";
+                            } else if (displayGrade.contains("디럭스") || displayGrade.toUpperCase().contains("DELUXE") || displayGrade.contains("デラックス")) {
+                                displayGrade = "Deluxe";
+                            }
+
                             int roomType = rs.getInt("ROOM_TYPE");
                             String roomTypeName = String.valueOf(roomType);
-                            if (roomType == 1) roomTypeName = "싱글";
-                            else if (roomType == 2) roomTypeName = "트윈";
-                            else if (roomType == 5) roomTypeName = "패밀리";
+                            if (roomType == 1) roomTypeName = "シングル";
+                            else if (roomType == 2) roomTypeName = "ツイン";
+                            else if (roomType == 5) roomTypeName = "ファミリー";
                             int companyNo = rs.getInt("COMPANY_NO");
                             String checkin = String.valueOf(rs.getDate("BOOT_CHECKIN"));
                             String checkout = String.valueOf(rs.getDate("BOOT_CHECKOUT"));
                             int confirm = rs.getInt("BOOT_CONFIRM");
-                            String statusText = confirm == 1 ? "예약확정" : (confirm == 2 ? "예약취소" : "예약대기");
+                            String statusText = confirm == 1 ? "予約確定" : (confirm == 2 ? "予約キャンセル" : "予約待機");
 
                             String reviewUrl = ctx + "/review/reviewWrite.jsp"
                                     + "?bootNo=" + URLEncoder.encode(bootNo == null ? "" : bootNo, "UTF-8")
@@ -91,14 +102,14 @@
             <div class="reservation-info">
                 <div class="reservation-no"><i class="fas fa-receipt me-1"></i><%= bootNo %></div>
                 <div class="reservation-meta">
-                    지점 <%= companyNo %> / <%= roomGrade %> / 객실 타입 <%= roomTypeName %><br>
+                    店舗 <%= companyNo %> / <%= displayGrade %> / 客室タイプ <%= roomTypeName %><br>
                     <%= checkin %> ~ <%= checkout %> / <%= statusText %>
                 </div>
             </div>
             <% if (confirm == 2) { %>
-                <span class="text-muted fw-bold">취소된 예약</span>
+                <span class="text-muted fw-bold">キャンセルされた予約</span>
             <% } else { %>
-                <a class="btn-review" href="<%= reviewUrl %>">리뷰 작성</a>
+                <a class="btn-review" href="<%= reviewUrl %>">レビューを書く</a>
             <% } %>
         </div>
     <%
@@ -109,7 +120,7 @@
                 loadFailed = true;
     %>
         <div class="empty-box">
-            예약 내역을 불러오지 못했습니다.<br>
+            予約履歴を読み込めませんでした。<br>
             <span class="text-danger"><%= e.getMessage() %></span>
         </div>
     <%
@@ -117,12 +128,12 @@
 
             if (!hasReservation && !loadFailed) {
     %>
-        <div class="empty-box">리뷰를 작성할 예약 내역이 없습니다.</div>
+        <div class="empty-box">レビューを記入できる予約履歴がありません。</div>
     <%
             }
     %>
 
-    <a href="<%= ctx %>/review/reviewList" class="btn-back">리뷰 목록으로 돌아가기</a>
+    <a href="<%= ctx %>/review/reviewList" class="btn-back">レビュー一覧に戻る</a>
 </div>
 </body>
 </html>

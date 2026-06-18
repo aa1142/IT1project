@@ -5,9 +5,7 @@
 <%
     String noticeUserGrade = (String) session.getAttribute("sessionUserGrade");
     String noticeUserId = (String) session.getAttribute("sessionUserId");
-    boolean noticeAdmin = "管理者".equals(noticeUserGrade)
-            || "관리자".equals(noticeUserGrade)
-            || (noticeUserId != null && noticeUserId.toLowerCase().startsWith("admin"));
+    String noticeAdmin =(String) session.getAttribute("adminId");
 %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -35,13 +33,13 @@
 <div style="max-width:1140px; margin:0 auto 20px auto;">
     <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
 </div>
-<% if (noticeAdmin) { %>
+<% if (noticeAdmin!=null) { %>
 <div style="max-width:1140px; margin:0 auto 20px auto;">
     <a href="<%= request.getContextPath() %>/Admin/bootmng" class="btn btn-outline-dark btn-sm">予約管理</a>
 </div>
 <%} %>
 <div class="container">
-    <h2 class="mb-4 fw-bold text-center"><%= noticeAdmin ? "お知らせ管理" : "お知らせ" %></h2>
+    <h2 class="mb-4 fw-bold text-center"><%= noticeAdmin != null ? "お知らせ管理" : "お知らせ" %></h2>
 
     <table class="table table-hover text-center">
         <thead>
@@ -50,7 +48,7 @@
                 <th style="width: 50%;">タイトル</th>
                 <th>登録日</th>
                 <th>照会数</th>
-                <% if (noticeAdmin) { %>
+                <% if (noticeAdmin!=null) { %>
                     <th>管理</th>
                 <% } %>
             </tr>
@@ -63,7 +61,7 @@
             if (list == null || list.isEmpty()) {
         %>
             <tr>
-                <td colspan="<%= noticeAdmin ? 5 : 4 %>">登録されたお知らせがありません。</td>
+                <td colspan="<%= noticeAdmin != null ? 5 : 4 %>">登録されたお知らせがありません。</td>
             </tr>
         <%
             } else {
@@ -91,7 +89,7 @@
                 </td>
                 <td><%= dto.getRegDate() %></td>
                 <td><%= dto.getHit() %></td>
-                <% if (noticeAdmin) { %>
+                <% if (noticeAdmin != null) { %>
                     <td>
                         <a href="noticeEdit.jsp?no=<%= dto.getNoticeNo() %>" class="btn btn-sm btn-outline-primary">修正</a>
                         <a href="../deleteNotice.do?noticeNo=<%= dto.getNoticeNo() %>"
@@ -107,7 +105,7 @@
         </tbody>
     </table>
 
-    <% if (noticeAdmin) { %>
+    <% if (noticeAdmin != null) { %>
         <div class="text-end mt-4">
             <a href="noticeWrite.jsp" class="btn btn-dark">新規登録</a>
         </div>

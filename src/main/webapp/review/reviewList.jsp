@@ -3,10 +3,10 @@
 <%@ page import="review.ReviewDao" %>
 <%@ page import="review.ReviewDto" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JYP 호텔 리뷰</title>
+    <title>JYPホテル レビュー</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -43,7 +43,7 @@
 </head>
 <body>
 <div style="max-width:1200px; margin:0 auto 20px auto;">
-    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">홈으로</a>
+    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
 </div>
 <%
     ArrayList<ReviewDto> reviewList = (ArrayList<ReviewDto>) request.getAttribute("reviewList");
@@ -56,52 +56,49 @@
 
     if (reviewCount > 0) {
         int totalRating = 0;
-        for (ReviewDto review : reviewList) {
-            totalRating += review.getRating();
-        }
+        for (ReviewDto review : reviewList) { totalRating += review.getRating(); }
         avgRating = (double) totalRating / reviewCount;
     }
 %>
 <div class="main-wrapper">
     <div class="left-sidebar">
-        <div class="hotel-title">JYP 호텔 이용 후기</div>
+        <div class="hotel-title">JYPホテル レビュー</div>
 
         <div class="score-section">
             <div class="stars-gold"><i class="fas fa-star"></i></div>
             <div class="score-big"><%= String.format("%.1f", avgRating) %></div>
         </div>
-        <div class="satisfy-count"><i class="far fa-smile me-1"></i> 총 <%= reviewCount %>개의 리뷰</div>
+        <div class="satisfy-count"><i class="far fa-smile me-1"></i> 全 <%= reviewCount %> 件のレビュー</div>
 
         <div class="gauge-group mt-4">
-            <div class="gauge-label-row"><span>위치 만족도</span><span class="text-muted">10점 만점</span></div>
+            <div class="gauge-label-row"><span>立地・アクセス</span><span class="text-muted">10点満点</span></div>
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
         <div class="gauge-group">
-            <div class="gauge-label-row"><span>청소 청결도</span><span class="text-muted">10점 만점</span></div>
+            <div class="gauge-label-row"><span>部屋의清潔さ</span><span class="text-muted">10点満点</span></div>
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
         <div class="gauge-group">
-            <div class="gauge-label-row"><span>친절 및 서비스</span><span class="text-muted">10점 만점</span></div>
+            <div class="gauge-label-row"><span>サービス・接客</span><span class="text-muted">10点満点</span></div>
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
         <div class="gauge-group">
-            <div class="gauge-label-row"><span>가격 대비 만족도</span><span class="text-muted">10점 만점</span></div>
+            <div class="gauge-label-row"><span>コスパ（価格満足度）</span><span class="text-muted">10点満点</span></div>
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
         <div class="gauge-group">
-            <div class="gauge-label-row"><span>객실 및 부대시설</span><span class="text-muted">10점 만점</span></div>
+            <div class="gauge-label-row"><span>客室・館内施設</span><span class="text-muted">10点満点</span></div>
             <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
         </div>
-
     </div>
 
     <div class="right-content">
         <div class="list-header">
-            <div class="list-title">리뷰 목록</div>
+            <div class="list-title">レビュー一覧</div>
             <select class="sort-select" id="sortSelect">
-                <option value="latest">최신순</option>
-                <option value="high">별점 높은순</option>
-                <option value="low">별점 낮은순</option>
+                <option value="latest">新着順</option>
+                <option value="high">評価の高い順</option>
+                <option value="low">評価の低い順</option>
             </select>
         </div>
 
@@ -109,37 +106,50 @@
         <%
             if (reviewList != null && !reviewList.isEmpty()) {
                 for (ReviewDto review : reviewList) {
+                    
+                    // 객실 등급 데이터가 넘어왔을 때 영문(Standard, Deluxe, Suite) 치환 처리
+                    String grade = review.getRoomgrade();
+                    String displayGrade = (grade == null) ? "" : grade;
+                    if (displayGrade.contains("스탠다드") || displayGrade.toUpperCase().contains("STANDARD") || displayGrade.contains("スタンダード")) {
+                        displayGrade = "Standard";
+                    } else if (displayGrade.contains("디럭스") || displayGrade.toUpperCase().contains("DELUXE") || displayGrade.contains("デラックス")) {
+                        displayGrade = "Deluxe";
+                    } else if (displayGrade.contains("스위트") || displayGrade.toUpperCase().contains("SUITE") || displayGrade.contains("スイート")) {
+                        displayGrade = "Suite";
+                    }
+                    
+                    // 객실 타입 숫자를 일본어 명칭으로 매핑
+                    String typeName = String.valueOf(review.getRoomType());
+                    if (review.getRoomType() == 1) typeName = "シングル";
+                    else if (review.getRoomType() == 2) typeName = "ツイン";
+                    else if (review.getRoomType() == 5) typeName = "ファミリー";
         %>
             <div class="review-card" data-review-no="<%= review.getReviewNo() %>" data-rating="<%= review.getRating() %>">
                 <div class="card-top-info">
                     <div class="card-stars">
-                        <%
-                            for (int i = 0; i < review.getRating(); i++) {
-                        %>
+                        <% for (int i = 0; i < review.getRating(); i++) { %>
                             <i class="fas fa-star"></i>
-                        <%
-                            }
-                        %>
+                        <% } %>
                     </div>
                     <div class="card-date"><%= review.getRegDate() == null ? "" : review.getRegDate() %></div>
-                    <span class="badge-info-custom"><i class="fas fa-bed me-1"></i><%= review.getRoomgrade() %> / 타입 <%= review.getRoomType() %></span>
+                    <span class="badge-info-custom"><i class="fas fa-bed me-1"></i><%= displayGrade %> / <%= typeName %></span>
                     <div class="card-management">
-                        <a href="<%= request.getContextPath() %>/review/reviewEdit.jsp?reviewNo=<%= review.getReviewNo() %>" class="btn-edit">수정</a>
-                        <form method="POST" action="<%= request.getContextPath() %>/review/reviewList" onsubmit="return confirm('정말 삭제할까요?')" style="display:inline;">
+                        <a href="<%= request.getContextPath() %>/review/reviewEdit.jsp?reviewNo=<%= review.getReviewNo() %>" class="btn-edit">修正</a>
+                        <form method="POST" action="<%= request.getContextPath() %>/review/reviewList" onsubmit="return confirm('本当に削除しますか？')" style="display:inline;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="reviewNo" value="<%= review.getReviewNo() %>">
-                            <button class="btn-delete" type="submit">삭제</button>
+                            <button class="btn-delete" type="submit">削除</button>
                         </form>
                     </div>
                 </div>
-                <div class="card-title-text">리뷰 #<%= review.getReviewNo() %></div>
+                <div class="card-title-text">レビュー #<%= review.getReviewNo() %></div>
                 <div class="card-content-text"><%= review.getContent() == null ? "" : review.getContent() %></div>
             </div>
         <%
                 }
             } else {
         %>
-            <div class="text-center py-5 text-muted">등록된 리뷰가 없습니다.</div>
+            <div class="text-center py-5 text-muted">投稿されたレビューはありません。</div>
         <%
             }
         %>

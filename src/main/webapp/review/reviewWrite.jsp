@@ -11,20 +11,26 @@
     if (selectedRoomType == null) selectedRoomType = "";
 
     String selectedBranchName = selectedBranch;
-    if ("1".equals(selectedBranch)) selectedBranchName = "JYP 호텔 도쿄";
-    else if ("2".equals(selectedBranch)) selectedBranchName = "JYP 호텔 신주쿠";
-    else if ("3".equals(selectedBranch)) selectedBranchName = "JYP 호텔 요코하마";
+    if ("1".equals(selectedBranch)) selectedBranchName = "JYPホテル東京";
+    else if ("2".equals(selectedBranch)) selectedBranchName = "JYPホテル新宿";
+    else if ("3".equals(selectedBranch)) selectedBranchName = "JYPホテル横浜";
+
+    // 등급 출력을 위해 영문 규격 변환 로직 추가
+    String displayGrade = selectedRoomGrade;
+    if (displayGrade.equalsIgnoreCase("standard") || displayGrade.contains("스탠다드")) displayGrade = "Standard";
+    else if (displayGrade.equalsIgnoreCase("deluxe") || displayGrade.contains("디럭스")) displayGrade = "Deluxe";
+    else if (displayGrade.equalsIgnoreCase("suite") || displayGrade.contains("스위트")) displayGrade = "Suite";
 
     String selectedRoomTypeName = selectedRoomType;
-    if ("1".equals(selectedRoomType)) selectedRoomTypeName = "싱글";
-    else if ("2".equals(selectedRoomType)) selectedRoomTypeName = "트윈";
-    else if ("5".equals(selectedRoomType)) selectedRoomTypeName = "패밀리";
+    if ("1".equals(selectedRoomType)) selectedRoomTypeName = "シングル";
+    else if ("2".equals(selectedRoomType)) selectedRoomTypeName = "ツイン";
+    else if ("5".equals(selectedRoomType)) selectedRoomTypeName = "ファミリー";
 %>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JYP 호텔 리뷰 작성</title>
+    <title>JYPホテル レビュー作成</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -54,16 +60,16 @@
 <body>
 
 <div class="write-container">
-    <div class="page-title">JYP 호텔 리뷰 작성</div>
+    <div class="page-title">JYPホテル レビュー作成</div>
 
     <form id="reviewForm" method="POST" action="<%= request.getContextPath() %>/review/reviewInsert">
         <% if (hasReservationInfo) { %>
             <div class="reservation-summary">
-                <div class="reservation-summary-title">선택한 예약 정보</div>
+                <div class="reservation-summary-title">選択された予約情報</div>
                 <div class="reservation-summary-detail">
-                    예약번호: <%= selectedBootNo %><br>
-                    지점: <%= selectedBranchName %><br>
-                    객실: <%= selectedRoomGrade %> / <%= selectedRoomTypeName %>
+                    予約番号: <%= selectedBootNo %><br>
+                    店舗: <%= selectedBranchName %><br>
+                    客室: <%= displayGrade %> / <%= selectedRoomTypeName %>
                 </div>
             </div>
             <input type="hidden" name="bootNo" value="<%= selectedBootNo %>">
@@ -72,19 +78,19 @@
             <input type="hidden" name="roomtype" value="<%= selectedRoomType %>">
         <% } else { %>
         <div class="form-section">
-            <div class="section-label"><i class="fas fa-map-marker-alt text-danger"></i> 방문 지점 선택</div>
+            <div class="section-label"><i class="fas fa-map-marker-alt text-danger"></i> ご宿泊店舗の選択</div>
             <select class="form-select-custom" name="branch" required>
-                <option value="" disabled <%= selectedBranch.isEmpty() ? "selected" : "" %>>지점을 선택해주세요</option>
-                <option value="1" <%= "1".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 도쿄</option>
-                <option value="2" <%= "2".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 신주쿠</option>
-                <option value="3" <%= "3".equals(selectedBranch) ? "selected" : "" %>>JYP 호텔 요코하마</option>
+                <option value="" disabled <%= selectedBranch.isEmpty() ? "selected" : "" %>>店舗を選択してください</option>
+                <option value="1" <%= "1".equals(selectedBranch) ? "selected" : "" %>>JYPホテル東京</option>
+                <option value="2" <%= "2".equals(selectedBranch) ? "selected" : "" %>>JYPホテル新宿</option>
+                <option value="3" <%= "3".equals(selectedBranch) ? "selected" : "" %>>JYPホテル横浜</option>
             </select>
         </div>
 
         <div class="form-section">
-            <div class="section-label"><i class="fas fa-bed"></i> 이용 객실 등급 선택</div>
+            <div class="section-label"><i class="fas fa-bed"></i> ご利用客室ランクの選択</div>
             <select class="form-select-custom" name="roomgrade" required>
-                <option value="" disabled <%= selectedRoomGrade.isEmpty() ? "selected" : "" %>>이용하신 객실 등급을 선택해주세요</option>
+                <option value="" disabled <%= selectedRoomGrade.isEmpty() ? "selected" : "" %>>ご利用された客室ランクを選択してください</option>
                 <option value="standard" <%= "standard".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Standard</option>
                 <option value="deluxe" <%= "deluxe".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Deluxe</option>
                 <option value="suite" <%= "suite".equalsIgnoreCase(selectedRoomGrade) ? "selected" : "" %>>Suite</option>
@@ -92,18 +98,18 @@
         </div>
 
         <div class="form-section">
-            <div class="section-label"><i class="fas fa-door-open"></i> 객실 타입 선택</div>
+            <div class="section-label"><i class="fas fa-door-open"></i> 客室タイプの選択</div>
             <select class="form-select-custom" name="roomtype" required>
-                <option value="" disabled <%= selectedRoomType.isEmpty() ? "selected" : "" %>>객실 타입을 선택해주세요</option>
-                <option value="1" <%= "1".equals(selectedRoomType) ? "selected" : "" %>>싱글</option>
-                <option value="2" <%= "2".equals(selectedRoomType) ? "selected" : "" %>>트윈</option>
-                <option value="5" <%= "5".equals(selectedRoomType) ? "selected" : "" %>>패밀리</option>
+                <option value="" disabled <%= selectedRoomType.isEmpty() ? "selected" : "" %>>客室タイプを選択してください</option>
+                <option value="1" <%= "1".equals(selectedRoomType) ? "selected" : "" %>>シングル</option>
+                <option value="2" <%= "2".equals(selectedRoomType) ? "selected" : "" %>>ツイン</option>
+                <option value="5" <%= "5".equals(selectedRoomType) ? "selected" : "" %>>ファミリー</option>
             </select>
         </div>
         <% } %>
 
         <div class="form-section">
-            <div class="section-label justify-content-center" style="font-size: 0.9rem; color: #555;">만족도 별점</div>
+            <div class="section-label justify-content-center" style="font-size: 0.9rem; color: #555;">満足度評価（星）</div>
             <div class="star-rating-box">
                 <div class="star-input-group" id="starGroup">
                     <i class="far fa-star" data-value="1"></i>
@@ -119,11 +125,11 @@
 
         <div class="form-section">
             <div class="section-label" style="border-bottom: 1px solid #eaeded; padding-bottom: 8px; margin-bottom: 15px;">
-                <i class="fas fa-sliders-h"></i> 세부 항목 점수 선택
+                <i class="fas fa-sliders-h"></i> 評価項目の詳細入力
             </div>
 
             <div class="slider-row">
-                <div class="slider-label">위치 만족도</div>
+                <div class="slider-label">立・アクセス</div>
                 <div class="slider-wrapper">
                     <input type="range" class="form-range-custom" name="score_location" min="0" max="10" value="5" oninput="updateSliderValue(this, 'val1')">
                 </div>
@@ -131,7 +137,7 @@
             </div>
 
             <div class="slider-row">
-                <div class="slider-label">청소 청결도</div>
+                <div class="slider-label">部屋の清潔さ</div>
                 <div class="slider-wrapper">
                     <input type="range" class="form-range-custom" name="score_cleanliness" min="0" max="10" value="5" oninput="updateSliderValue(this, 'val2')">
                 </div>
@@ -139,7 +145,7 @@
             </div>
 
             <div class="slider-row">
-                <div class="slider-label">친절 및 서비스</div>
+                <div class="slider-label">サービス・接客</div>
                 <div class="slider-wrapper">
                     <input type="range" class="form-range-custom" name="score_service" min="0" max="10" value="5" oninput="updateSliderValue(this, 'val3')">
                 </div>
@@ -147,7 +153,7 @@
             </div>
 
             <div class="slider-row">
-                <div class="slider-label">가격 대비 만족도</div>
+                <div class="slider-label">コスパ（価格満足度）</div>
                 <div class="slider-wrapper">
                     <input type="range" class="form-range-custom" name="score_price" min="0" max="10" value="5" oninput="updateSliderValue(this, 'val4')">
                 </div>
@@ -155,7 +161,7 @@
             </div>
 
             <div class="slider-row">
-                <div class="slider-label">객실 및 부대시설</div>
+                <div class="slider-label">客室・館内施設</div>
                 <div class="slider-wrapper">
                     <input type="range" class="form-range-custom" name="score_facilities" min="0" max="10" value="5" oninput="updateSliderValue(this, 'val5')">
                 </div>
@@ -164,18 +170,18 @@
         </div>
 
         <div class="form-section">
-            <div class="section-label">제목</div>
-            <input type="text" class="form-input-custom" name="title" placeholder="리뷰 제목을 입력해주세요" required>
+            <div class="section-label">タイトル</div>
+            <input type="text" class="form-input-custom" name="title" placeholder="レビューのタイトルを入力してください" required>
         </div>
 
         <div class="form-section">
-            <div class="section-label">리뷰 내용</div>
-            <textarea class="form-textarea-custom" name="content" rows="6" placeholder="객실 상태, 서비스, 위치 등 경험을 공유해주세요" required></textarea>
+            <div class="section-label">レビュー内容</div>
+            <textarea class="form-textarea-custom" name="content" rows="6" placeholder="客室の状態、サービス、立地など、あなたの体験を共有してください" required></textarea>
         </div>
 
         <div class="btn-group-row">
-            <button type="submit" class="btn-submit-custom" onclick="return validateRating()">작성 완료</button>
-            <a href="reviewList.jsp" class="btn-cancel-custom">취소</a>
+            <button type="submit" class="btn-submit-custom" onclick="return validateRating()">投稿する</button>
+            <a href="reviewList.jsp" class="btn-cancel-custom">キャンセル</a>
         </div>
     </form>
 </div>
@@ -210,7 +216,7 @@
 
     function validateRating() {
         if (hiddenRatingInput.value === "0") {
-            alert("만족도 별점을 최소 1점 이상 선택해주세요.");
+            alert("満足度評価の星を1つ以上選択してください。");
             return false;
         }
         return true;
