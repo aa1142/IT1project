@@ -30,7 +30,7 @@ public class HotelDAO {
             + "     AND b.boot_checkout > TO_DATE(?, 'YYYY-MM-DD') "
             + " ) ";
 
-    /** context.xml(proid) 기준 — SID/서비스명 환경 차이 대비 후보 URL */
+    /** context.xml() 기준 — SID/서비스명 환경 차이 대비 후보 URL */
     private static final String DB_USER = "scott";
     private static final String DB_PASS = "tiger";
     private static final String[] DB_URLS = {

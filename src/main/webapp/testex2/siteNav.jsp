@@ -18,7 +18,7 @@
         <a href="<%= navCtx %>/wls/signup.jsp">会員登録</a>
       <% } else { %>
         <span class="point"><%= navUserName %>様</span>
-        <a href="<%= navCtx %>/wls/myPage.jsp">マイページ</a>
+        <a href="<%= navCtx %>/myPage">マイページ</a>
         <a href="<%= navCtx %>/wls/logout.jsp">ログアウト</a>
       <% } %>
     </div>
