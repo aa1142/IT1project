@@ -35,7 +35,7 @@ public class AdminFilter implements Filter {
 //        String adminId = "admin01"; // 임시 하드코딩 (추후 세션 로그인 정보로 대체 가능)
         String adminId = (String)session.getAttribute("adminId");
         AdminDao adminDao = new AdminDao(); 
-        AdminDto resultAdmin = adminDao.selectAdmin(adminId); 
+        AdminDto resultAdmin = adminDao.selectAdmin(adminId);
         
         // request에 담아두면, 이 필터 다음에 실행되는 서블릿이나 JSP까지 이 데이터가 유지됩니다.
         httpRequest.setAttribute("adminData", resultAdmin);

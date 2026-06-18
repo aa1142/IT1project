@@ -34,7 +34,12 @@ public class Bootmng extends HttpServlet {
         if(bootTime == null) bootTime = "upcoming";
         
         BootDao bootDao = new BootDao();
-        Integer companyNo= (Integer)session.getAttribute("adminId");
+        String companyNoStr= (String)session.getAttribute("companyNo");
+        int companyNo = 0;
+        if(companyNoStr!= null) {
+        	companyNo = Integer.parseInt(companyNoStr);
+        }
+        
 //        int companyNo = 1;
         int pageSize = 5; 
         

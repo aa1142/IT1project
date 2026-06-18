@@ -27,7 +27,7 @@ public class AdminDao {
             AdminDto adminDto = new AdminDto();
             // ★ 여기가 핵심입니다. DB에서 데이터를 한 행 읽어오는지 확인합니다.
             if (rs.next()) {
-                adminDto.setAdminId(rs.getString(adminId));
+                adminDto.setAdminId(adminId);
                 adminDto.setCompanyNo(rs.getInt("company_no"));
                 adminDto.setAdminPw(rs.getString("admin_pw"));
                 adminDto.setAdminName(rs.getString("admin_name"));
