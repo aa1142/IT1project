@@ -70,7 +70,7 @@ public class MyPageServlet extends HttpServlet {
             List<Map<String, String>> reserveList = new ArrayList<>();
             try {
                 // ⚠️ 現在エラーが発生している領域です。実際のテーブル名（例: boot）が判明したら、この単語を修正してください。
-                String reserveSql = "SELECT boot_no, room_type, check_in, check_out, boot_confirm FROM boot WHERE member_id = ? ORDER BY reserve_no DESC";
+                String reserveSql = "SELECT boot_no, room_type, boot_checkin, boot_checkout, boot_confirm FROM boot WHERE member_id = ? ORDER BY reserve_no DESC";
                 pstmt2 = conn.prepareStatement(reserveSql);
                 pstmt2.setString(1, sessionUserId);
                 rs2 = pstmt2.executeQuery();
@@ -79,8 +79,8 @@ public class MyPageServlet extends HttpServlet {
                     Map<String, String> map = new HashMap<>();
                     map.put("no", rs2.getString("boot_no"));
                     map.put("room", rs2.getString("room_type"));
-                    map.put("in", rs2.getString("check_in"));
-                    map.put("out", rs2.getString("check_out"));
+                    map.put("in", rs2.getString("boot_checkin"));
+                    map.put("out", rs2.getString("boot_checkout"));
                     map.put("status", rs2.getString("boot_confirm"));
                     reserveList.add(map);
                 }

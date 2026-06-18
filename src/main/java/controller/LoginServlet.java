@@ -115,7 +115,7 @@ public class LoginServlet extends HttpServlet {
 
             // 👑 [第2段階]: 管理者テーブル(admin)でプレーンテキストのIDとパスワードを直接照合
             // （提供されたダミーデータ確認の結果、管理者はハッシュ暗号化されていないプレーンテキスト 'tiger123' の形式であるため、暗号化なしで比較します！）
-            String adminSql = "SELECT admin_name FROM admin WHERE admin_id = ? AND admin_pw = ?";
+            String adminSql = "SELECT * FROM admin WHERE admin_id = ? AND admin_pw = ?";
             pstmt = conn.prepareStatement(adminSql);
             pstmt.setString(1, userid.trim());
             pstmt.setString(2, userpw.trim()); // ◀ プレーンテキストのマッチング
@@ -126,9 +126,8 @@ public class LoginServlet extends HttpServlet {
                 String adminName = rs.getString("admin_name");
                 
                 HttpSession session = request.getSession();
-                session.setAttribute("sessionUserId", userid);
-                session.setAttribute("sessionUserName", adminName);
-                session.setAttribute("sessionUserGrade", "管理者"); // ◀ セッション権限を手動で管理者に指定
+                session.setAttribute("adminId", rs.getString("admin_id"));
+                session.setAttribute("companyNo", rs.getString("company_no")); // ◀ セッション権限を手動で管理者に指定
                 
                 out.print("<script>");
                 out.print("alert('👑 [JYP HOTELシステム最高管理者] " + adminName + " 様、ログイン成功。管理者専用メニューに移行します。');");
