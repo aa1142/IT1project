@@ -17,8 +17,8 @@
 
     String selectedRoomTypeName = selectedRoomType;
     if ("1".equals(selectedRoomType)) selectedRoomTypeName = "싱글";
-    else if ("2".equals(selectedRoomType)) selectedRoomTypeName = "더블";
-    else if ("3".equals(selectedRoomType)) selectedRoomTypeName = "트윈";
+    else if ("2".equals(selectedRoomType)) selectedRoomTypeName = "트윈";
+    else if ("5".equals(selectedRoomType)) selectedRoomTypeName = "패밀리";
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -96,8 +96,8 @@
             <select class="form-select-custom" name="roomtype" required>
                 <option value="" disabled <%= selectedRoomType.isEmpty() ? "selected" : "" %>>객실 타입을 선택해주세요</option>
                 <option value="1" <%= "1".equals(selectedRoomType) ? "selected" : "" %>>싱글</option>
-                <option value="2" <%= "2".equals(selectedRoomType) ? "selected" : "" %>>더블</option>
-                <option value="3" <%= "3".equals(selectedRoomType) ? "selected" : "" %>>트윈</option>
+                <option value="2" <%= "2".equals(selectedRoomType) ? "selected" : "" %>>트윈</option>
+                <option value="5" <%= "5".equals(selectedRoomType) ? "selected" : "" %>>패밀리</option>
             </select>
         </div>
         <% } %>

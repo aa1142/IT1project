@@ -4,8 +4,10 @@
 <%@ page import="java.util.List" %>
 <%
     String noticeUserGrade = (String) session.getAttribute("sessionUserGrade");
+    String noticeUserId = (String) session.getAttribute("sessionUserId");
     boolean noticeAdmin = "管理者".equals(noticeUserGrade)
-            || "관리자".equals(noticeUserGrade);
+            || "관리자".equals(noticeUserGrade)
+            || (noticeUserId != null && noticeUserId.toLowerCase().startsWith("admin"));
 %>
 <!DOCTYPE html>
 <html lang="ja">

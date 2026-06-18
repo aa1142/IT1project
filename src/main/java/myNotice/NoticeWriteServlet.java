@@ -99,8 +99,10 @@ public class NoticeWriteServlet extends HttpServlet {
         }
 
         String userGrade = (String) session.getAttribute("sessionUserGrade");
+        String userId = (String) session.getAttribute("sessionUserId");
         return "管理者".equals(userGrade)
-                || "관리자".equals(userGrade);
+                || "관리자".equals(userGrade)
+                || (userId != null && userId.toLowerCase().startsWith("admin"));
     }
 
     private void denyAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {

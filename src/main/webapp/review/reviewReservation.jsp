@@ -13,6 +13,10 @@
     }
 
     String ctx = request.getContextPath();
+    if (memberId == null) {
+        response.sendRedirect(ctx + "/wls/login.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -46,18 +50,7 @@
     <div class="page-desc">예약 내역을 선택하면 지점과 객실 정보가 자동으로 입력됩니다.</div>
 
     <%
-        if (memberId == null) {
-    %>
-        <div class="empty-box">
-            로그인이 필요합니다.<br>
-            <a href="<%= ctx %>/wls/login.jsp" class="btn btn-dark mt-3">로그인</a>
-        </div>
-    <%
-        } else {
-            String sql = "SELECT BOOT_NO, ROOM_GRADE, ROOM_TYPE, COMPANY_NO, BOOT_CHECKIN, BOOT_CHECKOUT, BOOT_CONFIRM "
-                       + "FROM BOOT b WHERE b.MEMBER_ID = ? "
-                       + "AND NOT EXISTS (SELECT 1 FROM REVIEW r WHERE r.BOOT_NO = b.BOOT_NO) "
-                       + "ORDER BY BOOT_CHECKIN DESC";
+            String sql = "select * from boot where member_id = ? ";
             boolean hasReservation = false;
             boolean loadFailed = false;
 
@@ -78,6 +71,10 @@
                             String bootNo = rs.getString("BOOT_NO");
                             String roomGrade = rs.getString("ROOM_GRADE");
                             int roomType = rs.getInt("ROOM_TYPE");
+                            String roomTypeName = String.valueOf(roomType);
+                            if (roomType == 1) roomTypeName = "싱글";
+                            else if (roomType == 2) roomTypeName = "트윈";
+                            else if (roomType == 5) roomTypeName = "패밀리";
                             int companyNo = rs.getInt("COMPANY_NO");
                             String checkin = String.valueOf(rs.getDate("BOOT_CHECKIN"));
                             String checkout = String.valueOf(rs.getDate("BOOT_CHECKOUT"));
@@ -94,7 +91,7 @@
             <div class="reservation-info">
                 <div class="reservation-no"><i class="fas fa-receipt me-1"></i><%= bootNo %></div>
                 <div class="reservation-meta">
-                    지점 <%= companyNo %> / <%= roomGrade %> / 객실 타입 <%= roomType %><br>
+                    지점 <%= companyNo %> / <%= roomGrade %> / 객실 타입 <%= roomTypeName %><br>
                     <%= checkin %> ~ <%= checkout %> / <%= statusText %>
                 </div>
             </div>
@@ -123,7 +120,6 @@
         <div class="empty-box">리뷰를 작성할 예약 내역이 없습니다.</div>
     <%
             }
-        }
     %>
 
     <a href="<%= ctx %>/review/reviewList" class="btn-back">리뷰 목록으로 돌아가기</a>
