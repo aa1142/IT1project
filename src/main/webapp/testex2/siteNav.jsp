@@ -19,7 +19,6 @@
       <% } else { %>
         <span class="point"><%= navUserName %>様</span>
         <a href="<%= navCtx %>/wls/myPage.jsp">マイページ</a>
-        <a href="<%= navCtx %>/testex2/myReservationList.jsp">予約履歴</a>
         <a href="<%= navCtx %>/wls/logout.jsp">ログアウト</a>
       <% } %>
     </div>
