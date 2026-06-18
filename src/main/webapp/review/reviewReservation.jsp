@@ -68,7 +68,7 @@
                     Class.forName("oracle.jdbc.driver.OracleDriver");
                 }
 
-                try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "SCOTT", "tiger");
+                try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setString(1, memberId);
 

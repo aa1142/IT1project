@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ReviewDbUtil {
-    private static final String USER = "proid";
-    private static final String PASS = "3431";
+    private static final String USER = "scott";
+    private static final String PASS = "tiger";
     private static final String[] URLS = {
            // "jdbc:oracle:thin:@localhost:1521:xe",
             "jdbc:oracle:thin:@localhost:1521:orcl",

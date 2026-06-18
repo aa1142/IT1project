@@ -67,10 +67,13 @@
             } else {
                 for (NoticeDto dto : list) {
                     String title = dto.getTitle() == null ? "" : dto.getTitle();
-                    // DB에 "[중요공지]" 또는 "[重要]" 등으로 저장되어 있을 경우를 위해 둘 다 체크하거나, 일본어 기준인 [重要]로 판단하도록 수정했습니다.
+                    
+                    // DB에 한국어 혹은 일본어로 저장되어 있을 중요 태그를 모두 검사합니다.
                     boolean important = title.startsWith("[중요공지]") || title.startsWith("[重要]");
                     String displayTitle = title;
+                    
                     if (important) {
+                        // 중요 태그 문자열을 제거하고 실제 제목만 남깁니다.
                         displayTitle = title.replaceFirst("^\\[중요공지\\]\\s*", "").replaceFirst("^\\[重要\\]\\s*", "");
                     }
         %>	

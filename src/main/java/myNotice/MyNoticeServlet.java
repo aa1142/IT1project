@@ -20,8 +20,8 @@ public class MyNoticeServlet extends HttpServlet {
      * private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
     private static final String URL    = "jdbc:oracle:thin:@localhost:1521:ORCL";  // SID 방식
     // 서비스명 방식: "jdbc:oracle:thin:@//localhost:1521/XEPDB1"
-    private static final String USER   = "proid";   // DB 계정
-    private static final String PASS   = "3431";   // DB 비밀번호
+    private static final String USER   = "scott";   // DB 계정
+    private static final String PASS   = "tiger";   // DB 비밀번호
      */
 
     // doPost: JSP 화면에서 'POST' 방식으로 데이터를 쏴주면 자동으로 실행되는 영역입니다.
