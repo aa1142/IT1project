@@ -44,7 +44,7 @@
     </form>
     
     <div class="footer-link">
-        <a href="${pageContext.request.contextPath}/testex2/hotelsearch.jsp">◀ ホームへ戻る</a>
+        <a href="${pageContext.request.contextPath}/wls/index.jsp">◀ ホームへ戻る</a>
     </div>
 </div>
 

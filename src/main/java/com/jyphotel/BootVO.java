@@ -20,6 +20,15 @@ public class BootVO {
     private String boot_please;
     private int boot_confirm;
     private String reservation_code;
+    private String paymentStatus;
+
+	public String getPaymentStatus() {
+	    return paymentStatus;
+	}
+
+	public void setPaymentStatus(String paymentStatus) {
+	    this.paymentStatus = paymentStatus;
+	}
 
     public String getBoot_no() { return boot_no; }
     public void setBoot_no(String boot_no) { this.boot_no = boot_no; }

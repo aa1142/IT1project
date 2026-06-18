@@ -13,22 +13,25 @@ public class BootDAO {
         Class.forName("oracle.jdbc.OracleDriver");
         return DriverManager.getConnection(
             "jdbc:oracle:thin:@localhost:1521:orcl",
-            "proid",
-            "3431"
+            "scott",
+            "tiger"
         );
     }
     
     /**
-     * 1. [조회] 카카오페이 통신용 예약 코드 + 연락처 또는 이메일 검증 단건 조회 (마이페이지용)
+     * 1. [조회 완결] 카카오페이 통신용 예약 코드 + 연락처 또는 이메일 검증 단건 조회 (마이페이지용)
+     * 🎯 리팩토링 포인트: PAYMENT 테이블을 조인하여 진짜 결제 상태(PAYMENT_STATUS)를 함께 인출합니다.
      */
     public BootDTO findByReservationCodeAndPhoneOrEmail(String reservationCode, String keyword) throws Exception {
         String sql =
-            "SELECT BOOT_NO, ROOM_GRADE, ROOM_TYPE, ROOM_NO, COMPANY_NO, MEMBER_ID, " +
-            "BOOT_PHONE, BOOT_NAME, BOOT_EMAIL, BOOT_CHECKIN, BOOT_CHECKOUT, " +
-            "BOOT_ADULT, BOOT_CHILD, BOOT_PAY_CHECK, BOOT_PLEASE, BOOT_CONFIRM, RESERVATION_CODE " +
-            "FROM BOOT " +
-            "WHERE RESERVATION_CODE = ? " +
-            "AND (BOOT_PHONE = ? OR LOWER(BOOT_EMAIL) = LOWER(?))";
+            "SELECT b.BOOT_NO, b.ROOM_GRADE, b.ROOM_TYPE, b.ROOM_NO, b.COMPANY_NO, b.MEMBER_ID, " +
+            "b.BOOT_PHONE, b.BOOT_NAME, b.BOOT_EMAIL, b.BOOT_CHECKIN, b.BOOT_CHECKOUT, " +
+            "b.BOOT_ADULT, b.BOOT_CHILD, b.BOOT_PAY_CHECK, b.BOOT_PLEASE, b.BOOT_CONFIRM, b.RESERVATION_CODE, " +
+            "p.PAYMENT_STATUS " + // 👈 조인으로 퍼 올릴 장부 컬럼 명시
+            "FROM BOOT b " +
+            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " + // 👈 결제 테이블 아웃조인 결합
+            "WHERE b.RESERVATION_CODE = ? " +
+            "AND (b.BOOT_PHONE = ? OR LOWER(b.BOOT_EMAIL) = LOWER(?))";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -58,6 +61,9 @@ public class BootDAO {
                     dto.setBootPlease(rs.getString("BOOT_PLEASE"));
                     dto.setBootConfirm(rs.getInt("BOOT_CONFIRM"));
                     dto.setReservationCode(rs.getString("RESERVATION_CODE"));
+                    
+                    // 🎯 [수정 핵심] 조인 쿼리로 긁어온 PAYMENT_STATUS를 가방에 쏙 바인딩합니다.
+                    dto.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
 
                     return dto;
                 }
@@ -67,15 +73,18 @@ public class BootDAO {
     }
 
     /**
-     * 2. [조회 백업] 카카오페이 통신용 예약 코드 + 연락처 기반 단건 검증 조회
+     * 2. [조회 백업 완결] 카카오페이 통신용 예약 코드 + 연락처 기반 단건 검증 조회
+     * 🎯 리팩토링 포인트: 백업용 조회 메서드 역시 PAYMENT 테이블 조인 규격을 동일하게 맞춥니다.
      */
     public BootDTO findByReservationCodeAndPhone(String reservationCode, String bookerPhone) throws Exception {
         String sql =
-            "SELECT BOOT_NO, ROOM_GRADE, ROOM_TYPE, ROOM_NO, COMPANY_NO, MEMBER_ID, " +
-            "BOOT_PHONE, BOOT_NAME, BOOT_EMAIL, BOOT_CHECKIN, BOOT_CHECKOUT, " +
-            "BOOT_ADULT, BOOT_CHILD, BOOT_PAY_CHECK, BOOT_PLEASE, BOOT_CONFIRM, RESERVATION_CODE " +
-            "FROM BOOT " +
-            "WHERE RESERVATION_CODE = ? AND BOOT_PHONE = ?";
+            "SELECT b.BOOT_NO, b.ROOM_GRADE, b.ROOM_TYPE, b.ROOM_NO, b.COMPANY_NO, b.MEMBER_ID, " +
+            "b.BOOT_PHONE, b.BOOT_NAME, b.BOOT_EMAIL, b.BOOT_CHECKIN, b.BOOT_CHECKOUT, " +
+            "b.BOOT_ADULT, b.BOOT_CHILD, b.BOOT_PAY_CHECK, b.BOOT_PLEASE, b.BOOT_CONFIRM, b.RESERVATION_CODE, " +
+            "p.PAYMENT_STATUS " + // 👈 조인으로 퍼 올릴 장부 컬럼 명시
+            "FROM BOOT b " +
+            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " + // 👈 결제 테이블 아웃조인 결합
+            "WHERE b.RESERVATION_CODE = ? AND b.BOOT_PHONE = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -104,6 +113,9 @@ public class BootDAO {
                     dto.setBootPlease(rs.getString("BOOT_PLEASE"));
                     dto.setBootConfirm(rs.getInt("BOOT_CONFIRM"));
                     dto.setReservationCode(rs.getString("RESERVATION_CODE"));
+                    
+                    // 🎯 [수정 핵심] 조인 쿼리로 긁어온 PAYMENT_STATUS를 가방에 쏙 바인딩합니다.
+                    dto.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
 
                     return dto;
                 }

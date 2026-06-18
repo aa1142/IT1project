@@ -19,26 +19,32 @@
         reservationCode = reservation.getBootNo();
     }
 
-
     String displayAmount = String.format("%,d", reservation.getBootPayCheck()) + "円";
 
-    // 4. 숫자로 통합 관리되는 상태값(bootConfirm) 분기 조건 전면 리팩토링
-    // (0: 결제대기, 1: 결제완료, 2: 취소/환불완료)
-    int bootConfirm = reservation.getBootConfirm();
+    // 🎯 [장부 바인딩 구역] 
+    String paymentStatus = reservation.getPaymentStatus();
+    if (paymentStatus == null) {
+        paymentStatus = "PENDING"; // 기본 안전장치 방어벽 (null일 때 결제대기로 흐르게 처리)
+    }
+    
     String displayStatus = "";
+    boolean isPaid = false; // 밑에서 환불 버튼을 제어할 스위치 변수
 
-    if (bootConfirm == 0) {
-        displayStatus = "決済待ち";
-    } else if (bootConfirm == 1) {
-        displayStatus = "予約完了";
-    } else if (bootConfirm == 2) {
-        displayStatus = "キャンセル/返金完了";
+    // 💡 팩트 반영: READY 대신 PENDING, PAID, REFUNDED 구조로 명확하게 매핑 분기합니다.
+    if ("PAID".equalsIgnoreCase(paymentStatus)) {
+        displayStatus = "予約完了";              // 결제완료 (PAID 일 때)
+        isPaid = true;
+    } else if ("PENDING".equalsIgnoreCase(paymentStatus)) {
+        displayStatus = "決済待ち";              // 결제대기 (PENDING 일 때)
+    } else if ("REFUNDED".equalsIgnoreCase(paymentStatus)) {
+        displayStatus = "キャンセル/返金完了"; // 환불완료 (REFUNDED 일 때)
     } else {
-        displayStatus = "その他状態 (" + bootConfirm + ")";
+        displayStatus = "その他状態 (" + paymentStatus + ")";
     }
 
     String pleaseSummary = HotelPriceUtil.formatPleaseSummary(reservation.getBootPlease());
 %>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -72,7 +78,7 @@
 
         <section class="reservation-card">
             <div class="room-image">
-                <%= reservation.getRoomGrade() %> <%-- 등급 노출로 역동성 부여 --%>
+                <%= reservation.getRoomGrade() %>
             </div>
 
             <div>
@@ -88,8 +94,8 @@
             <div class="card-actions">
                 <button type="button" class="detail-link" onclick="openDetail()">[予約詳細を見る]</button>
 
-                <%-- 5. 오직 결제완료(1) 상태일 때만 환불 처리 요청 버튼을 지원합니다 --%>
-                <% if (bootConfirm == 1) { %>
+                <%-- 🎯 변동 포인트: 오직 PAYMENT 테이블 상태가 PAID(완료)일 때만 환불 버튼 가동 --%>
+                <% if (isPaid) { %>
                 <form action="${pageContext.request.contextPath}/kakaoRefund" method="post"
                       class="refund-form"
                       onsubmit="return confirm('本当に予約をキャンセルして返金しますか？');">

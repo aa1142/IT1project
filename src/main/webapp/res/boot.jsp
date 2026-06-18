@@ -59,7 +59,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ホテル予約決済 (BOOT)</title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/boot.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css">
 </head>
 <body>
 <main>

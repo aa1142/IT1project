@@ -32,7 +32,7 @@
     <%= errorMessage %>
   </div>
 
-  <a class="home-button" href="${pageContext.request.contextPath}/index.jsp">メイン画面へ移動</a>
+  <a class="home-button" href="${pageContext.request.contextPath}/wls/index.jsp">メイン画面へ移動</a>
 </main>
 </body>
 </html>

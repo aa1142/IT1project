@@ -11,8 +11,8 @@ public class PaymentDAO {
         Class.forName("oracle.jdbc.OracleDriver");
         return DriverManager.getConnection(
             "jdbc:oracle:thin:@localhost:1521:orcl",
-            "proid",
-            "3431"
+            "scott",
+            "tiger"
         );
     }
 

@@ -107,10 +107,8 @@
                     vo.getReservation_code(), 
                     amount
                 );
-                System.out.println("[메일로그] 카카오페이 결제완료 확인 메일 전송 완료!");
             }
         } catch (Exception e) {
-            System.out.println("[메일오류] 결제완료 메일 발송 중 오류: " + e.getMessage());
             e.printStackTrace();
         }
         

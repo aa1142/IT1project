@@ -19,7 +19,7 @@ public class HotelDAO {
     public static final int CONFIRM_PENDING = 0;
     /** 점검·청소·宿泊中 만 제외 — 날짜 충돌은 BOOT_ROOM_BUSY 로 판단 */
     private static final String ROOM_OK =
-            " AND TRIM(r.room_now) NOT IN ('청소 중', '점검 중', '清掃中', '点検中', '宿泊中') ";
+            " AND TRIM(r.room_now) NOT IN ('청소 중', '점검 중', '清掃중', '点検중', '宿泊중') ";
 
     /** 확정 예약만 객실 점유로 간주 */
     private static final String BOOT_ROOM_BUSY =
@@ -31,8 +31,8 @@ public class HotelDAO {
             + " ) ";
 
     /** context.xml(proid) 기준 — SID/서비스명 환경 차이 대비 후보 URL */
-    private static final String DB_USER = "proid";
-    private static final String DB_PASS = "3431";
+    private static final String DB_USER = "scott";
+    private static final String DB_PASS = "tiger";
     private static final String[] DB_URLS = {
             "jdbc:oracle:thin:@localhost:1521:orcl",
             "jdbc:oracle:thin:@//localhost:1521/XEPDB1"
@@ -465,7 +465,7 @@ public class HotelDAO {
         return ok;
     }
 
-    /** 예약 영수증 단건 조회 */
+    /** 🎯 [교정 완결] 예약 영수증 단건 조회 (PAYMENT_STATUS 컬럼 아웃조인 추가) */
     public BootVO selectReservationReceipt(String boot_no) {
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -474,10 +474,13 @@ public class HotelDAO {
 
         try {
             con = dbDirectConnect();
-            String sql = "SELECT b.*, c.company_name, "
+            // 💡 장부 상태 확인을 위해 PAYMENT 테이블을 reservation_id 기준으로 LEFT OUTER JOIN 합니다.
+            String sql = "SELECT b.*, c.company_name, p.PAYMENT_STATUS, "
                     + "TO_CHAR(b.boot_checkin, 'YYYY-MM-DD') AS ci, "
                     + "TO_CHAR(b.boot_checkout, 'YYYY-MM-DD') AS co "
-                    + "FROM boot b LEFT JOIN company c ON c.company_no = b.company_no "
+                    + "FROM boot b "
+                    + "LEFT JOIN company c ON c.company_no = b.company_no "
+                    + "LEFT OUTER JOIN payment p ON b.boot_no = p.reservation_id "
                     + "WHERE b.boot_no = ?";
             pstmt = con.prepareStatement(sql);
             bindBootNo(pstmt, 1, boot_no);
@@ -496,7 +499,7 @@ public class HotelDAO {
         return vo;
     }
 
-    /** 회원별 예약 내역 */
+    /** 🎯 [교정 완결] 회원별 예약 내역 (PAYMENT_STATUS 컬럼 아웃조인 추가) */
     public Vector<BootVO> selectReservationHistoryByMember(String member_id) {
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -505,10 +508,12 @@ public class HotelDAO {
 
         try {
             con = dbDirectConnect();
-            String sql = "SELECT b.*, c.company_name, "
+            String sql = "SELECT b.*, c.company_name, p.PAYMENT_STATUS, "
                     + "TO_CHAR(b.boot_checkin, 'YYYY-MM-DD') AS ci, "
                     + "TO_CHAR(b.boot_checkout, 'YYYY-MM-DD') AS co "
-                    + "FROM boot b LEFT JOIN company c ON c.company_no = b.company_no "
+                    + "FROM boot b "
+                    + "LEFT JOIN company c ON c.company_no = b.company_no "
+                    + "LEFT OUTER JOIN payment p ON b.boot_no = p.reservation_id "
                     + "WHERE b.member_id = ? ORDER BY b.boot_checkin DESC";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, member_id);
@@ -565,6 +570,7 @@ public class HotelDAO {
         return null;
     }
 
+    /** 🎯 [교정 완결] 가방(BootVO)에 오라클 결제 상태 문자열 바인딩 추가 */
     private BootVO parseReceiptData(ResultSet rs) throws SQLException {
         BootVO vo = new BootVO();
         vo.setBoot_no(rs.getString("boot_no"));
@@ -584,6 +590,10 @@ public class HotelDAO {
         vo.setBoot_pay_check(rs.getInt("boot_pay_check"));
         vo.setBoot_please(rs.getString("boot_please"));
         vo.setBoot_confirm(rs.getInt("boot_confirm"));
+        
+        // 🎯 [추가 포인트] 조인으로 퍼 올린 PAYMENT_STATUS 문자열을 BootVO 객체에 주입!
+        vo.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
+
         String resCode = rs.getString("reservation_code");
         if (resCode == null) {
             resCode = rs.getString("RESERVATION_CODE");
