@@ -142,7 +142,6 @@
                         	break;	
                         }
                         
-                        System.out.println("jsp RoomNo = "+room.getRoomNo());
                         String[] firstCheckInOut = bootDao.SelectOneFirstBootDate(room.getRoomNo(), room.getCompanyNo());
                         String firstCheckIn = "";
                         String firstCheckOut = "";
@@ -193,7 +192,7 @@
                         
                 %>
                 <div class="room-card <%= cardClass %>" onclick="openRoomModal('<%= roomNo %>', '<%= roomGrade %>', '<%= statusText %>', '<%= firstCheckIn %>', '<%= roomType %>')">
-                    <div class="text-muted fw-bold" style="font-size: 11px; line-height: 1.1;"><%= roomNo %>号室</div>
+                    <div class="text-muted fw-bold" style="font-size: 11px; line-height: 1.1;"><%= String.format("%03d", room.getRoomNo() % 1000) %>号室</div>
 				    
 				    <div style="font-size: 12px; line-height: 1.2; margin-top: 1px;"><%= roomGrade %></div>
 				    

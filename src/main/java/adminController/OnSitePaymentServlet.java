@@ -41,7 +41,9 @@ public class OnSitePaymentServlet extends HttpServlet {
 
         // 기본 설정 값
         HttpSession session = request.getSession();
-        Integer companyNo = (Integer)session.getAttribute("companyNo");
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 //        companyNo = 1;
         BootDao bootDao = new BootDao();
         int pageSize = 5; 

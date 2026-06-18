@@ -21,7 +21,9 @@ public class MemoInsertServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         
         HttpSession session = request.getSession();
-        Integer companyNo = (Integer) session.getAttribute("companyNo");
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
         String adminId = (String) session.getAttribute("adminId");
         
         // 테스트용 임시 데이터 설정

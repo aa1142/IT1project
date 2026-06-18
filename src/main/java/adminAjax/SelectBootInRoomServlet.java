@@ -26,8 +26,9 @@ public class SelectBootInRoomServlet extends HttpServlet {
 		BootDao bootDao = new BootDao();
 		
 		// 2. 세션 및 파라미터 값 추출
-		Integer companyNoObj = (Integer)session.getAttribute("companyNo");
-		int companyNo = (companyNoObj != null) ? companyNoObj : 0;
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 		String roomNoStr = request.getParameter("roomNo");
 		int roomNo = 0;
 		

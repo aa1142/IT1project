@@ -26,9 +26,9 @@ public class RoomStatusServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 	    RoomDao roomDao = new RoomDao();
 	    BootDao bootDao = new BootDao();
-	    Integer sessionCompanyNo = (Integer) session.getAttribute("companyNo");
-//	    if (sessionCompanyNo == null) { sessionCompanyNo = 1; } // 임시 디버깅용
-	    int companyNo = sessionCompanyNo;
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 	    
 	    // 1. 왼쪽 사이드바용 등급별 개수
 	    Map<String, Integer> roomCounts = roomDao.selectCountRoomGrade(companyNo);

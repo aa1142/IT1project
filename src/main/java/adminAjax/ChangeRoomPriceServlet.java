@@ -25,7 +25,9 @@ public class ChangeRoomPriceServlet extends HttpServlet {
 				response.setContentType("text/plain;charset=UTF-8");
 				
 				HttpSession session = request.getSession();
-				Integer companyNo = (Integer)session.getAttribute("companyNo");
+			    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+			    int companyNo = 0;
+			    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 				// 2. AJAX가 보낸 파라미터 수신
 				String roomGrade = request.getParameter("roomGrade");
 				String priceSingleStr = request.getParameter("priceSingle");

@@ -14,7 +14,9 @@ public class RoomSearchServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	    System.out.println("=== 모달 서버 요청 진입 확인 ==="); // 최최상단에 배치
 	    HttpSession session = request.getSession();
-	    Integer companyNo = (Integer) session.getAttribute("companyNo");
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 	    try {
 	        String grade = request.getParameter("grade");
 	        String typeStr = request.getParameter("type");

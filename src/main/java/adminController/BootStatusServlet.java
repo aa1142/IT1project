@@ -21,7 +21,9 @@ public class BootStatusServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		Integer companyNo= (Integer)session.getAttribute("companyNo");
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 		//회사 더미데이터
 //		companyNo = 1;
 		RoomDao roomDao = new RoomDao();

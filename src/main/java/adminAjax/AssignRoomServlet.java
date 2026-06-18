@@ -27,7 +27,9 @@ public class AssignRoomServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         HttpSession session = request.getSession();
-        Integer companyNo = (Integer) session.getAttribute("companyNo");
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
         
         BootDao bootDao = new BootDao();
         String bootNoStr = request.getParameter("bootNo");

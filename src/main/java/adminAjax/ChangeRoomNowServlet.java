@@ -39,8 +39,9 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	    String isWalkIn = request.getParameter("isWalkIn");
 	    
 	    // 세션 및 더미데이터
-	    Integer companyObj = (Integer) session.getAttribute("companyNo");
-	    int company = (companyObj != null) ? companyObj : 0;
+	    String sessionCompanyNo = (String) session.getAttribute("companyNo");
+	    int companyNo = 0;
+	    if (sessionCompanyNo != null) { companyNo = Integer.parseInt(sessionCompanyNo); } 
 	    
 	    int result = 0;//성공 여부
 	    
@@ -61,7 +62,7 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	        BootDto bootDto = new BootDto();
 	        bootDto.setBootNo("Hotel-"+System.currentTimeMillis());
 	        bootDto.setBootName(bootName);
-	        bootDto.setCompanyNo(company);
+	        bootDto.setCompanyNo(companyNo);
 	        bootDto.setBootPhone(bootPhone);
 	        bootDto.setBootAdult(bootAdult);
 	        bootDto.setBootChild(bootChild);
@@ -71,11 +72,11 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	        bootDto.setRoomType(roomType);
 	        result = bootDao.assignRoom(bootDto);
 	        if(result>0) {
-	        	result = roomDao.updateRoomNow(roomNow, roomNo, company);
+	        	result = roomDao.updateRoomNow(roomNow, roomNo, companyNo);
 	        }
 	    }
 	    else {
-	    	result = roomDao.updateRoomNow(roomNow, roomNo, company);
+	    	result = roomDao.updateRoomNow(roomNow, roomNo, companyNo);
 		}
 
 	    System.out.println("방 업데이트"+result);

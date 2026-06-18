@@ -21,17 +21,15 @@
     
     // 🎯 방 선택(클릭) 처리 함수
     function selectRoom(element, roomNum) {
-        // 기존에 선택되어 있던 방들의 하이라이트(selected) 클래스 전부 제거
         $('.room-box').removeClass('selected');
-        
-        // 현재 클릭한 방 상자에 selected 클래스 추가 (테두리 파랗게 변경)
         $(element).addClass('selected');
         
-        // 전역 변수에 클릭한 방 번호 저장
+        // ⚠️ 전역 변수에는 DB 전송을 위해 원래의 5자리 번호(예: 20101)를 그대로 저장합니다.
         selectedRoomNum = roomNum;
         
-        // 모달 하단의 배지 업데이트 및 안내 문구 토글
-        document.getElementById('selectedRoomBadge').innerText = roomNum + "号室";
+        // 렌더링: 배지 화면에 보여줄 때만 마지막 3글자만 출력 (예: 101号室)
+        const displayRoomNum = String(roomNum).slice(-3);
+        document.getElementById('selectedRoomBadge').innerText = displayRoomNum + "号室";
         document.getElementById('selectedRoomBadge').classList.remove('d-none');
         document.getElementById('noSelectText').classList.add('d-none');
     }
@@ -52,7 +50,6 @@
         const checkInDate = element.getAttribute('data-checkin');
         const checkOutDate = element.getAttribute('data-checkout');
 
-        // 모달 상단 텍스트 바인딩
         document.getElementById('modalResNo').innerText = bootNo;
         document.getElementById('modalGuestName').innerText = row.cells[1].innerText; 
         document.getElementById('modalPhone').innerText = row.cells[2].innerText;     
@@ -63,8 +60,6 @@
         document.getElementById('modalRoomType').innerText = grade + " (" + typeText + ")";
         
         const pleaseText = element.getAttribute('data-please');
-
-        // 값이 없거나, 문자열 "null"이거나, 공백만 있는 경우 "なし"로 처리
         document.getElementById('modalBootPlease').innerText = 
             (pleaseText && pleaseText !== "null" && pleaseText.trim() !== "") ? pleaseText : "なし";
 
@@ -83,8 +78,13 @@
                     let html = '<div class="room-container">';
                     data.forEach(room => {
                         const roomNum = room.roomNo || room.room_no; 
+                        
+                        // 🎯 [수정] 화면에 보여줄 3자리 방 호수 추출 (예: 20101 -> 101)
+                        const displayRoomNum = String(roomNum).slice(-3);
+                        
+                        // 클릭 이벤트에는 원래 roomNum(5자리)을 넘겨주고, 화면 text에는 displayRoomNum(3자리)을 출력합니다.
                         html += '<div class="room-box" onclick="selectRoom(this, \'' + roomNum + '\')">'
-                             + '    <span class="fw-bold">' + roomNum + '号室</span>'
+                             + '    <span class="fw-bold">' + displayRoomNum + '号室</span>'
                              + '    <small>利用可能</small>'
                              + '</div>';
                     });
@@ -103,13 +103,18 @@
 
     // 객실 지정 최종 완료 요청
     function assignRoomComplete() {
-           	console.log("ajax 들어옴");
+        console.log("ajax 들어옴");
         if (!selectedBootNo) { alert("予約情報が正しくありません。"); return; }
         if (!selectedRoomNum) { alert("割り当てる客室を選択してください。"); return; }
-        if (confirm(selectedBootNo + "番の予約に " + selectedRoomNum + "号室を割り当てますか？")) {
-        	$.ajax({
+        
+        // 🎯 [수정] 컨펌창 띄울 때도 마지막 3글자만 보여주도록 처리
+        const displayRoomNum = String(selectedRoomNum).slice(-3);
+        
+        if (confirm(selectedBootNo + "番の予約に " + displayRoomNum + "号室を割り当てますか？")) {
+            $.ajax({
                 url: '${pageContext.request.contextPath}/admin/assignRoom.do', 
                 type: 'POST',
+                // ⚠️ 여기서는 원래의 5자리 번호(selectedRoomNum)를 서버로 전송해야 DB 처리가 정상적으로 이루어집니다.
                 data: { bootNo: selectedBootNo, roomNo: selectedRoomNum},
                 dataType: 'json',
                 success: function(res) {
