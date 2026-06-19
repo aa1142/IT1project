@@ -47,6 +47,26 @@ public class PaymentDAO {
     }
 
     /**
+     * 🔥 [추가됨] 현재 결제 상태 조회 (핵심)
+     */
+    public String getPaymentStatus(String bootNo) throws Exception {
+        String sql = "SELECT PAYMENT_STATUS FROM PAYMENT WHERE RESERVATION_ID = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            bindReservationId(pstmt, 1, bootNo);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("PAYMENT_STATUS");
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * 1. [등록] 카카오페이 최종 승인 완료된 결제 영수증 내역을 PAYMENT 테이블에 적재합니다.
      */
     public int insertPayment(PaymentDTO dto) throws Exception {
@@ -71,7 +91,6 @@ public class PaymentDAO {
      * 예약 직후 결제 대기 건 등록 (온라인 결제 — 카카오페이 승인 전)
      */
     public int insertPendingPayment(String bootNo, int amount, String paymentMethod) throws Exception {
-        // 기존 쿼리(RESERVATION_ID 타격)로 완벽 복구
         String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
                 + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, ?, ?, 'PENDING')";
 
@@ -107,7 +126,6 @@ public class PaymentDAO {
      * 카카오페이 승인 완료 — PENDING 건을 PAID 로 갱신 (없으면 신규 INSERT)
      */
     public int completeKakaoPayment(String bootNo, String tid, int amount) throws Exception {
-        // 🎯 원래 RESERVATION_ID 조건절 유지하되, 카카오페이 승인 시각(APPROVED_AT = SYSDATE)을 확실하게 동기화해 줍니다.
         String updateSql = "UPDATE PAYMENT SET TID = ?, PAYMENT_STATUS = 'PAID', APPROVED_AT = SYSDATE "
                 + "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS IN ('PENDING', 'AWAITING')";
 
@@ -129,6 +147,7 @@ public class PaymentDAO {
         dto.setPaymentMethod("KAKAOPAY");
         dto.setAmount(amount);
         dto.setPaymentStatus("PAID");
+
         return insertPayment(dto);
     }
 
@@ -164,7 +183,7 @@ public class PaymentDAO {
     }
 
     /**
-     * 3. [수정] 결제 성공 시 상태를 'PAID'로 바꾸고, APPROVED_AT에 오라클 현재 시각(SYSDATE)을 채웁니다.
+     * 3. [수정] 결제 상태 변경
      */
     public int updatePaymentStatus(String bootNo, String status) throws Exception {
         String sql = "UPDATE PAYMENT SET PAYMENT_STATUS = ?, APPROVED_AT = SYSDATE WHERE RESERVATION_ID = ?";

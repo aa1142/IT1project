@@ -63,8 +63,36 @@ public class HotelDAO {
         }
         throw new SQLException("DB connection failed");
     }
+    public int updateMemberCountUp(String memberId) throws Exception {
+        String sql = "UPDATE MEMBER SET MEMBER_COUNT = NVL(MEMBER_COUNT, 0) + 1 WHERE MEMBER_ID = ?";
 
-    /** 한글 지점명 → DB 검색어 변환기 */
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, memberId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+    
+    public int updateMemberCountDown(String memberId) throws Exception {
+        String sql = "UPDATE MEMBER SET MEMBER_COUNT = NVL(MEMBER_COUNT, 0) - 1 WHERE MEMBER_ID = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, memberId);
+
+            return pstmt.executeUpdate();
+        }
+    }
+    
+    private Connection getConnection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/** 한글 지점명 → DB 검색어 변환기 */
     private String convertBranchKeyword(String keyword) {
         if (keyword == null) {
             return "";

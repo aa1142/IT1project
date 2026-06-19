@@ -40,7 +40,7 @@
 
     // [장부 바인딩 구역] 
     String paymentStatus = reservation.getPaymentStatus();
-    if (paymentStatus == null) {
+    if (paymentStatus == null) {	
         paymentStatus = "PENDING";
     }
     
