@@ -2,7 +2,6 @@ package review;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -19,8 +18,6 @@ public class ReviewInsertServlet extends HttpServlet {
 
     private static class ReservationReviewInfo {
         private int branch;
-        private String roomGrade;
-        private int roomType;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,50 +33,35 @@ public class ReviewInsertServlet extends HttpServlet {
             memberId = (String) httpSession.getAttribute("userId");
         }
         if (memberId == null) {
-            memberId = "testUser";
+            response.sendRedirect(request.getContextPath() + "/wls/login.jsp");
+            return;
         }
 
-        String title = request.getParameter("title");
         String content = request.getParameter("content");
         String bootNo = request.getParameter("bootNo");
-        int branch = Integer.parseInt(request.getParameter("branch"));
-        String roomGrade = request.getParameter("roomgrade");
-        int roomType = Integer.parseInt(request.getParameter("roomtype"));
-        int rating = Integer.parseInt(request.getParameter("rating"));
-        int scoreLocation = Integer.parseInt(request.getParameter("score_location"));
-        int scoreCleanliness = Integer.parseInt(request.getParameter("score_cleanliness"));
-        int scoreService = Integer.parseInt(request.getParameter("score_service"));
-        int scorePrice = Integer.parseInt(request.getParameter("score_price"));
-        int scoreFacilities = Integer.parseInt(request.getParameter("score_facilities"));
+        if (bootNo == null || bootNo.trim().isEmpty()) {
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "예약 정보를 먼저 선택해주세요.");
+            return;
+        }
 
-        if (bootNo != null && !bootNo.trim().isEmpty()) {
-            ReservationReviewInfo reservationInfo = findReservationReviewInfo(bootNo.trim(), memberId);
-            if (reservationInfo == null) {
-                response.setContentType("text/html; charset=UTF-8");
-                response.getWriter().println("<script>alert('선택한 예약 내역을 확인할 수 없습니다.'); location.href='" + request.getContextPath() + "/review/reviewReservation.jsp';</script>");
-                return;
-            }
-
-            branch = reservationInfo.branch;
-            roomGrade = reservationInfo.roomGrade;
-            roomType = reservationInfo.roomType;
+        ReservationReviewInfo reservationInfo = findReservationReviewInfo(bootNo.trim(), memberId);
+        if (reservationInfo == null) {
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "선택한 예약 내역을 확인할 수 없습니다.");
+            return;
         }
 
         ReviewDto reviewDto = new ReviewDto();
-        reviewDto.setBootNo(bootNo == null || bootNo.trim().isEmpty() ? null : bootNo.trim());
+        reviewDto.setBootNo(bootNo.trim());
         reviewDto.setMemberid(memberId);
-        reviewDto.setCompanyNo(branch);
-        reviewDto.setTitle(title);
+        reviewDto.setCompanyNo(reservationInfo.branch);
+        reviewDto.setBranch(reservationInfo.branch);
+        reviewDto.setRating(parseInt(request.getParameter("rating"), 0));
+        reviewDto.setScore_location(parseInt(request.getParameter("score_location"), 5));
+        reviewDto.setScore_cleanliness(parseInt(request.getParameter("score_cleanliness"), 5));
+        reviewDto.setScore_service(parseInt(request.getParameter("score_service"), 5));
+        reviewDto.setScore_price(parseInt(request.getParameter("score_price"), 5));
+        reviewDto.setScore_facilities(parseInt(request.getParameter("score_facilities"), 5));
         reviewDto.setContent(content);
-        reviewDto.setBranch(branch);
-        reviewDto.setRoomType(roomType);
-        reviewDto.setRoomgrade(roomGrade);
-        reviewDto.setRating(rating);
-        reviewDto.setScore_location(scoreLocation);
-        reviewDto.setScore_cleanliness(scoreCleanliness);
-        reviewDto.setScore_service(scoreService);
-        reviewDto.setScore_price(scorePrice);
-        reviewDto.setScore_facilities(scoreFacilities);
 
         ReviewDao reviewDao = new ReviewDao();
         int result = reviewDao.insertReview(reviewDto);
@@ -88,33 +70,23 @@ public class ReviewInsertServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/review/reviewList");
         } else {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('리뷰 등록에 실패했습니다. Tomcat 콘솔 오류를 확인하세요.'); history.back();</script>");
+            response.getWriter().println("<script>alert('리뷰 등록에 실패했습니다. Tomcat 콘솔 오류를 확인해주세요.'); history.back();</script>");
         }
     }
 
     private ReservationReviewInfo findReservationReviewInfo(String bootNo, String memberId) {
-        String sql = "SELECT COMPANY_NO, ROOM_GRADE, ROOM_TYPE FROM BOOT WHERE BOOT_NO = ? AND MEMBER_ID = ? AND BOOT_CONFIRM <> 2";
+        String sql = "SELECT COMPANY_NO FROM BOOT WHERE TO_CHAR(BOOT_NO) = ? AND MEMBER_ID = ? AND BOOT_CONFIRM <> 2";
 
-        try {
-            try {
-                Class.forName("oracle.jdbc.OracleDriver");
-            } catch (ClassNotFoundException e) {
-                Class.forName("oracle.jdbc.driver.OracleDriver");
-            }
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, bootNo);
+            pstmt.setString(2, memberId);
 
-            try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
-                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, bootNo);
-                pstmt.setString(2, memberId);
-
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        ReservationReviewInfo info = new ReservationReviewInfo();
-                        info.branch = rs.getInt("COMPANY_NO");
-                        info.roomGrade = rs.getString("ROOM_GRADE");
-                        info.roomType = rs.getInt("ROOM_TYPE");
-                        return info;
-                    }
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    ReservationReviewInfo info = new ReservationReviewInfo();
+                    info.branch = rs.getInt("COMPANY_NO");
+                    return info;
                 }
             }
         } catch (Exception e) {
@@ -123,5 +95,18 @@ public class ReviewInsertServlet extends HttpServlet {
         }
 
         return null;
+    }
+
+    private int parseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private void showAlert(HttpServletResponse response, String location, String message) throws IOException {
+        response.setContentType("text/html; charset=UTF-8");
+        response.getWriter().println("<script>alert('" + message + "'); location.href='" + location + "';</script>");
     }
 }
