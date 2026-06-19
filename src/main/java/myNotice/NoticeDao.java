@@ -22,7 +22,7 @@ public class NoticeDao {
     public ArrayList<NoticeDto> getNoticeList() {
         String sql = "SELECT * FROM NOTICE "
                 + "ORDER BY CASE "
-                + "WHEN NOTICE_TITLE LIKE '[중요공지]%' OR NOTICE_TITLE LIKE '[重要]%' THEN 0 "
+                + "WHEN NOTICE_TITLE LIKE '[\uC911\uC694\uACF5\uC9C0]%' OR NOTICE_TITLE LIKE '[重要]%' THEN 0 "
                 + "ELSE 1 END, NOTICE_NO DESC";
         ArrayList<NoticeDto> noticeList = new ArrayList<>();
 

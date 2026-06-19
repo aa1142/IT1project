@@ -40,18 +40,18 @@ public class ReviewInsertServlet extends HttpServlet {
         String content = request.getParameter("content");
         String bootNo = request.getParameter("bootNo");
         if (bootNo == null || bootNo.trim().isEmpty()) {
-            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "예약 정보를 먼저 선택해주세요.");
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "予約情報を先に選択してください。");
             return;
         }
 
         ReservationReviewInfo reservationInfo = findReservationReviewInfo(bootNo.trim(), memberId);
         if (reservationInfo == null) {
-            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "선택한 예약 내역을 확인할 수 없습니다.");
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "選択した予約情報を確認できません。");
             return;
         }
 
         if (hasReviewForReservation(bootNo.trim())) {
-            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "이미 리뷰를 작성한 예약입니다.");
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "すでにレビューを作成した予約です。");
             return;
         }
 
@@ -70,7 +70,7 @@ public class ReviewInsertServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/review/reviewList");
         } else {
             response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().println("<script>alert('리뷰 등록에 실패했습니다. Tomcat 콘솔 오류를 확인해주세요.'); history.back();</script>");
+            response.getWriter().println("<script>alert('レビューの登録に失敗しました。Tomcatコンソールを確認してください。'); history.back();</script>");
         }
     }
 

@@ -8,16 +8,14 @@ public class ReviewDbUtil {
     private static final String USER = "scott";
     private static final String PASS = "tiger";
     private static final String[] URLS = {
-           // "jdbc:oracle:thin:@localhost:1521:xe",
-            "jdbc:oracle:thin:@localhost:1521:orcl",
-            //"jdbc:oracle:thin:@//localhost:1521/XEPDB1"
+            "jdbc:oracle:thin:@localhost:1521:orcl"
     };
 
     static {
         try {
             Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError("Oracle JDBC 드라이버(ojdbc8.jar)를 찾을 수 없습니다.");
+            throw new ExceptionInInitializerError("Oracle JDBCドライバー(ojdbc8.jar)が見つかりません。");
         }
     }
 
@@ -38,6 +36,6 @@ public class ReviewDbUtil {
         if (lastError != null) {
             throw lastError;
         }
-        throw new SQLException("Oracle DB에 연결할 수 없습니다.");
+        throw new SQLException("Oracle DBに接続できません。");
     }
 }

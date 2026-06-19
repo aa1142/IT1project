@@ -33,8 +33,8 @@ public class NoticeWriteServlet extends HttpServlet {
         String content = request.getParameter("content");
         String important = request.getParameter("important");
 
-        if ("Y".equals(important) && title != null && !title.startsWith("[중요공지]")) {
-            title = "[중요공지] " + title;
+        if ("Y".equals(important) && title != null && !title.startsWith("[重要]")) {
+            title = "[重要] " + title;
         }
 
         String uploadPath = request.getServletContext().getRealPath("") + File.separator + "upload";
@@ -66,9 +66,9 @@ public class NoticeWriteServlet extends HttpServlet {
 
         if (result > 0) {
             int newNoticeNo = dao.getLatestNoticeNo();
-            out.println("<script>alert('공지사항이 등록되었습니다.'); location.href='notice/noticeDetail.jsp?no=" + newNoticeNo + "';</script>");
+            out.println("<script>alert('お知らせを登録しました。'); location.href='notice/noticeDetail.jsp?no=" + newNoticeNo + "';</script>");
         } else {
-            out.println("<script>alert('등록 실패! 콘솔창 오류를 확인하세요.'); history.back();</script>");
+            out.println("<script>alert('お知らせの登録に失敗しました。Tomcatコンソールを確認してください。'); history.back();</script>");
         }
         out.close();
     }
@@ -103,7 +103,7 @@ public class NoticeWriteServlet extends HttpServlet {
         String adminId = (String) session.getAttribute("adminId");
         return adminId != null
                 || "管理者".equals(userGrade)
-                || "관리자".equals(userGrade)
+                || "\uad00\ub9ac\uc790".equals(userGrade)
                 || (userId != null && userId.toLowerCase().startsWith("admin"));
     }
 
