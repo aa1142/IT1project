@@ -70,6 +70,9 @@
     String mPhoneJs = mPhone.replace("\\", "\\\\").replace("'", "\\'");
     String mEmailJs = mEmail.replace("\\", "\\\\").replace("'", "\\'");
     String mAddrJs = mAddr.replace("\\", "\\\\").replace("'", "\\'").replace("\r", " ").replace("\n", " ");
+
+    String reserveToken = java.util.UUID.randomUUID().toString();
+    session.setAttribute("reserveToken", reserveToken);
 %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -120,6 +123,7 @@
       <input type="hidden" name="boot_child" value="<%= boot_child %>">
       <input type="hidden" name="breakfast_yn" id="breakfast_yn" value="N">
       <input type="hidden" name="fast_checkin_yn" id="fast_checkin_yn" value="N">
+      <input type="hidden" name="reserveToken" value="<%= reserveToken %>">
 
       <div class="main-content">
         <div class="form-section">

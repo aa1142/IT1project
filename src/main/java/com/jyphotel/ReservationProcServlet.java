@@ -26,6 +26,15 @@ public class ReservationProcServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
+        HttpSession session = req.getSession();
+        String sessionToken = (String) session.getAttribute("reserveToken");
+        String formToken = req.getParameter("reserveToken");
+        if (sessionToken == null || formToken == null || !sessionToken.equals(formToken)) {
+            sendAlertBack(resp, "既に予約処理が完了しているか、再送信されました。ホテル検索からやり直してください。");
+            return;
+        }
+        session.removeAttribute("reserveToken");
+
         HotelDAO dao = new HotelDAO();
         PaymentDAO payDao = new PaymentDAO();
 
@@ -106,7 +115,6 @@ public class ReservationProcServlet extends HttpServlet {
         vo.setBoot_pay_check(isOnlinePay ? HotelDAO.PAY_CHECK_ONLINE : HotelDAO.PAY_CHECK_ONSITE);
         vo.setBoot_confirm(HotelDAO.CONFIRM_PENDING);
 
-        HttpSession session = req.getSession();
         String memberId = dao.resolveMemberIdForReservation((String) session.getAttribute("sessionUserId"));
         if (memberId != null) {
             vo.setMember_id(memberId);
@@ -142,19 +150,7 @@ public class ReservationProcServlet extends HttpServlet {
             session.setAttribute("reservationCode", vo.getReservation_code());
             session.setAttribute("amount", grandTotal);
 
-            String itemName = companyName + " " + RoomTypeUtil.toUiGrade(room_grade)
-                    + " " + RoomTypeUtil.getDisplayName(room_grade, room_type);
-
-            req.setAttribute("bootNo", vo.getBoot_no());
-            req.setAttribute("reservationCode", vo.getReservation_code());
-            req.setAttribute("bootPayCheck", String.valueOf(grandTotal));
-            req.setAttribute("bootName", vo.getBoot_name());
-            req.setAttribute("bootEmail", vo.getBoot_email());
-            req.setAttribute("itemName", itemName);
-            req.setAttribute("quantity", "1");
-            req.setAttribute("taxFreeAmount", "0");
-
-            req.getRequestDispatcher("/res/boot.jsp").forward(req, resp);
+            resp.sendRedirect(req.getContextPath() + "/res/boot.jsp");
             return;
         }
 
