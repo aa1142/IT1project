@@ -15,11 +15,11 @@ public class LogoutServelt extends HttpServlet {
         
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 1. 현재 브라우저의 세션 가져오기
-		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession();
 		if (session != null) {
 			session.removeAttribute("adminId");
 			// 완전히 무효화하려면 주석을 푸셔도 됩니다.
-			// session.invalidate(); 
+			 session.invalidate(); 
 		}
 		
 		// 🎯 2. 안전한 Null 체크 후 로그아웃 성공 알림창 띄우기
@@ -33,7 +33,7 @@ public class LogoutServelt extends HttpServlet {
 			// 자바스크립트로 알림창을 띄우고 로그인 페이지로 이동시킵니다.
 			out.println("<script type='text/javascript'>");
 			out.println("    alert('성공적으로 로그아웃되었습니다.');");
-			out.println("    location.href = '" + request.getContextPath() + "/wls/index.jsp;");
+			out.println("    location.href = '" + request.getContextPath() + "/wls/index.jsp';");
 			out.println("</script>");
 			
 			out.flush();
