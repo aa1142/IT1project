@@ -64,6 +64,7 @@
             <span class="navbar-text text-white">
                 ${not empty adminData ? adminData.adminName : '管理者'}様
             </span>
+            <a href="${pageContext.request.contextPath}/Admin/logout" class="btn btn-outline-light btn-sm ms-3fw-bold">Logout</a>
         </div>
     </div>
 </nav>
