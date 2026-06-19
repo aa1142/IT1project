@@ -112,29 +112,41 @@
           </tr>
         </thead>
         <tbody>
-        <% if (reserveList == null || reserveList.isEmpty()) { %>
-        
+         <% if (reserveList == null || reserveList.isEmpty()) { %>
           <tr><td colspan="5" class="no-data">宿泊予約履歴がありません。</td></tr>
         <% } else { 
              for (Map<String, String> reserve : reserveList) { 
-               String status = reserve.get("status");
-               if (status == null) status = "予約完了";
+               String status = reserve.get("status"); // ◀ DB에서 '0' 또는 '1' 텍스트를 꺼내옵니다.
                
-               // 状態に応じて適切なバッジを付与するための翻訳マッピング
-               String displayStatus = status;
-               if ("예약완료".equals(status)) displayStatus = "予約完了";
-               else if ("예약취소".equals(status) || "취소".equals(status)) displayStatus = "キャンセル";
+               // 💡 [핵심 교정]: 숫자 값에 따라 알맞은 일본어 상태 문자열과 디자인 배지를 동적 할당합니다.
+               String displayStatus = "予約完了";
+               String badgeClass = "badge-success"; // 기본 초록 배지
                
-               String badgeClass = "キャンセル".equals(displayStatus) || displayStatus.contains("取消") || displayStatus.contains("キャンセル") ? "badge-cancel" : "badge-success";
+               if ("1".equals(status)) {
+                   displayStatus = "キャンセル";
+                   badgeClass = "badge-cancel"; // 1일 경우 취소 빨간 배지 전환
+               } else if ("0".equals(status)) {
+                   displayStatus = "予約完了";
+                   badgeClass = "badge-success";
+               } else {
+                   // 혹시라도 다른 문자열(예약완료 등)이 들어있을 때를 대비한 방어 코드
+                   displayStatus = status;
+                   if("예약완료".equals(status)) displayStatus = "予約完了";
+                   if("취소".equals(status) || "예약취소".equals(status)) {
+                       displayStatus = "キャンセル";
+                       badgeClass = "badge-cancel";
+                   }
+               }
         %>
           <tr>
             <td><%= reserve.get("no") %></td>
             <td style="font-weight:700; color:var(--main);"><%= reserve.get("room") %></td>
             <td><%= reserve.get("in") %></td>
             <td><%= reserve.get("out") %></td>
+            <!-- 💡 실시간 반영된 예쁜 배지와 매핑된 일본어 텍스트가 깨끗하게 출력됩니다 -->
             <td><span class="badge <%= badgeClass %>"><%= displayStatus %></span></td>
           </tr>
-        <%    } 
+        <%   } 
            } %>
         </tbody>
       </table>
