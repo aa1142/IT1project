@@ -56,11 +56,6 @@ public class ReviewInsertServlet extends HttpServlet {
         reviewDto.setCompanyNo(reservationInfo.branch);
         reviewDto.setBranch(reservationInfo.branch);
         reviewDto.setRating(parseInt(request.getParameter("rating"), 0));
-        reviewDto.setScore_location(parseInt(request.getParameter("score_location"), 5));
-        reviewDto.setScore_cleanliness(parseInt(request.getParameter("score_cleanliness"), 5));
-        reviewDto.setScore_service(parseInt(request.getParameter("score_service"), 5));
-        reviewDto.setScore_price(parseInt(request.getParameter("score_price"), 5));
-        reviewDto.setScore_facilities(parseInt(request.getParameter("score_facilities"), 5));
         reviewDto.setContent(content);
 
         ReviewDao reviewDao = new ReviewDao();

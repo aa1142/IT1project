@@ -68,11 +68,11 @@
 <div style="max-width:680px; margin:0 auto 20px auto;">
     <a href="<%= ctx %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
 </div>
+
 <div class="write-container">
     <div class="page-title">レビュー修正</div>
 
-    <form method="POST" action="<%= ctx %>/review/reviewList">
-        <input type="hidden" name="action" value="update">
+    <form method="POST" action="<%= ctx %>/review/reviewUpdate" onsubmit="return validateRating()">
         <input type="hidden" name="reviewNo" value="<%= review.getReviewNo() %>">
         <input type="hidden" name="branch" value="<%= review.getCompanyNo() %>">
 
@@ -106,12 +106,6 @@
             <textarea class="form-textarea-custom" name="content" rows="7" required><%= review.getContent() == null ? "" : review.getContent() %></textarea>
         </div>
 
-        <input type="hidden" name="score_location" value="<%= review.getScore_location() %>">
-        <input type="hidden" name="score_cleanliness" value="<%= review.getScore_cleanliness() %>">
-        <input type="hidden" name="score_service" value="<%= review.getScore_service() %>">
-        <input type="hidden" name="score_price" value="<%= review.getScore_price() %>">
-        <input type="hidden" name="score_facilities" value="<%= review.getScore_facilities() %>">
-
         <div class="btn-group-row">
             <button type="submit" class="btn-submit-custom">修正する</button>
             <a href="<%= ctx %>/review/reviewList" class="btn-cancel-custom">キャンセル</a>
@@ -141,6 +135,14 @@
             });
         });
     });
+
+    function validateRating() {
+        if (!hiddenRatingInput || hiddenRatingInput.value === "0") {
+            alert("評価を1点以上選択してください。");
+            return false;
+        }
+        return true;
+    }
 </script>
 </body>
 </html>

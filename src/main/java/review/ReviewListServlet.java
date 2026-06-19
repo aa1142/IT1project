@@ -42,11 +42,6 @@ public class ReviewListServlet extends HttpServlet {
             reviewDto.setCompanyNo(Integer.parseInt(request.getParameter("branch")));
             reviewDto.setBranch(Integer.parseInt(request.getParameter("branch")));
             reviewDto.setRating(Integer.parseInt(request.getParameter("rating")));
-            reviewDto.setScore_location(Integer.parseInt(request.getParameter("score_location")));
-            reviewDto.setScore_cleanliness(Integer.parseInt(request.getParameter("score_cleanliness")));
-            reviewDto.setScore_service(Integer.parseInt(request.getParameter("score_service")));
-            reviewDto.setScore_price(Integer.parseInt(request.getParameter("score_price")));
-            reviewDto.setScore_facilities(Integer.parseInt(request.getParameter("score_facilities")));
             reviewDto.setContent(request.getParameter("content"));
 
             reviewDao.updateReview(reviewDto);

@@ -18,11 +18,6 @@ public class ReviewUpdateServlet extends HttpServlet {
         int reviewNo = Integer.parseInt(request.getParameter("reviewNo"));
         int branch = Integer.parseInt(request.getParameter("branch"));
         int rating = Integer.parseInt(request.getParameter("rating"));
-        int scoreLocation = Integer.parseInt(request.getParameter("score_location"));
-        int scoreCleanliness = Integer.parseInt(request.getParameter("score_cleanliness"));
-        int scoreService = Integer.parseInt(request.getParameter("score_service"));
-        int scorePrice = Integer.parseInt(request.getParameter("score_price"));
-        int scoreFacilities = Integer.parseInt(request.getParameter("score_facilities"));
         String content = request.getParameter("content");
 
         ReviewDto reviewDto = new ReviewDto();
@@ -30,11 +25,6 @@ public class ReviewUpdateServlet extends HttpServlet {
         reviewDto.setCompanyNo(branch);
         reviewDto.setBranch(branch);
         reviewDto.setRating(rating);
-        reviewDto.setScore_location(scoreLocation);
-        reviewDto.setScore_cleanliness(scoreCleanliness);
-        reviewDto.setScore_service(scoreService);
-        reviewDto.setScore_price(scorePrice);
-        reviewDto.setScore_facilities(scoreFacilities);
         reviewDto.setContent(content);
 
         ReviewDao reviewDao = new ReviewDao();

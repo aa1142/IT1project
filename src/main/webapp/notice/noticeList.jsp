@@ -27,6 +27,13 @@
             font-weight: 700;
             vertical-align: middle;
         }
+        .image-badge {
+            display: inline-block;
+            margin-left: 6px;
+            color: #4b5563;
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +78,8 @@
                     // DB에 한국어 혹은 일본어로 저장되어 있을 중요 태그를 모두 검사합니다.
                     boolean important = title.startsWith("[중요공지]") || title.startsWith("[重要]");
                     String displayTitle = title;
+                    String imageFile = dto.getImageFile();
+                    boolean hasImage = imageFile != null && !imageFile.trim().isEmpty();
                     
                     if (important) {
                         // 중요 태그 문자열을 제거하고 실제 제목만 남깁니다.
@@ -85,6 +94,9 @@
                             <span class="important-badge">重要</span>
                         <% } %>
                         <%= displayTitle %>
+                        <% if (hasImage) { %>
+                        <span class="image-badge" title="画像あり">&#128206;</span>
+                        <% } %>
                     </a>
                 </td>
                 <td><%= dto.getRegDate() %></td>

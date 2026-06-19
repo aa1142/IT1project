@@ -93,12 +93,6 @@
             <textarea class="form-textarea-custom" name="content" rows="7" placeholder="ご利用後の感想を入力してください。" required></textarea>
         </div>
 
-        <input type="hidden" name="score_location" value="5">
-        <input type="hidden" name="score_cleanliness" value="5">
-        <input type="hidden" name="score_service" value="5">
-        <input type="hidden" name="score_price" value="5">
-        <input type="hidden" name="score_facilities" value="5">
-
         <div class="btn-group-row">
             <button type="submit" class="btn-submit-custom" onclick="return validateRating()">投稿する</button>
             <a href="<%= ctx %>/review/reviewReservation.jsp" class="btn-cancel-custom">キャンセル</a>

@@ -9,11 +9,6 @@ public class ReviewDto {
     private int rating;
     private String bootNo;
     private String memberid;
-    private int score_location;
-    private int score_cleanliness;
-    private int score_service;
-    private int score_price;
-    private int score_facilities;
     private int companyNo;
     private int boot_no;
     private String roomGrade;
@@ -78,46 +73,6 @@ public class ReviewDto {
 
     public void setMemberid(String memberid) {
         this.memberid = memberid;
-    }
-
-    public int getScore_location() {
-        return score_location;
-    }
-
-    public void setScore_location(int score_location) {
-        this.score_location = score_location;
-    }
-
-    public int getScore_cleanliness() {
-        return score_cleanliness;
-    }
-
-    public void setScore_cleanliness(int score_cleanliness) {
-        this.score_cleanliness = score_cleanliness;
-    }
-
-    public int getScore_service() {
-        return score_service;
-    }
-
-    public void setScore_service(int score_service) {
-        this.score_service = score_service;
-    }
-
-    public int getScore_price() {
-        return score_price;
-    }
-
-    public void setScore_price(int score_price) {
-        this.score_price = score_price;
-    }
-
-    public int getScore_facilities() {
-        return score_facilities;
-    }
-
-    public void setScore_facilities(int score_facilities) {
-        this.score_facilities = score_facilities;
     }
 
     public int getCompanyNo() {
