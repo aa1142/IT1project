@@ -171,6 +171,7 @@ public class BootDao {
                 bootDto.setBootName(rs.getString("boot_name"));
                 bootDto.setRoomType(rs.getInt("room_type"));
                 bootDto.setBootPayCheck(rs.getInt("boot_pay_check"));
+                bootDto.setMemberId(rs.getString("member_id"));
     	        }
         		return bootDto;// 중간 반환
         	});
