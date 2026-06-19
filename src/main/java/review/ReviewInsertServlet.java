@@ -50,6 +50,11 @@ public class ReviewInsertServlet extends HttpServlet {
             return;
         }
 
+        if (hasReviewForReservation(bootNo.trim())) {
+            showAlert(response, request.getContextPath() + "/review/reviewReservation.jsp", "이미 리뷰를 작성한 예약입니다.");
+            return;
+        }
+
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setBootNo(bootNo.trim());
         reviewDto.setMemberid(memberId);
@@ -90,6 +95,24 @@ public class ReviewInsertServlet extends HttpServlet {
         }
 
         return null;
+    }
+
+    private boolean hasReviewForReservation(String bootNo) {
+        String sql = "SELECT 1 FROM REVIEW WHERE TO_CHAR(BOOT_NO) = ?";
+
+        try (Connection conn = ReviewDbUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, bootNo);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            System.err.println("[ReviewInsertServlet] hasReviewForReservation failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private int parseInt(String value, int defaultValue) {

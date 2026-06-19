@@ -50,7 +50,10 @@
     <div class="page-desc">予約済みの客室情報をもとにレビューを作成します。</div>
 
     <%
-        String sql = "SELECT * FROM BOOT WHERE MEMBER_ID = ? ORDER BY BOOT_NO DESC";
+        String sql = "SELECT * FROM BOOT b "
+                + "WHERE b.MEMBER_ID = ? "
+                + "AND NOT EXISTS (SELECT 1 FROM REVIEW r WHERE TO_CHAR(r.BOOT_NO) = TO_CHAR(b.BOOT_NO)) "
+                + "ORDER BY b.BOOT_NO DESC";
         boolean hasReservation = false;
         boolean loadFailed = false;
 
