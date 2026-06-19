@@ -16,7 +16,7 @@ public class PaymentDAO {
         );
     }
 
-  /** PAYMENT.RESERVATION_ID = boot_no (NUMBER) */
+    /** PAYMENT.RESERVATION_ID = boot_no (NUMBER) */
     private void bindReservationId(PreparedStatement pstmt, int index, String bootNo) throws Exception {
         if (bootNo == null || bootNo.trim().isEmpty()) {
             pstmt.setNull(index, java.sql.Types.NUMERIC);
@@ -27,10 +27,9 @@ public class PaymentDAO {
 
     /**
      * [사용자 전용 정품 메서드]
-     * 앞단 흐름 상관없이 오직 오라클 테이블에서 예약번호 하나로 진짜 적재된 AMOUNT 금액을 직접 긁어옵니다.
+     * 오라클 테이블에서 예약번호 하나로 진짜 적재된 AMOUNT 금액을 직접 긁어옵니다.
      */
     public int getRoomTotalAmountFromDB(String bootNo) throws Exception {
-        // 컬럼명 모순을 해결하기 위해 실제 오라클 컬럼명인 RESERVATION_ID로 타격합니다.
         String sql = "SELECT AMOUNT FROM PAYMENT WHERE RESERVATION_ID = ?";
         
         try (Connection conn = getConnection();
@@ -40,7 +39,7 @@ public class PaymentDAO {
             
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("AMOUNT"); // 정품 AMOUNT 추출 완료!
+                    return rs.getInt("AMOUNT");
                 }
             }
         }
@@ -51,7 +50,8 @@ public class PaymentDAO {
      * 1. [등록] 카카오페이 최종 승인 완료된 결제 영수증 내역을 PAYMENT 테이블에 적재합니다.
      */
     public int insertPayment(PaymentDTO dto) throws Exception {
-        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT) "
+                   + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, SYSDATE)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -71,6 +71,7 @@ public class PaymentDAO {
      * 예약 직후 결제 대기 건 등록 (온라인 결제 — 카카오페이 승인 전)
      */
     public int insertPendingPayment(String bootNo, int amount, String paymentMethod) throws Exception {
+        // 기존 쿼리(RESERVATION_ID 타격)로 완벽 복구
         String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
                 + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, ?, ?, 'PENDING')";
 
@@ -106,6 +107,7 @@ public class PaymentDAO {
      * 카카오페이 승인 완료 — PENDING 건을 PAID 로 갱신 (없으면 신규 INSERT)
      */
     public int completeKakaoPayment(String bootNo, String tid, int amount) throws Exception {
+        // 🎯 원래 RESERVATION_ID 조건절 유지하되, 카카오페이 승인 시각(APPROVED_AT = SYSDATE)을 확실하게 동기화해 줍니다.
         String updateSql = "UPDATE PAYMENT SET TID = ?, PAYMENT_STATUS = 'PAID', APPROVED_AT = SYSDATE "
                 + "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS IN ('PENDING', 'AWAITING')";
 
@@ -134,8 +136,7 @@ public class PaymentDAO {
      * 2. [조회] 환불 처리를 위해 RESERVATION_ID를 기준으로 정상 결제('PAID')된 영수증 내역을 찾아옵니다.
      */
     public PaymentDTO findPaidPaymentByBootNo(String bootNo) throws Exception {
-        // 부적합한 식별자 에러 방지를 위해 BOOT_NO 컬럼명을 RESERVATION_ID로 전면 수정 고정
-    	String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT " +
+        String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT " +
                 "FROM PAYMENT " +
                 "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
 
@@ -163,13 +164,9 @@ public class PaymentDAO {
     }
 
     /**
-     * 3. [수정] 환불 성공 시 결제 내역의 상태를 전면 변경합니다. (ex: PAID -> REFUNDED)
-     */
-    /**
-     * 3. [수정] 결제 성공 시 상태를 'PAID'로 바꾸고, 빈칸이던 APPROVED_AT에 오라클 현재 시각(SYSDATE)을 쾅 박아버립니다.
+     * 3. [수정] 결제 성공 시 상태를 'PAID'로 바꾸고, APPROVED_AT에 오라클 현재 시각(SYSDATE)을 채웁니다.
      */
     public int updatePaymentStatus(String bootNo, String status) throws Exception {
-        // 🎯 STATUS뿐만 아니라 APPROVED_AT 컬럼까지 실시간 동기화 처리
         String sql = "UPDATE PAYMENT SET PAYMENT_STATUS = ?, APPROVED_AT = SYSDATE WHERE RESERVATION_ID = ?";
 
         try (Connection conn = getConnection();
@@ -180,4 +177,5 @@ public class PaymentDAO {
 
             return pstmt.executeUpdate();
         }
-    }}
+    }
+}

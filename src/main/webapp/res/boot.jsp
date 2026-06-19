@@ -34,20 +34,16 @@
         return;
     }
 
- // 3. 🎯 [수정 완료] 빈 PAYMENT 테이블 대신, 앞서 완벽하게 받아온 vo 장부와 세션에서 요금을 추출합니다!
+    // 3. 요금 산출 로직
     int roomTotal = 0;
-    
     if (vo != null) {
-        // 팀원의 요금 산출 방식 규칙인 vo 내의 객실 요금이나 세션 값을 최우선으로 반영합니다.
-        // ReservationProcServlet 에서 세션에 저장한 총 결제 금액
         if (session.getAttribute("amount") != null) {
             roomTotal = (Integer) session.getAttribute("amount");
         }
     }
 
-    // 만약 세션 값이 유실되었을 경우를 대비한 2중 안전 장치 (vo의 다른 데이터나 기본값 활용)
     if (roomTotal == 0) {
-        roomTotal = 150000; // 세션 만료 시 터지지 않게 잡아주는 디폴트 예약금
+        roomTotal = 150000; 
     }
 
     String reservationCode = vo.getReservation_code();
@@ -59,26 +55,53 @@
 <head>
     <meta charset="UTF-8">
     <title>ホテル予約決済 (BOOT)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css">
 </head>
 <body>
-<main>
-    <h1>ホテル予約決済</h1>
-    <p class="notice">カカオペイ決済を実行します。決済ボタンを押すとカカオペイ決済画面に移動します。</p>
-
-    <div class="summary">
-        <div class="row"><strong>予約識別番号</strong><span><%= bootNo %></span></div>
-        <div class="row"><strong>通信固有コード</strong><span><%= reservationCode %></span></div>
-        <div class="row"><strong>予約者名</strong><span><%= bootName %></span></div>
-        <div class="row"><strong>商品名</strong><span><%= itemName %></span></div>
-        <div class="row"><strong>数量</strong><span>1</span></div>
-        <div class="row"><strong>決済金額</strong><span class="value" id="reserveTotal">¥<%= nf.format(roomTotal) %></span></div>
+<main class="receipt-container">
+    
+    <div class="receipt-header">
+        <div class="pay-icon">💳</div>
+        <h2>ホテル予約決済</h2>
+        <p class="notice">カカオペイ決済を実行します。決済ボタンを押すとカカ오ペイ決済画面に移動します。</p>
     </div>
 
-    <form action="${pageContext.request.contextPath}/res/kakaoReady.jsp" method="post">
+    <div class="section-title">予約および決済情報</div>
+    <table class="info-table">
+        <tr>
+            <th>予約識別番号</th>
+            <td><%= bootNo %></td>
+        </tr>
+        <tr>
+            <th>通信固有コード</th>
+            <td><%= reservationCode %></td>
+        </tr>
+        <tr>
+            <th>予約者名</th>
+            <td><%= bootName %></td>
+        </tr>
+        <tr>
+            <th>商品名</th>
+            <td><%= itemName %></td>
+        </tr>
+        <tr>
+            <th>数量</th>
+            <td>1</td>
+        </tr>
+        <tr>
+            <th>決済金額</th>
+            <td class="highlight-price" id="reserveTotal">₩ <%= nf.format(roomTotal) %></td>
+        </tr>
+    </table>
+
+    <form action="${pageContext.request.contextPath}/res/kakaoReady.jsp" method="post" class="btn-group">
         <input type="hidden" name="bootNo" value="<%= bootNo %>">
         <input type="hidden" name="bootPayCheck" value="<%= roomTotal %>"> 
-        <button class="pay-button" type="submit">カカオペイで決済する</button>
+        <button class="btn btn-primary" type="submit">カカオペイで決済する</button>
     </form>
 </main>
 </body>

@@ -1,45 +1,148 @@
-@charset "UTF-8";
+/* ===================================================
+   호텔 결제 대기화면 - 럭셔리 블랙 & 골드 옐로우 프리미엄 에디션
+   =================================================== */
 
-body { 
-    margin: 0; 
-    font-family: Arial, 'Noto Sans KR', sans-serif; 
-    background: #f5f5f5; 
-    color: #222; 
+/* 1. 기본 배경 및 폰트 세팅 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: -0.3px;
 }
-main { 
-    max-width: 720px; 
-    margin: 60px auto; 
-    padding: 32px; 
-    background: #fff; 
-    border: 1px solid #ddd; 
+
+body {
+    background-color: #111111; /* 전체 배경: 완전 딥 블랙 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
-h1 { 
-    margin-top: 0; 
+
+/* 2. 무거운 다크 블랙 메인 카드 컨테이너 */
+.receipt-container {
+    background-color: #1a1a1a; /* 컨테이너: 세련된 차콜 블랙 */
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); /* 웅장한 블랙 입체 섀도우 */
+    padding: 40px;
+    border: 1px solid #2d2d2d; /* 미세한 테두리선으로 입체감 확보 */
+    border-top: 6px solid #f2b705; /* 상단 포인트: 선명한 리치 골드 옐로우 바 */
 }
-.summary { 
-    display: grid; 
-    gap: 10px; 
-    margin: 24px 0; 
-    padding: 20px; 
-    background: #fafafa; 
-    border: 1px solid #e4e4e4; 
+
+/* 3. 헤더 영역 스타일 */
+.receipt-header {
+    text-align: center;
+    margin-bottom: 35px;
 }
-.row { 
-    display: flex; 
-    justify-content: space-between; 
-    gap: 18px; 
+
+.pay-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: inline-block;
+    filter: drop-shadow(0 2px 8px rgba(242, 183, 5, 0.3)); /* 아이콘 은은한 야광 */
 }
-.pay-button { 
-    width: 100%; 
-    height: 54px; 
-    border: 0; 
-    background: #ffeb00; 
-    color: #111; 
-    font-weight: 900; 
-    cursor: pointer; 
-    font-size: 16px; 
+
+.receipt-header h2 {
+    font-size: 24px;
+    color: #ffffff; /* 흰색 타이틀 */
+    font-weight: 700;
+    margin-bottom: 10px;
 }
-.notice { 
-    color: #666; 
-    line-height: 1.6; 
+
+.receipt-header .notice {
+    font-size: 13px;
+    color: #999999; /* 안내 문구는 차분한 그레이 */
+    line-height: 1.6;
+}
+
+/* 4. 중간 소제목 세로 바 */
+.section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f2b705; /* 골드 옐로우 명칭 */
+    text-transform: uppercase;
+    border-left: 3px solid #f2b705; /* 세로선도 노란색 */
+    padding-left: 10px;
+    margin: 25px 0 15px 0;
+}
+
+/* 5. 영수증 형태의 데이터 테이블 */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.info-table tr {
+    border-bottom: 1px solid #2a2a2a; /* 보이지 않는 듯 시크한 다크 가로 구분선 */
+}
+
+.info-table tr:last-child {
+    border-bottom: none;
+}
+
+.info-table th, .info-table td {
+    padding: 16px 0;
+    font-size: 14px;
+}
+
+.info-table th {
+    text-align: left;
+    color: #888888; /* 왼쪽 항목명은 쥐색 */
+    font-weight: 400;
+    width: 40%;
+}
+
+.info-table td {
+    text-align: right;
+    color: #ffffff; /* 오른쪽 실제 데이터는 선명한 흰색 */
+    font-weight: 500;
+}
+
+/* 최종 결제 금액행 특수 튜닝 */
+.info-table tr.total-row {
+    border-top: 2px solid #2d2d2d;
+}
+
+.info-table td.highlight-price {
+    color: #f2b705; /* 핵심 포인트: 쨍하고 선명한 시그니처 노란색 */
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* 6. 하단 결제 단추 그룹 */
+.btn-group {
+    margin-top: 35px;
+    width: 100%;
+}
+
+.btn {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* 시크한 올 블랙 버튼 베이스에 노란색 글씨 포인트 */
+.btn-primary {
+    background-color: #f2b705; /* 버튼 자체를 카카오맛+골드맛 노란색으로 도색 */
+    color: #111111; /* 글씨는 완전 블랙으로 가독성 폭발 */
+}
+
+.btn-primary:hover {
+    background-color: #dca604; /* 마우스 올리면 약간 묵직해지는 노란색 */
+    box-shadow: 0 0 15px rgba(242, 183, 5, 0.4); /* 호버 시 네온 발광 이펙트 */
+}
+
+.btn-primary:active {
+    transform: scale(0.98); /* 누르면 살짝 들어가는 물리 효과 */
 }
