@@ -20,7 +20,10 @@ public class NoticeDao {
     }
 
     public ArrayList<NoticeDto> getNoticeList() {
-        String sql = "SELECT * FROM NOTICE ORDER BY NOTICE_NO DESC";
+        String sql = "SELECT * FROM NOTICE "
+                + "ORDER BY CASE "
+                + "WHEN NOTICE_TITLE LIKE '[중요공지]%' OR NOTICE_TITLE LIKE '[重要]%' THEN 0 "
+                + "ELSE 1 END, NOTICE_NO DESC";
         ArrayList<NoticeDto> noticeList = new ArrayList<>();
 
         try (Connection conn = NoticeDbUtil.getConnection();
