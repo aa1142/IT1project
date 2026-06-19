@@ -38,14 +38,14 @@ public class KakaoApproveServlet extends HttpServlet {
         String partnerOrderId = (String) session.getAttribute("partnerOrderId");
         String partnerUserId = (String) session.getAttribute("partnerUserId");
 
-        Object bootNoObj = session.getAttribute("bootNo"); 
+        Object bootNoObj = session.getAttribute("bootNo");
         Object amountObj = session.getAttribute("amount");
         Object reservationCodeObj = session.getAttribute("reservationCode");
         Object bookerEmailObj = session.getAttribute("bootEmail");
         Object bookerNameObj = session.getAttribute("bootName");
+        String memberId = (String) session.getAttribute("memberId"); // 👈 추가 (중요)
 
         if (pgToken == null || tid == null || partnerOrderId == null || partnerUserId == null) {
-            System.out.println("[검증 로그] 카카오 세션 필수 정보가 누락되어 실패 구역으로 튕깁니다.");
             request.setAttribute("errorMessage", "결제 승인 필수 정보가 유실되었습니다.");
             request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
@@ -78,33 +78,44 @@ public class KakaoApproveServlet extends HttpServlet {
         String responseBody = readBody(connection);
 
         if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            System.out.println("[검증 로그] 카카오 본사 승인 거절됨. 응답코드: " + connection.getResponseCode());
             request.setAttribute("errorMessage", "카카오 최종 승인 실패: " + responseBody);
             request.getRequestDispatcher("/res/kakaoFail.jsp").forward(request, response);
             return;
         }
-        System.out.println("[검증 로그] 카카오 승인 성공 완료! 이제 오라클 대상을 타격합니다.");
-        System.out.println("[검증 로그] 던질 bootNo 값: [" + bootNo + "]");
+
+        System.out.println("[검증 로그] 카카오 승인 성공!");
 
         try {
             PaymentDAO paymentDAO = new PaymentDAO();
-            paymentDAO.completeKakaoPayment(bootNo, tid, amount);
-            System.out.println("[검증 로그] PAYMENT 결제 완료 처리");
-
             HotelDAO hotelDAO = new HotelDAO();
+
+            // 🔥 1. 이전 상태 저장 (핵심)
+            String beforeStatus = paymentDAO.getPaymentStatus(bootNo);
+
+            // 🔥 2. 결제 승인 처리 (PAID)
+            paymentDAO.completeKakaoPayment(bootNo, tid, amount);
+
+            // 🔥 3. member_count 처리 (중복 방지 핵심)
+            if (memberId != null && !"PAID".equals(beforeStatus)) {
+                hotelDAO.updateMemberCountUp(memberId);
+                System.out.println("[검증 로그] member_count +1 처리 완료");
+            }
+
+            // 예약 확정 로그
             hotelDAO.appendBootPaymentNote(bootNo, "|카카오페이완료(TID:" + tid + ")");
-            System.out.println("[검증 로그] BOOT 예약 확정 완료");
 
         } catch (Exception e) {
-            System.out.println("[💥 검증 로그 에러 발생] 오라클 타격 도중 자바 예외가 발생했습니다!");
+            System.out.println("[💥 DB 처리 오류]");
             e.printStackTrace();
         }
 
         try {
             MailService mailService = new MailService();
-            mailService.sendReservationCompleteMail(bookerEmail, bookerName, reservationCode, partnerOrderId, amount);
+            mailService.sendReservationCompleteMail(
+                    bookerEmail, bookerName, reservationCode, partnerOrderId, amount
+            );
         } catch (Exception e) {
-            System.out.println("[검증 로그] 메일 발송 예외 발생 (무시하고 계속 진행)");
+            System.out.println("[메일 실패] 무시하고 진행");
         }
 
         session.setAttribute("partnerOrderId", partnerOrderId);
@@ -117,21 +128,33 @@ public class KakaoApproveServlet extends HttpServlet {
 
     private static int parseInt(String value, int defaultValue) {
         try {
-            if (value == null || value.trim().isEmpty()) { return defaultValue; }
+            if (value == null || value.trim().isEmpty()) return defaultValue;
             return Integer.parseInt(value);
-        } catch (Exception e) { return defaultValue; }
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     private static String readBody(HttpURLConnection connection) throws IOException {
         BufferedReader reader;
+
         if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
+            );
         } else {
-            reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
+            reader = new BufferedReader(
+                    new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8)
+            );
         }
+
         StringBuilder body = new StringBuilder();
         String line;
-        while ((line = reader.readLine()) != null) { body.append(line); }
+
+        while ((line = reader.readLine()) != null) {
+            body.append(line);
+        }
+
         reader.close();
         return body.toString();
     }
