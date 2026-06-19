@@ -2,30 +2,31 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>決済キャンセル (BOOT)</title>
-<style>
-    body { margin: 0; font-family: Arial, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #222; }
-    main { max-width: 550px; margin: 100px auto; padding: 40px; background: #fff; border: 1px solid #ddd; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .cancel-icon { font-size: 48px; color: #e67e22; margin-bottom: 15px; }
-    h1 { margin-top: 0; color: #111; font-size: 26px; }
-    .notice { color: #666; line-height: 1.6; margin-bottom: 30px; }
-    .btn-group { display: flex; gap: 10px; }
-    .btn { flex: 1; height: 48px; line-height: 48px; font-weight: bold; text-decoration: none; border-radius: 4px; display: inline-block; }
-    .btn-dark { background: #333; color: #fff; }
-    .btn-light { background: #eee; color: #333; border: 1px solid #ccc; }
-</style>
+    <meta charset="UTF-8">
+    <title>決済キャンセル (BOOT)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css?v=1.2">
 </head>
 <body>
-<main>
-  <div class="cancel-icon">!</div>
-  <h1>決済がキャンセルされました</h1>
-  <p class="notice">カカオペイ決済中にユーザーによって決済がキャンセルされました。<br>再度予約を進める場合は下のボタンを押してください。</p>
+<main class="receipt-container" style="border-top: 6px solid #f1c40f;">
+    
+    <div class="receipt-header">
+        <div class="pay-icon cancel">!</div>
+        <h2>決済がキャンセルされました</h2>
+        <p class="notice">
+            カカオペイ決済中にユーザーによって決済がキャンセルされました。<br>
+            再度予約を進める場合は、下記のボタンを押してください。
+        </p>
+    </div>
 
-  <div class="btn-group">
-    <a class="btn btn-light" href="${pageContext.request.contextPath}.../wls/index.jsp">メインへ</a>
-    <a class="btn btn-dark" href="javascript:history.back();">前の画面へ</a>
-  </div>
+    <div class="btn-group" style="display: flex; flex-direction: column; gap: 0;">
+        <a class="btn btn-primary" href="javascript:history.back();">前の画面へ戻る</a>
+        
+        <a class="btn btn-secondary" href="${pageContext.request.contextPath}/wls/index.jsp">メイン画面へ移動</a>
+    </div>
 </main>
 </body>
 </html>

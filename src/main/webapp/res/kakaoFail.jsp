@@ -9,30 +9,52 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>決済失敗 (BOOT)</title>
-<style>
-    body { margin: 0; font-family: Arial, 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #222; }
-    main { max-width: 550px; margin: 100px auto; padding: 40px; background: #fff; border: 1px solid #d9383a; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .fail-icon { font-size: 48px; color: #d9383a; margin-bottom: 15px; }
-    h1 { margin-top: 0; color: #d9383a; font-size: 26px; }
-    .notice { color: #666; line-height: 1.6; margin-bottom: 20px; }
-    .error-box { background: #fff5f5; border: 1px solid #fcc2c3; padding: 15px; text-align: left; color: #b71c1c; font-size: 14px; font-family: monospace; word-break: break-all; margin-bottom: 30px; }
-    .home-button { display: inline-block; width: 100%; height: 48px; line-height: 48px; background: #333; color: #fff; font-weight: bold; text-decoration: none; border-radius: 4px; }
-</style>
+    <meta charset="UTF-8">
+    <title>決済失敗 (BOOT)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css?v=1.1">
+    
+    <style>
+        .error-box {
+            background: #221a1a; /* 딥 다크 레드 차콜 */
+            border: 1px solid #4a2323;
+            padding: 18px;
+            text-align: left;
+            color: #f3a4a4; /* 눈이 편안한 인디핑크 계열 에러 텍스트 */
+            font-size: 13px;
+            font-family: monospace;
+            word-break: break-all;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .error-box strong {
+            color: #e74c3c; /* 강렬한 네온 레드 포인트 */
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+    </style>
 </head>
 <body>
-<main>
-  <div class="fail-icon">✕</div>
-  <h1>決済および予約失敗</h1>
-  <p class="notice">処理中に問題が発生し、決済を完了できませんでした。</p>
+<main class="receipt-container" style="border-top: 6px solid #e74c3c;">
+    
+    <div class="receipt-header">
+        <div class="pay-icon fail">✖</div>
+        <h2>決済に失敗しました</h2>
+        <p class="notice">処理中に問題が発生し、決済を完了できませんでした。<br>エラーメッセージをご確認の上, 再度お試しください。</p>
+    </div>
 
-  <div class="error-box">
-    <strong>Error Log:</strong><br>
-    <%= errorMessage %>
-  </div>
+    <div class="section-title">Error Details</div>
+    <div class="error-box">
+        <strong>Error Log:</strong><br>
+        <%= errorMessage %>
+    </div>
 
-  <a class="home-button" href="${pageContext.request.contextPath}/wls/index.jsp">メイン画面へ移動</a>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/wls/index.jsp">メイン画面へ移動</a>
+    </div>
 </main>
 </body>
 </html>

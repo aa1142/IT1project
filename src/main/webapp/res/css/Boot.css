@@ -1,202 +1,146 @@
-/* ===================================================
-   호텔 결제 대기화면 - 럭셔리 하이엔드 블랙 & 샴페인 골드 에디션
-   =================================================== */
-
-/* 1. 기본 배경 및 프리미엄 폰트 세팅 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Noto Sans KR', sans-serif;
-    letter-spacing: -0.5px; /* 자간을 미세하게 좁혀 가독성과 세련미 확보 */
+/* ==========================================================================
+   🎯 프리미엄 다크 골드 테마 - 미니멀 스타일
+   ========================================================================== */
+:root {
+    --gold-primary: #e5cf98;
+    --gold-shadow: rgba(229, 207, 152, 0.25);
+    --dark-bg: #141414;
+    --card-bg: #1f1f1f;
+    --border-color: #2e2e2e;
 }
 
 body {
-    background-color: #fcfcfd; /* 🎯 고급 미술관 전시벽 같은 미세한 웜 화이트 배경 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark-bg) !important;
+    color: #e0e0e0;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
-/* 2. 깊고 은은한 매트 블랙 프리미엄 카드 컨테이너 */
-.receipt-container {
-    background-color: #151515; /* 🎯 더 무겁고 정돈된 완전 매트 차콜 블랙 */
-    width: 100%;
-    max-width: 480px;
-    border-radius: 20px; /* 라운딩을 넓혀 트렌디한 느낌 부각 */
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), 
-                0 0 1px rgba(0, 0, 0, 0.1); /* 미세 입체 섀도우 튜닝 */
-    padding: 45px;
-    border: 1px solid #252525;
-    position: relative;
-    overflow: hidden;
+/* 상단 헤더 */
+.header {
+    background-color: #0b0b0b !important;
+    border-bottom: 1px solid var(--border-color) !important;
 }
 
-/* 상단 지붕 바에 샴페인 골드 그라데이션 적용 */
-.receipt-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, #bfa15f, #e5cf98, #bfa15f); /* 🎯 샴페인 골드 빔 */
+.logo {
+    color: var(--gold-primary) !important;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--gold-shadow);
 }
 
-/* 3. 헤더 영역 스타일 */
-.receipt-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.pay-icon {
-    font-size: 40px;
-    margin-bottom: 15px;
-    display: inline-block;
-}
-
-.receipt-header h2 {
-    font-size: 25px;
-    color: #ffffff; 
-    font-weight: 700;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-}
-
-.receipt-header .notice {
+.header-button {
+    color: #a0a0a0;
+    text-decoration: none;
     font-size: 13px;
-    color: #8c8c8c; /* 안내 텍스트 가독성 최적화 */
-    line-height: 1.6;
+    border: 1px solid #333;
+    padding: 8px 16px;
+    border-radius: 4px;
+    background: #111;
+    transition: all 0.3s;
 }
 
-/* 4. 중간 소제목 세로 바 - 샴페인 은은한 라인 */
-.section-title {
+.header-button:hover {
+    color: var(--gold-primary);
+    border-color: var(--gold-primary);
+    background: #1a1a1a;
+}
+
+/* 사이드바 */
+.sidebar {
+    background-color: #0d0d0d !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.side-menu a:hover, .side-menu a.active {
+    color: var(--gold-primary) !important;
+    background-color: #1a1a1a !important;
+}
+
+/* 예약 카드 및 고정 사진 영역 */
+.reservation-card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+}
+
+/* 사진 크기를 과하지 않고 보기 좋게 딱 고정 */
+.zoom-wrapper {
+    width: 280px;
+    height: 180px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #3d3d3d;
+}
+
+.zoom-wrapper .zoom-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 상태 배지 */
+.status-badge {
+    display: inline-block;
+    background: rgba(229, 207, 152, 0.12) !important;
+    color: var(--gold-primary) !important;
+    border: 1px solid rgba(229, 207, 152, 0.3) !important;
+}
+
+/* 럭셔리 골드 그라데이션 버튼 */
+.detail-btn-luxury {
+    background: linear-gradient(135deg, #d4af37, #aa7c11);
+    color: #000 !important;
+    border: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.detail-btn-luxury:hover {
+    background: linear-gradient(135deg, #f3e5ab, #c59b27);
+    box-shadow: 0 0 15px var(--gold-shadow);
+}
+
+.refund-button-luxury {
+    background: transparent;
+    color: #ff5252;
+    border: 1px solid rgba(255, 82, 82, 0.4);
+    padding: 11px 20px;
     font-size: 13px;
     font-weight: 600;
-    color: #e5cf98; /* 은은한 펄 골드 */
-    text-transform: uppercase;
-    letter-spacing: 1px; /* 영문/한글 매칭 스페이싱 */
-    border-left: 2px solid #bfa15f; 
-    padding-left: 12px;
-    margin: 30px 0 18px 0;
-}
-
-/* 5. 정갈한 명세서 데이터 테이블 */
-.info-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.info-table tr {
-    border-bottom: 1px solid #222222; /* 보이지 않는 듯 시크한 구분선 */
-}
-
-.info-table tr:last-child {
-    border-bottom: none;
-}
-
-.info-table th, .info-table td {
-    padding: 18px 0;
-    font-size: 14px;
-}
-
-.info-table th {
-    text-align: left;
-    color: #757575; /* 중후한 슬레이트 그레이 */
-    font-weight: 400;
-    width: 42%;
-}
-
-.info-table td {
-    text-align: right;
-    color: #eeeeee; /* 눈이 편안한 밝은 그레이 아이보리 */
-    font-weight: 500;
-}
-
-/* 최종 결제 금액행 특수 하이라이트 경계 */
-.info-table tr.total-row {
-    border-top: 1px solid #333333;
-}
-
-/* 🎯 금액 수치에 입히는 시그니처 샴페인 골드 폰트 */
-.info-table td.highlight-price {
-    color: #e5cf98; 
-    font-size: 24px;
-    font-weight: 700;
-    text-shadow: 0 0 10px rgba(229, 207, 152, 0.2); /* 은은한 골드 안개 이펙트 */
-}
-
-/* 6. 하단 결제 단추 그룹 */
-.btn-group {
-    margin-top: 40px;
-    width: 100%;
-}
-
-.btn {
-    width: 100%;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 16px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 700;
-    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.3s;
 }
 
-/* 🎯 메인 버튼: 번쩍이는 노란색 대신 은은한 황금빛 그라데이션 명품 메탈릭 도색 */
-.btn-primary {
-    background: linear-gradient(135deg, #bfa15f 0%, #e5cf98 50%, #bfa15f 100%);
-    color: #111111;
-    box-shadow: 0 4px 15px rgba(191, 161, 95, 0.2);
+.refund-button-luxury:hover {
+    background: rgba(255, 82, 82, 0.1);
+    border-color: #ff5252;
 }
 
-.btn-primary:hover {
-    background: linear-gradient(135deg, #cbac6a 0%, #edd8a3 50%, #cbac6a 100%);
-    box-shadow: 0 6px 20px rgba(191, 161, 95, 0.4);
-    transform: translateY(-1px); /* 아주 살짝 떠오르는 고급 모션 */
+/* 모달 */
+.modal-bg {
+    backdrop-filter: blur(5px) !important;
 }
 
-.btn-primary:active {
-    transform: translateY(1px);
+.modal {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8) !important;
 }
 
-/* 2차 서브 버튼 (어두운 명품 패키징 색상) */
-.btn-secondary {
-    background-color: #222222;
-    color: #b3b3b3;
-    border: 1px solid #2f2f2f;
-    margin-top: 12px;
+.modal-title {
+    color: var(--gold-primary) !important;
 }
 
-.btn-secondary:hover {
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border-color: #444444;
-}
-
-/* ===================================================
-   결제 상태별 발광 아이콘 이펙트
-   =================================================== */
-
-/* 🎯 완료(성공) 체크마크: 시그니처 샴페인 골드 은은한 야광 */
-.pay-icon.success {
-    color: #e5cf98;
-    filter: drop-shadow(0 0 15px rgba(229, 207, 152, 0.5));
-}
-
-/* 취소 스타일 */
-.pay-icon.cancel {
-    color: #f1c40f;
-    filter: drop-shadow(0 0 12px rgba(241, 196, 15, 0.3));
-}
-
-/* 실패 스타일 */
-.pay-icon.fail {
-    color: #e74c3c;
-    filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.3));
+.highlight-price {
+    color: var(--gold-primary) !important;
+    font-size: 18px;
+    font-weight: 700 !important;
 }
