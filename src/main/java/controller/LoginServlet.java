@@ -131,7 +131,7 @@ public class LoginServlet extends HttpServlet {
                 
                 out.print("<script>");
                 out.print("alert('👑 [JYP HOTELシステム最高管理者] " + adminName + " 様、ログイン成功。管理者専用メニューに移行します。');");
-                out.print("location.href='" + request.getContextPath() + "/Admin/bootmng.jsp';"); // ◀ 管理者メインパスへ転送
+                out.print("location.href='" + request.getContextPath() + "/Admin/bootmng';"); // ◀ 管理者メインパスへ転送
                 out.print("</script>");
                 return;
             }
