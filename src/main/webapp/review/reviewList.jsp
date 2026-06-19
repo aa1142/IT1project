@@ -11,40 +11,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #fff; color: #333; font-family: 'Pretendard', sans-serif; padding: 40px; }
-        .main-wrapper { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; }
-        .left-sidebar { width: 35%; }
-        .hotel-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 25px; }
-        .score-section { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .stars-gold, .card-stars { color: #1f2d3d; }
-        .score-big { font-size: 2.5rem; font-weight: bold; }
-        .satisfy-count { font-size: 0.9rem; color: #555; margin-bottom: 25px; }
-        .gauge-group { margin-bottom: 20px; }
-        .gauge-label-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; font-weight: 500; }
-        .progress { height: 10px; background-color: #eaeded; border-radius: 5px; }
-        .progress-bar { background-color: #1f2d3d; }
-        .right-content { width: 65%; }
-        .list-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2d3d; padding-bottom: 10px; margin-bottom: 20px; }
-        .list-title { font-size: 1.2rem; font-weight: bold; }
-        .sort-select { width: 150px; padding: 6px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.85rem; }
+        .page-wrap { max-width: 1200px; margin: 0 auto; }
+        .top-actions { margin-bottom: 20px; }
+        .page-title-area { margin-bottom: 26px; }
+        .hotel-title { font-size: 1.8rem; font-weight: bold; margin-bottom: 8px; }
+        .satisfy-count { font-size: 0.95rem; color: #555; }
+        .list-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1f2d3d; padding-bottom: 10px; margin-bottom: 20px; gap: 16px; }
+        .list-title { font-size: 1.2rem; font-weight: bold; white-space: nowrap; }
+        .header-controls { display: flex; gap: 10px; align-items: center; }
+        .branch-filter, .sort-select { width: 150px; padding: 6px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.85rem; color: #495057; }
         .review-card { padding: 20px 0; border-bottom: 1px solid #eaeded; }
-        .card-top-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .card-date { color: #888; font-size: 0.85rem; }
+        .card-top-info { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .card-stars { color: #1f2d3d; }
         .badge-info-custom { background-color: #eaeded; color: #495057; font-size: 0.75rem; font-weight: 500; padding: 4px 8px; border-radius: 4px; }
+        .reservation-line { color: #6c757d; font-size: 0.9rem; margin-bottom: 8px; }
         .card-management { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
         .btn-edit { color: #888; text-decoration: none; }
         .btn-delete { color: #dc3545; text-decoration: none; border: none; background: none; padding: 0; }
-        .card-title-text { font-weight: bold; font-size: 1.05rem; margin-bottom: 6px; }
         .card-content-text { color: #555; font-size: 0.95rem; white-space: pre-wrap; }
-        @media (max-width: 900px) {
-            .main-wrapper { flex-direction: column; }
-            .left-sidebar, .right-content { width: 100%; }
+        @media (max-width: 700px) {
+            body { padding: 24px; }
+            .list-header { align-items: flex-start; flex-direction: column; }
+            .header-controls { width: 100%; }
+            .branch-filter, .sort-select { width: 50%; }
+            .card-management { margin-left: 0; width: 100%; justify-content: flex-end; }
         }
     </style>
 </head>
 <body>
-<div style="max-width:1200px; margin:0 auto 20px auto;">
-    <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
-</div>
+<div class="page-wrap">
+    <div class="top-actions">
+        <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
+    </div>
 <%
     ArrayList<ReviewDto> reviewList = (ArrayList<ReviewDto>) request.getAttribute("reviewList");
     if (reviewList == null) {
@@ -52,138 +50,128 @@
         reviewList = reviewDao.getReviewList();
     }
     int reviewCount = reviewList == null ? 0 : reviewList.size();
-    double avgRating = 0;
-
-    if (reviewCount > 0) {
-        int totalRating = 0;
-        for (ReviewDto review : reviewList) { totalRating += review.getRating(); }
-        avgRating = (double) totalRating / reviewCount;
-    }
 %>
-<div class="main-wrapper">
-    <div class="left-sidebar">
+    <div class="page-title-area">
         <div class="hotel-title">JYPホテル レビュー</div>
-
-        <div class="score-section">
-            <div class="stars-gold"><i class="fas fa-star"></i></div>
-            <div class="score-big"><%= String.format("%.1f", avgRating) %></div>
-        </div>
-        <div class="satisfy-count"><i class="far fa-smile me-1"></i> 全 <%= reviewCount %> 件のレビュー</div>
-
-        <div class="gauge-group mt-4">
-            <div class="gauge-label-row"><span>立地・アクセス</span><span class="text-muted">10点満点</span></div>
-            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
-        </div>
-        <div class="gauge-group">
-            <div class="gauge-label-row"><span>部屋의清潔さ</span><span class="text-muted">10点満点</span></div>
-            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
-        </div>
-        <div class="gauge-group">
-            <div class="gauge-label-row"><span>サービス・接客</span><span class="text-muted">10点満点</span></div>
-            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
-        </div>
-        <div class="gauge-group">
-            <div class="gauge-label-row"><span>コスパ（価格満足度）</span><span class="text-muted">10点満点</span></div>
-            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
-        </div>
-        <div class="gauge-group">
-            <div class="gauge-label-row"><span>客室・館内施設</span><span class="text-muted">10点満点</span></div>
-            <div class="progress"><div class="progress-bar" style="width: 50%"></div></div>
-        </div>
+        <div class="satisfy-count"><i class="far fa-smile me-1"></i> 全 <span id="visibleCount"><%= reviewCount %></span> 件のレビュー</div>
     </div>
 
-    <div class="right-content">
-        <div class="list-header">
-            <div class="list-title">レビュー一覧</div>
+    <div class="list-header">
+        <div class="list-title">レビュー一覧</div>
+        <div class="header-controls">
+            <select class="branch-filter" id="branchFilter">
+                <option value="all">全店舗</option>
+                <option value="1">東京店</option>
+                <option value="2">新宿店</option>
+                <option value="3">横浜店</option>
+            </select>
             <select class="sort-select" id="sortSelect">
                 <option value="latest">新着順</option>
                 <option value="high">評価の高い順</option>
                 <option value="low">評価の低い順</option>
             </select>
         </div>
-
-        <div id="reviewListArea">
-        <%
-            if (reviewList != null && !reviewList.isEmpty()) {
-                for (ReviewDto review : reviewList) {
-                    
-                    // 객실 등급 데이터가 넘어왔을 때 영문(Standard, Deluxe, Suite) 치환 처리
-                    String grade = review.getRoomgrade();
-                    String displayGrade = (grade == null) ? "" : grade;
-                    if (displayGrade.contains("스탠다드") || displayGrade.toUpperCase().contains("STANDARD") || displayGrade.contains("スタンダード")) {
-                        displayGrade = "Standard";
-                    } else if (displayGrade.contains("디럭스") || displayGrade.toUpperCase().contains("DELUXE") || displayGrade.contains("デラックス")) {
-                        displayGrade = "Deluxe";
-                    } else if (displayGrade.contains("스위트") || displayGrade.toUpperCase().contains("SUITE") || displayGrade.contains("スイート")) {
-                        displayGrade = "Suite";
-                    }
-                    
-                    // 객실 타입 숫자를 일본어 명칭으로 매핑
-                    String typeName = String.valueOf(review.getRoomType());
-                    if (review.getRoomType() == 1) typeName = "シングル";
-                    else if (review.getRoomType() == 2) typeName = "ツイン";
-                    else if (review.getRoomType() == 5) typeName = "ファミリー";
-        %>
-            <div class="review-card" data-review-no="<%= review.getReviewNo() %>" data-rating="<%= review.getRating() %>">
-                <div class="card-top-info">
-                    <div class="card-stars">
-                        <% for (int i = 0; i < review.getRating(); i++) { %>
-                            <i class="fas fa-star"></i>
-                        <% } %>
-                    </div>
-                    <div class="card-date"><%= review.getRegDate() == null ? "" : review.getRegDate() %></div>
-                    <span class="badge-info-custom"><i class="fas fa-bed me-1"></i><%= displayGrade %> / <%= typeName %></span>
-                    <div class="card-management">
-                        <a href="<%= request.getContextPath() %>/review/reviewEdit.jsp?reviewNo=<%= review.getReviewNo() %>" class="btn-edit">修正</a>
-                        <form method="POST" action="<%= request.getContextPath() %>/review/reviewList" onsubmit="return confirm('本当に削除しますか？')" style="display:inline;">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="reviewNo" value="<%= review.getReviewNo() %>">
-                            <button class="btn-delete" type="submit">削除</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="card-title-text">レビュー #<%= review.getReviewNo() %></div>
-                <div class="card-content-text"><%= review.getContent() == null ? "" : review.getContent() %></div>
-            </div>
-        <%
-                }
-            } else {
-        %>
-            <div class="text-center py-5 text-muted">投稿されたレビューはありません。</div>
-        <%
-            }
-        %>
-        </div>
     </div>
+
+    <div id="reviewListArea">
+    <%
+        if (reviewList != null && !reviewList.isEmpty()) {
+            for (ReviewDto review : reviewList) {
+                String branchName = "東京店";
+                if (review.getCompanyNo() == 2) branchName = "新宿店";
+                else if (review.getCompanyNo() == 3) branchName = "横浜店";
+
+                String roomTypeName = String.valueOf(review.getRoomType());
+                if (review.getRoomType() == 1) roomTypeName = "シングル";
+                else if (review.getRoomType() == 2) roomTypeName = "ツイン";
+                else if (review.getRoomType() == 5) roomTypeName = "ファミリー";
+
+                String roomGrade = review.getRoomGrade() == null ? "" : review.getRoomGrade();
+                String stayPeriod = "";
+                if (review.getBootCheckin() != null && review.getBootCheckout() != null) {
+                    stayPeriod = " / " + review.getBootCheckin() + " ~ " + review.getBootCheckout();
+                }
+    %>
+        <div class="review-card" data-review-no="<%= review.getReviewNo() %>" data-rating="<%= review.getRating() %>" data-branch="<%= review.getCompanyNo() %>">
+            <div class="card-top-info">
+                <div class="card-stars">
+                    <% for (int i = 0; i < review.getRating(); i++) { %>
+                        <i class="fas fa-star"></i>
+                    <% } %>
+                </div>
+                <span class="badge-info-custom"><i class="fas fa-hotel me-1"></i><%= branchName %></span>
+                <% if (review.getBootNo() != null && !review.getBootNo().trim().isEmpty()) { %>
+                    <span class="badge-info-custom">予約番号 <%= review.getBootNo() %></span>
+                <% } %>
+                <div class="card-management">
+                    <a href="<%= request.getContextPath() %>/review/reviewEdit.jsp?reviewNo=<%= review.getReviewNo() %>" class="btn-edit">修正</a>
+                    <form method="POST" action="<%= request.getContextPath() %>/review/reviewList" onsubmit="return confirm('本当に削除しますか？')" style="display:inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="reviewNo" value="<%= review.getReviewNo() %>">
+                        <button class="btn-delete" type="submit">削除</button>
+                    </form>
+                </div>
+            </div>
+            <div class="reservation-line">
+                <%= roomGrade %><%= roomGrade.length() > 0 && review.getRoomType() > 0 ? " / " : "" %><%= review.getRoomType() > 0 ? roomTypeName : "" %><%= stayPeriod %>
+            </div>
+            <div class="card-content-text"><%= review.getContent() == null ? "" : review.getContent() %></div>
+        </div>
+    <%
+            }
+        } else {
+    %>
+        <div class="text-center py-5 text-muted" id="emptyMessage">投稿されたレビューはありません。</div>
+    <%
+        }
+    %>
+    </div>
+    <div class="text-center py-5 text-muted" id="filterEmptyMessage" style="display:none;">選択した店舗のレビューはありません。</div>
 </div>
 
 <script>
     const sortSelect = document.getElementById('sortSelect');
+    const branchFilter = document.getElementById('branchFilter');
     const reviewListArea = document.getElementById('reviewListArea');
+    const visibleCount = document.getElementById('visibleCount');
+    const filterEmptyMessage = document.getElementById('filterEmptyMessage');
 
-    if (sortSelect && reviewListArea) {
-        sortSelect.addEventListener('change', function() {
-            const cards = Array.from(reviewListArea.querySelectorAll('.review-card'));
-            const sortType = this.value;
+    function applyReviewControls() {
+        if (!reviewListArea) return;
 
-            cards.sort((a, b) => {
-                const ratingA = Number(a.dataset.rating || 0);
-                const ratingB = Number(b.dataset.rating || 0);
-                const noA = Number(a.dataset.reviewNo || 0);
-                const noB = Number(b.dataset.reviewNo || 0);
+        const selectedBranch = branchFilter ? branchFilter.value : 'all';
+        const sortType = sortSelect ? sortSelect.value : 'latest';
+        const cards = Array.from(reviewListArea.querySelectorAll('.review-card'));
 
-                if (sortType === 'high') {
-                    return ratingB - ratingA || noB - noA;
-                }
-                if (sortType === 'low') {
-                    return ratingA - ratingB || noB - noA;
-                }
-                return noB - noA;
-            });
-
-            cards.forEach(card => reviewListArea.appendChild(card));
+        cards.forEach(card => {
+            const visible = selectedBranch === 'all' || card.dataset.branch === selectedBranch;
+            card.style.display = visible ? '' : 'none';
         });
+
+        cards.sort((a, b) => {
+            const ratingA = Number(a.dataset.rating || 0);
+            const ratingB = Number(b.dataset.rating || 0);
+            const noA = Number(a.dataset.reviewNo || 0);
+            const noB = Number(b.dataset.reviewNo || 0);
+
+            if (sortType === 'high') {
+                return ratingB - ratingA || noB - noA;
+            }
+            if (sortType === 'low') {
+                return ratingA - ratingB || noB - noA;
+            }
+            return noB - noA;
+        });
+
+        cards.forEach(card => reviewListArea.appendChild(card));
+
+        const shownCount = cards.filter(card => card.style.display !== 'none').length;
+        if (visibleCount) visibleCount.innerText = shownCount;
+        if (filterEmptyMessage) filterEmptyMessage.style.display = cards.length > 0 && shownCount === 0 ? '' : 'none';
     }
+
+    if (sortSelect) sortSelect.addEventListener('change', applyReviewControls);
+    if (branchFilter) branchFilter.addEventListener('change', applyReviewControls);
 </script>
 </body>
 </html>
