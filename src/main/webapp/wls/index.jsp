@@ -85,6 +85,7 @@
       <nav>
         <ul>
           <li><a href="<%=ctx%>/notice/noticeList.jsp">NOTICE</a></li>
+          <li><a href="<%=ctx%>/review/reviewList.jsp">REVIEW</a></li>
            <li><a href="<%=ctx%>/res/BootSearch.jsp">予約照会</a></li>
           <% if(!isLogin) { %>
               <li><a href="<%=ctx%>/wls/login.jsp" style="color:var(--point-blue);">ログイン</a></li>
