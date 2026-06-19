@@ -55,10 +55,13 @@
     <title>JYPホテル - <%= displayTitle %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { padding: 50px; font-family: 'Pretendard', sans-serif; background-color: #f8f9fa; }
-        .detail-card {
+        body { padding: 50px 0; font-family: 'Pretendard', sans-serif; background-color: #f8f9fa; }
+        .detail-wrap {
             max-width: 800px;
             margin: 0 auto;
+            padding: 0 12px;
+        }
+        .detail-card {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -82,9 +85,10 @@
     </style>
 </head>
 <body>
-<div style="max-width:800px; margin:0 auto 20px auto;">
+<div class="detail-wrap mb-3">
     <a href="<%= request.getContextPath() %>/wls/index.jsp" class="btn btn-outline-dark btn-sm">ホームへ</a>
 </div>
+<div class="detail-wrap">
 <div class="detail-card">
     <h2 class="detail-title">
         <% if (important) { %>
@@ -94,8 +98,6 @@
     </h2>
 
     <div class="detail-meta">
-        <span>No. <%= dto.getNoticeNo() %></span>
-        <span class="mx-2">|</span>
         <span>登録日 <%= dto.getRegDate() %></span>
         <span class="mx-2">|</span>
         <span>照会数 <%= displayHit %></span>
@@ -116,6 +118,7 @@
                onclick="return confirm('本当に削除しますか？')">削除</a>
         <% } %>
     </div>
+</div>
 </div>
 </body>
 </html>
