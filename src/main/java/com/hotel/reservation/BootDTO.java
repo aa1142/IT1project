@@ -21,6 +21,7 @@ public class BootDTO {
 	private String reservationCode; // RESERVATION_CODE (VARCHAR2, 카카오페이 통신용)
 	// BootDTO.java 내부에 추가되어야 할 규격
 	private String paymentStatus;
+	private int paymentAmount;
 
 	public String getPaymentStatus() {
 	    return paymentStatus;
@@ -28,6 +29,14 @@ public class BootDTO {
 
 	public void setPaymentStatus(String paymentStatus) {
 	    this.paymentStatus = paymentStatus;
+	}
+
+	public int getPaymentAmount() {
+	    return paymentAmount;
+	}
+
+	public void setPaymentAmount(int paymentAmount) {
+	    this.paymentAmount = paymentAmount;
 	}
 	// 기본 생성자
 	public BootDTO() {

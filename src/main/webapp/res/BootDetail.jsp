@@ -23,14 +23,20 @@
         reservationCode = reservation.getBootNo();
     }
 
-    // [2중 안전 장부 방어벽] 결제 총액 인출 및 골드 규격 포맷팅
-    int finalPrice = 0;
-    if (reservation != null && reservation.getBootPayCheck() > 0) {
-        finalPrice = reservation.getBootPayCheck();
-    } else if (session.getAttribute("amount") != null) {
-        finalPrice = (Integer) session.getAttribute("amount");
+    // PAYMENT.AMOUNT 우선, 없으면 boot_please 총요금
+    int finalPrice = reservation.getPaymentAmount();
+    if (finalPrice <= 0) {
+        finalPrice = HotelPriceUtil.parsePleaseAmount(reservation.getBootPlease(), "총요금");
     }
-    String displayAmount = String.format("%,d", finalPrice) + " 円";
+    if (finalPrice <= 0) {
+        int room = HotelPriceUtil.parsePleaseAmount(reservation.getBootPlease(), "객실요금");
+        int breakfast = HotelPriceUtil.parsePleaseAmount(reservation.getBootPlease(), "조식요금");
+        int fastCheckin = HotelPriceUtil.parsePleaseAmount(reservation.getBootPlease(), "빠른체크인요금");
+        finalPrice = room + breakfast + fastCheckin;
+    }
+    String displayAmount = (finalPrice > 0)
+            ? String.format("%,d", finalPrice) + " 円"
+            : "—";
 
     // [장부 바인딩 구역] 
     String paymentStatus = reservation.getPaymentStatus();

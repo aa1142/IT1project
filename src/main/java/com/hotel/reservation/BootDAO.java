@@ -27,9 +27,9 @@ public class BootDAO {
             "SELECT b.BOOT_NO, b.ROOM_GRADE, b.ROOM_TYPE, b.ROOM_NO, b.COMPANY_NO, b.MEMBER_ID, " +
             "b.BOOT_PHONE, b.BOOT_NAME, b.BOOT_EMAIL, b.BOOT_CHECKIN, b.BOOT_CHECKOUT, " +
             "b.BOOT_ADULT, b.BOOT_CHILD, b.BOOT_PAY_CHECK, b.BOOT_PLEASE, b.BOOT_CONFIRM, b.RESERVATION_CODE, " +
-            "p.PAYMENT_STATUS " + // 👈 조인으로 퍼 올릴 장부 컬럼 명시
+            "p.PAYMENT_STATUS, p.AMOUNT AS PAYMENT_AMOUNT " +
             "FROM BOOT b " +
-            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " + // 👈 결제 테이블 아웃조인 결합
+            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " +
             "WHERE b.RESERVATION_CODE = ? " +
             "AND (b.BOOT_PHONE = ? OR LOWER(b.BOOT_EMAIL) = LOWER(?))";
 
@@ -61,9 +61,8 @@ public class BootDAO {
                     dto.setBootPlease(rs.getString("BOOT_PLEASE"));
                     dto.setBootConfirm(rs.getInt("BOOT_CONFIRM"));
                     dto.setReservationCode(rs.getString("RESERVATION_CODE"));
-                    
-                    // 🎯 [수정 핵심] 조인 쿼리로 긁어온 PAYMENT_STATUS를 가방에 쏙 바인딩합니다.
                     dto.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
+                    dto.setPaymentAmount(rs.getInt("PAYMENT_AMOUNT"));
 
                     return dto;
                 }
@@ -81,9 +80,9 @@ public class BootDAO {
             "SELECT b.BOOT_NO, b.ROOM_GRADE, b.ROOM_TYPE, b.ROOM_NO, b.COMPANY_NO, b.MEMBER_ID, " +
             "b.BOOT_PHONE, b.BOOT_NAME, b.BOOT_EMAIL, b.BOOT_CHECKIN, b.BOOT_CHECKOUT, " +
             "b.BOOT_ADULT, b.BOOT_CHILD, b.BOOT_PAY_CHECK, b.BOOT_PLEASE, b.BOOT_CONFIRM, b.RESERVATION_CODE, " +
-            "p.PAYMENT_STATUS " + // 👈 조인으로 퍼 올릴 장부 컬럼 명시
+            "p.PAYMENT_STATUS, p.AMOUNT AS PAYMENT_AMOUNT " +
             "FROM BOOT b " +
-            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " + // 👈 결제 테이블 아웃조인 결합
+            "LEFT OUTER JOIN PAYMENT p ON b.BOOT_NO = p.RESERVATION_ID " +
             "WHERE b.RESERVATION_CODE = ? AND b.BOOT_PHONE = ?";
 
         try (Connection conn = getConnection();
@@ -113,9 +112,8 @@ public class BootDAO {
                     dto.setBootPlease(rs.getString("BOOT_PLEASE"));
                     dto.setBootConfirm(rs.getInt("BOOT_CONFIRM"));
                     dto.setReservationCode(rs.getString("RESERVATION_CODE"));
-                    
-                    // 🎯 [수정 핵심] 조인 쿼리로 긁어온 PAYMENT_STATUS를 가방에 쏙 바인딩합니다.
                     dto.setPaymentStatus(rs.getString("PAYMENT_STATUS"));
+                    dto.setPaymentAmount(rs.getInt("PAYMENT_AMOUNT"));
 
                     return dto;
                 }
