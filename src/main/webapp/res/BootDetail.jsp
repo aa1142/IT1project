@@ -4,7 +4,7 @@
 <%
     request.setCharacterEncoding("UTF-8");
 
-    // BootSearchServlet이 request에 "boot"라는 이름으로 실어 보낸 새 가방 인출
+    // request에 "boot"라는 이름으로 실어 보낸 가방 인출
     BootDTO reservation = (BootDTO) request.getAttribute("boot");
 
     // [방어벽] 데이터 유실 시 안전하게 bootSearch.jsp로 튕구기
@@ -19,7 +19,18 @@
         reservationCode = reservation.getBootNo();
     }
 
-    String displayAmount = String.format("%,d", reservation.getBootPayCheck()) + "円";
+    // 🎯 [정밀 교정 및 2중 안전 방어벽] 
+    int finalPrice = 0;
+
+    // 가방(DTO)에 금액이 똑바로 들어있다면 그걸 우선 채택합니다.
+    if (reservation != null && reservation.getBootPayCheck() > 0) {
+        finalPrice = reservation.getBootPayCheck();
+    } 
+    // 만약 어떤 서블릿이든 금액 적재를 누락시켰다면(0원) 세션 장부에서 결제했던 진짜 금액을 강탈해옵니다.
+    else if (session.getAttribute("amount") != null) {
+        finalPrice = (Integer) session.getAttribute("amount");
+    }
+    String displayAmount = String.format("%,d", finalPrice) + " 円";
 
     // 🎯 [장부 바인딩 구역] 
     String paymentStatus = reservation.getPaymentStatus();
@@ -69,7 +80,7 @@
         <h2>予約メニュー</h2>
         <nav class="side-menu">
             <a href="#" class="active">予約履歴</a>
-            <a href="#">予約詳細</a>
+            <a onclick="openDetail()" class="detail-link">予約詳細</a>
         </nav>
     </aside>
 
@@ -164,7 +175,7 @@
 
         <div class="detail-row">
             <div class="detail-label">決済金額</div>
-            <div class="detail-value" style="color:#d9383a; font-weight:bold;"><%= displayAmount %></div>
+            <div class="detail-value highlight-price" style="color: #e5cf98; font-weight: bold; text-shadow: 0 0 10px rgba(229, 207, 152, 0.2);"><%= displayAmount %></div>
         </div>
 
         <div class="detail-row">

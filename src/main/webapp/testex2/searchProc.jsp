@@ -8,7 +8,7 @@
     String room_grade = RoomTypeUtil.normalizeUiGrade(request.getParameter("room_grade"));
 
     String boot_checkin = request.getParameter("boot_checkin");
-    if (boot_checkin == null) boot_checkin = "";
+    if (boot_checkin == null) boot_checkin = "`";
 
     int nights = HotelPriceUtil.toInt(request.getParameter("nights"), 1);
     int boot_adult = HotelPriceUtil.toInt(request.getParameter("boot_adult"), 1);

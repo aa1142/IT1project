@@ -1,18 +1,18 @@
 /* ===================================================
-   호텔 결제 대기화면 - 럭셔리 블랙 & 골드 옐로우 프리미엄 에디션
+   호텔 결제 대기화면 - 럭셔리 하이엔드 블랙 & 샴페인 골드 에디션
    =================================================== */
 
-/* 1. 기본 배경 및 폰트 세팅 */
+/* 1. 기본 배경 및 프리미엄 폰트 세팅 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Noto Sans KR', sans-serif;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.5px; /* 자간을 미세하게 좁혀 가독성과 세련미 확보 */
 }
 
 body {
-    background-color: #111111; /* 전체 배경: 완전 딥 블랙 */
+    background-color: #fcfcfd; /* 🎯 고급 미술관 전시벽 같은 미세한 웜 화이트 배경 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,63 +20,77 @@ body {
     padding: 20px;
 }
 
-/* 2. 무거운 다크 블랙 메인 카드 컨테이너 */
+/* 2. 깊고 은은한 매트 블랙 프리미엄 카드 컨테이너 */
 .receipt-container {
-    background-color: #1a1a1a; /* 컨테이너: 세련된 차콜 블랙 */
+    background-color: #151515; /* 🎯 더 무겁고 정돈된 완전 매트 차콜 블랙 */
     width: 100%;
-    max-width: 500px;
-    border-radius: 16px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); /* 웅장한 블랙 입체 섀도우 */
-    padding: 40px;
-    border: 1px solid #2d2d2d; /* 미세한 테두리선으로 입체감 확보 */
-    border-top: 6px solid #f2b705; /* 상단 포인트: 선명한 리치 골드 옐로우 바 */
+    max-width: 480px;
+    border-radius: 20px; /* 라운딩을 넓혀 트렌디한 느낌 부각 */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2), 
+                0 0 1px rgba(0, 0, 0, 0.1); /* 미세 입체 섀도우 튜닝 */
+    padding: 45px;
+    border: 1px solid #252525;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 상단 지붕 바에 샴페인 골드 그라데이션 적용 */
+.receipt-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #bfa15f, #e5cf98, #bfa15f); /* 🎯 샴페인 골드 빔 */
 }
 
 /* 3. 헤더 영역 스타일 */
 .receipt-header {
     text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
 }
 
 .pay-icon {
-    font-size: 36px;
-    margin-bottom: 12px;
+    font-size: 40px;
+    margin-bottom: 15px;
     display: inline-block;
-    filter: drop-shadow(0 2px 8px rgba(242, 183, 5, 0.3)); /* 아이콘 은은한 야광 */
 }
 
 .receipt-header h2 {
-    font-size: 24px;
-    color: #ffffff; /* 흰색 타이틀 */
+    font-size: 25px;
+    color: #ffffff; 
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
 }
 
 .receipt-header .notice {
     font-size: 13px;
-    color: #999999; /* 안내 문구는 차분한 그레이 */
+    color: #8c8c8c; /* 안내 텍스트 가독성 최적화 */
     line-height: 1.6;
 }
 
-/* 4. 중간 소제목 세로 바 */
+/* 4. 중간 소제목 세로 바 - 샴페인 은은한 라인 */
 .section-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #f2b705; /* 골드 옐로우 명칭 */
+    color: #e5cf98; /* 은은한 펄 골드 */
     text-transform: uppercase;
-    border-left: 3px solid #f2b705; /* 세로선도 노란색 */
-    padding-left: 10px;
-    margin: 25px 0 15px 0;
+    letter-spacing: 1px; /* 영문/한글 매칭 스페이싱 */
+    border-left: 2px solid #bfa15f; 
+    padding-left: 12px;
+    margin: 30px 0 18px 0;
 }
 
-/* 5. 영수증 형태의 데이터 테이블 */
+/* 5. 정갈한 명세서 데이터 테이블 */
 .info-table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .info-table tr {
-    border-bottom: 1px solid #2a2a2a; /* 보이지 않는 듯 시크한 다크 가로 구분선 */
+    border-bottom: 1px solid #222222; /* 보이지 않는 듯 시크한 구분선 */
 }
 
 .info-table tr:last-child {
@@ -84,37 +98,39 @@ body {
 }
 
 .info-table th, .info-table td {
-    padding: 16px 0;
+    padding: 18px 0;
     font-size: 14px;
 }
 
 .info-table th {
     text-align: left;
-    color: #888888; /* 왼쪽 항목명은 쥐색 */
+    color: #757575; /* 중후한 슬레이트 그레이 */
     font-weight: 400;
-    width: 40%;
+    width: 42%;
 }
 
 .info-table td {
     text-align: right;
-    color: #ffffff; /* 오른쪽 실제 데이터는 선명한 흰색 */
+    color: #eeeeee; /* 눈이 편안한 밝은 그레이 아이보리 */
     font-weight: 500;
 }
 
-/* 최종 결제 금액행 특수 튜닝 */
+/* 최종 결제 금액행 특수 하이라이트 경계 */
 .info-table tr.total-row {
-    border-top: 2px solid #2d2d2d;
+    border-top: 1px solid #333333;
 }
 
+/* 🎯 금액 수치에 입히는 시그니처 샴페인 골드 폰트 */
 .info-table td.highlight-price {
-    color: #f2b705; /* 핵심 포인트: 쨍하고 선명한 시그니처 노란색 */
-    font-size: 22px;
+    color: #e5cf98; 
+    font-size: 24px;
     font-weight: 700;
+    text-shadow: 0 0 10px rgba(229, 207, 152, 0.2); /* 은은한 골드 안개 이펙트 */
 }
 
 /* 6. 하단 결제 단추 그룹 */
 .btn-group {
-    margin-top: 35px;
+    margin-top: 40px;
     width: 100%;
 }
 
@@ -125,24 +141,62 @@ body {
     align-items: center;
     padding: 16px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* 시크한 올 블랙 버튼 베이스에 노란색 글씨 포인트 */
+/* 🎯 메인 버튼: 번쩍이는 노란색 대신 은은한 황금빛 그라데이션 명품 메탈릭 도색 */
 .btn-primary {
-    background-color: #f2b705; /* 버튼 자체를 카카오맛+골드맛 노란색으로 도색 */
-    color: #111111; /* 글씨는 완전 블랙으로 가독성 폭발 */
+    background: linear-gradient(135deg, #bfa15f 0%, #e5cf98 50%, #bfa15f 100%);
+    color: #111111;
+    box-shadow: 0 4px 15px rgba(191, 161, 95, 0.2);
 }
 
 .btn-primary:hover {
-    background-color: #dca604; /* 마우스 올리면 약간 묵직해지는 노란색 */
-    box-shadow: 0 0 15px rgba(242, 183, 5, 0.4); /* 호버 시 네온 발광 이펙트 */
+    background: linear-gradient(135deg, #cbac6a 0%, #edd8a3 50%, #cbac6a 100%);
+    box-shadow: 0 6px 20px rgba(191, 161, 95, 0.4);
+    transform: translateY(-1px); /* 아주 살짝 떠오르는 고급 모션 */
 }
 
 .btn-primary:active {
-    transform: scale(0.98); /* 누르면 살짝 들어가는 물리 효과 */
+    transform: translateY(1px);
+}
+
+/* 2차 서브 버튼 (어두운 명품 패키징 색상) */
+.btn-secondary {
+    background-color: #222222;
+    color: #b3b3b3;
+    border: 1px solid #2f2f2f;
+    margin-top: 12px;
+}
+
+.btn-secondary:hover {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+/* ===================================================
+   결제 상태별 발광 아이콘 이펙트
+   =================================================== */
+
+/* 🎯 완료(성공) 체크마크: 시그니처 샴페인 골드 은은한 야광 */
+.pay-icon.success {
+    color: #e5cf98;
+    filter: drop-shadow(0 0 15px rgba(229, 207, 152, 0.5));
+}
+
+/* 취소 스타일 */
+.pay-icon.cancel {
+    color: #f1c40f;
+    filter: drop-shadow(0 0 12px rgba(241, 196, 15, 0.3));
+}
+
+/* 실패 스타일 */
+.pay-icon.fail {
+    color: #e74c3c;
+    filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.3));
 }

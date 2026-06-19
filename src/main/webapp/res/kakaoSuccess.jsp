@@ -90,16 +90,12 @@
             e.printStackTrace();
         }
 
-        // -----------------------------------------------------------
-        // 결제 완료 메일 발송
-        // -----------------------------------------------------------
         try {
             HotelDAO hotelDao = new HotelDAO();
             BootVO vo = hotelDao.selectReservationReceipt(bootNo);
             
             if (vo != null) {
                 com.hotel.mail.MailService mailService = new com.hotel.mail.MailService();
-                // 맨 끝 파라미터 두 개에 전부 vo.getReservation_code()를 꽂아 RESERVATION_CODE로 발송되게 고정합니다.
                 mailService.sendReservationCompleteMail(
                     vo.getBoot_email(), 
                     vo.getBoot_name(), 
@@ -127,17 +123,48 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>決済完了</title>
+    <title>決済完了 (BOOT)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/res/css/Boot.css?v=1.1">
 </head>
-<body style="text-align: center; padding: 50px; font-family: sans-serif;">
-    <div style="border: 1px solid #ddd; padding: 30px; display: inline-block; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-        <h1 style="color: #2bc366;">決済が完了しました</h1>
-        <p>カカオペイ決済が正常に処理されました。</p>
-        <p>ホテル管理者が客室を割り当てると予約が最終確定されます。</p>
-        <p><strong>予約番号:</strong> <%= bootNo %></p>
-        <p><strong>決済承認金額:</strong> ¥<%= String.format("%,d", amount) %></p>
-        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" style="display: inline-block; padding: 10px 20px; background: #111; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 16px;">予約受付内訳を見る</a>
-        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" style="display: inline-block; padding: 10px 20px; background: #fee500; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">予約照会へ移動</a>
+<body>
+<main class="receipt-container">
+    
+    <div class="receipt-header">
+        <div class="pay-icon success">✔</div>
+        <h2>決済が完了しました！</h2>
+        <p class="notice">カカオペイ決済が正常に処理されました。<br>ホテル管理者が客室を割り当てると予約が最終確定されます。</p>
     </div>
+
+    <div class="section-title">決済明細</div>
+    <table class="info-table">
+        <tr>
+            <th>予約識別番号</th>
+            <td><%= bootNo %></td> 
+        </tr>
+        <tr>
+            <th>取引番号 (TID)</th>
+            <td style="font-size: 11px; color: #a0aec0; word-break: break-all;"><%= tid %></td>
+        </tr>
+        <tr>
+            <th>決済手段</th>
+            <td>カカオペイ (KAKAOPAY)</td>
+        </tr>
+        <tr class="total-row">
+            <th>総決済金額</th>
+            <td class="highlight-price">
+                ₩ <%= String.format("%,d", amount) %>
+            </td>
+        </tr>
+    </table>
+
+    <div class="btn-group" style="display: flex; flex-direction: column;">
+        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" class="btn btn-primary">予約受付内訳を見る</a>
+        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" class="btn btn-secondary">予約照会へ移動</a>
+    </div>
+</main>
 </body>
-</html>
+</html>	
