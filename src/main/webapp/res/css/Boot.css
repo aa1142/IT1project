@@ -1,6 +1,6 @@
-/* ==========================================================================
-   🎯 프리미엄 다크 골드 테마 - 미니멀 스타일
-   ========================================================================== */
+@charset "UTF-8";
+
+/* 프리미엄 다크 골드 테마 - 테이블용 */
 :root {
     --gold-primary: #e5cf98;
     --gold-shadow: rgba(229, 207, 152, 0.25);
@@ -14,87 +14,69 @@ body {
     padding: 0;
     background-color: var(--dark-bg) !important;
     color: #e0e0e0;
-    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* 상단 헤더 */
-.header {
-    background-color: #0b0b0b !important;
-    border-bottom: 1px solid var(--border-color) !important;
+/* 메인 컨테이너 */
+.receipt-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.logo {
-    color: var(--gold-primary) !important;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px var(--gold-shadow);
+.receipt-header {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.header-button {
-    color: #a0a0a0;
-    text-decoration: none;
-    font-size: 13px;
-    border: 1px solid #333;
-    padding: 8px 16px;
-    border-radius: 4px;
-    background: #111;
-    transition: all 0.3s;
-}
-
-.header-button:hover {
+.receipt-header h2 {
     color: var(--gold-primary);
-    border-color: var(--gold-primary);
-    background: #1a1a1a;
+    margin: 10px 0;
 }
 
-/* 사이드바 */
-.sidebar {
-    background-color: #0d0d0d !important;
-    border-right: 1px solid var(--border-color) !important;
+.notice {
+    font-size: 13px;
+    color: #888;
 }
 
-.side-menu a:hover, .side-menu a.active {
-    color: var(--gold-primary) !important;
-    background-color: #1a1a1a !important;
-}
-
-/* 예약 카드 및 고정 사진 영역 */
-.reservation-card {
-    background-color: var(--card-bg) !important;
-    border: 1px solid var(--border-color) !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
-}
-
-/* 사진 크기를 과하지 않고 보기 좋게 딱 고정 */
-.zoom-wrapper {
-    width: 280px;
-    height: 180px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #3d3d3d;
-}
-
-.zoom-wrapper .zoom-img {
+/* 표 스타일링 */
+.info-table {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    border-collapse: collapse;
+    margin: 20px 0;
 }
 
-/* 상태 배지 */
-.status-badge {
-    display: inline-block;
-    background: rgba(229, 207, 152, 0.12) !important;
+.info-table th, .info-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.info-table th {
+    color: #888;
+    width: 40%;
+}
+
+/* 하이라이트 금액 */
+.highlight-price {
     color: var(--gold-primary) !important;
-    border: 1px solid rgba(229, 207, 152, 0.3) !important;
+    font-size: 18px;
+    font-weight: 700 !important;
 }
 
-/* 럭셔리 골드 그라데이션 버튼 */
-.detail-btn-luxury {
-    background: linear-gradient(135deg, #d4af37, #aa7c11);
+/* 버튼 스타일 (기존 btn-primary를 골드 스타일로 교체) */
+.btn-primary {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #d4af37, #aa7c11) !important;
     color: #000 !important;
-    border: none;
-    padding: 12px 20px;
-    font-size: 14px;
+    border: none !important;
+    padding: 15px;
+    font-size: 16px;
     font-weight: 700;
     border-radius: 6px;
     cursor: pointer;
@@ -102,45 +84,14 @@ body {
     text-align: center;
 }
 
-.detail-btn-luxury:hover {
-    background: linear-gradient(135deg, #f3e5ab, #c59b27);
+.btn-primary:hover {
+    background: linear-gradient(135deg, #f3e5ab, #c59b27) !important;
     box-shadow: 0 0 15px var(--gold-shadow);
 }
 
-.refund-button-luxury {
-    background: transparent;
-    color: #ff5252;
-    border: 1px solid rgba(255, 82, 82, 0.4);
-    padding: 11px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.refund-button-luxury:hover {
-    background: rgba(255, 82, 82, 0.1);
-    border-color: #ff5252;
-}
-
-/* 모달 */
-.modal-bg {
-    backdrop-filter: blur(5px) !important;
-}
-
-.modal {
-    background-color: #1a1a1a !important;
-    border: 1px solid #333 !important;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8) !important;
-}
-
-.modal-title {
-    color: var(--gold-primary) !important;
-}
-
-.highlight-price {
-    color: var(--gold-primary) !important;
-    font-size: 18px;
-    font-weight: 700 !important;
+.section-title {
+    color: #fff;
+    font-weight: bold;
+    border-left: 3px solid var(--gold-primary);
+    padding-left: 10px;
 }
