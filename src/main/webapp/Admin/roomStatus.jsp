@@ -119,7 +119,7 @@
                             }
                 %>
                             <div class="mb-4">
-                                <div class="fw-bold text-dark mb-2"><%= currentFloor %>階</div>
+                                <div class="fw-bold text-dark mb-2"><%= currentFloor%10 %>階</div>
                                 <div class="d-flex flex-wrap gap-3">
                 <% 
                                     lastFloor = currentFloor;
@@ -314,9 +314,11 @@
     <%@ include file="/adminTem/memoModal.jsp" %>
     
  <script>
+// 🌟 전역 변수들 선언 (전체 함수에서 공유됨)
 var currentFirstCheckin = "";
 var currentRoomGrade = "";
 var currentRoomType = "";
+var currentRoomNo = 0; // 💡 숫자로 다루기 위해 0으로 초기화
 
 $(document).on('input', '#inputRoomPhone', function() {
     let val = $(this).val().replace(/[^0-9]/g, ''); 
@@ -335,13 +337,16 @@ $(document).on('input', '#inputRoomPhone', function() {
 });
 
 function openRoomModal(roomNo, roomGrade, statusText, firstCheckin, roomType) {
-    console.log("モーダルオープン:", roomNo);
+    // 💡 들어오는 문자열 방 번호를 확실하게 숫자로 변환해서 전역변수에 저장!
+    currentRoomNo = parseInt(roomNo); 
+    console.log("モーダルオープン (숫자 변환 완료):", currentRoomNo);
     
     currentFirstCheckin = firstCheckin; 
     currentRoomGrade = roomGrade;
     currentRoomType = roomType;
     
-    document.getElementById('modalRoomNo').innerText = roomNo + "号室";
+    // 호실 표시할 때는 뒤의 3자리만 보여줌 (예: 10001호 -> 1호실)
+    document.getElementById('modalRoomNo').innerText = (currentRoomNo % 1000) + "号室";
     document.getElementById('modalRoomGrade').innerText = roomGrade;
     
     document.getElementById('modalRoomStatus').classList.remove('d-none');
@@ -373,7 +378,7 @@ function openRoomModal(roomNo, roomGrade, statusText, firstCheckin, roomType) {
     $.ajax({
         url: "${pageContext.request.contextPath}/Admin/getSelectBoot",
         type: "GET",
-        data: { roomNo: roomNo },
+        data: { roomNo: currentRoomNo }, // 💡 전역변수 값을 안전하게 전송
         dataType: "json",
         success: function(res) {
             if (res) {
@@ -529,24 +534,25 @@ function updateBadgeDesign(statusText) {
 }
     
 function submitStatusLetter() {
-    const roomNoRaw = document.getElementById('modalRoomNo').innerText;
-    const roomNo = parseInt(roomNoRaw); 
     const roomNow = document.getElementById('modalStatusSelect').value;
 
-    if (!roomNo || !roomNow) {
+    // 💡 오타 수정 및 정확한 검증
+    if (!currentRoomNo || !roomNow) {
         alert("客室情報またはステータスの値が正しくありません。");
         return;
     }
 
     const isWalkInMode = !document.getElementById('inputRoomName').classList.contains('d-none');
     
+
+
     let ajaxData = { 
-        roomNo: roomNo, 
+        roomNo: currentRoomNo, // 조립된 완벽한 번호 전달 
         roomNow: roomNow, 
         roomGrade: currentRoomGrade,
         roomType : currentRoomType
     };
-	console.log(isWalkInMode);
+
     if (isWalkInMode) {
         const bootName = document.getElementById('inputRoomName').value.trim();
         const bootPhone = document.getElementById('inputRoomPhone').value.trim();
@@ -576,7 +582,8 @@ function submitStatusLetter() {
         data: ajaxData, 
         success: function(response) {
             if (response.trim() === "SUCCESS") {
-                alert(roomNo + "号室の ステータスが [" + roomNow + "] に変更されました。");
+                // 💡 오타 수정 (roomNo -> (currentRoomNo % 1000) 호실로 노출)
+                alert((currentRoomNo % 1000) + "号室の ステータスが [" + roomNow + "] に変更されました。");
                 location.reload(); 
             } else {
                 alert("状態の変更に失敗しました。もう一度お試しください。");
