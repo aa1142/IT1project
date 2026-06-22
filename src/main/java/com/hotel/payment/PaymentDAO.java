@@ -26,17 +26,16 @@ public class PaymentDAO {
     }
 
     /**
-     * [사용자 전용 정품 메서드]
-     * 오라클 테이블에서 예약번호 하나로 진짜 적재된 AMOUNT 금액을 직접 긁어옵니다.
+     * 예약 금액 조회
      */
     public int getRoomTotalAmountFromDB(String bootNo) throws Exception {
         String sql = "SELECT AMOUNT FROM PAYMENT WHERE RESERVATION_ID = ?";
-        
+
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             bindReservationId(pstmt, 1, bootNo);
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("AMOUNT");
@@ -47,7 +46,7 @@ public class PaymentDAO {
     }
 
     /**
-     * 🔥 [추가됨] 현재 결제 상태 조회 (핵심)
+     * 결제 상태 조회
      */
     public String getPaymentStatus(String bootNo) throws Exception {
         String sql = "SELECT PAYMENT_STATUS FROM PAYMENT WHERE RESERVATION_ID = ?";
@@ -67,11 +66,13 @@ public class PaymentDAO {
     }
 
     /**
-     * 1. [등록] 카카오페이 최종 승인 완료된 결제 영수증 내역을 PAYMENT 테이블에 적재합니다.
+     * 결제 INSERT (예약 생성 시 1회만 사용)
      */
     public int insertPayment(PaymentDTO dto) throws Exception {
-        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT) "
-                   + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, SYSDATE)";
+        String sql =
+            "INSERT INTO PAYMENT " +
+            "(PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT) " +
+            "VALUES (PAYMENT_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, SYSDATE)";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -88,11 +89,13 @@ public class PaymentDAO {
     }
 
     /**
-     * 예약 직후 결제 대기 건 등록 (온라인 결제 — 카카오페이 승인 전)
+     * 예약 생성 시 결제 대기 INSERT
      */
     public int insertPendingPayment(String bootNo, int amount, String paymentMethod) throws Exception {
-        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
-                + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, ?, ?, 'PENDING')";
+        String sql =
+            "INSERT INTO PAYMENT " +
+            "(PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) " +
+            "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, ?, ?, 'PENDING')";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -101,16 +104,19 @@ public class PaymentDAO {
             pstmt.setString(2, bootNo);
             pstmt.setString(3, paymentMethod);
             pstmt.setInt(4, amount);
+
             return pstmt.executeUpdate();
         }
     }
 
     /**
-     * 현장 결제 예약 — 결제 완료 전 현장 수납 예정 건
+     * 현장 결제 INSERT
      */
     public int insertOnsitePayment(String bootNo, int amount) throws Exception {
-        String sql = "INSERT INTO PAYMENT (PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) "
-                + "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, 'ONSITE', ?, 'AWAITING')";
+        String sql =
+            "INSERT INTO PAYMENT " +
+            "(PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS) " +
+            "VALUES (PAYMENT_SEQ.NEXTVAL, ?, NULL, ?, 'ONSITE', ?, 'AWAITING')";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -118,46 +124,42 @@ public class PaymentDAO {
             bindReservationId(pstmt, 1, bootNo);
             pstmt.setString(2, bootNo);
             pstmt.setInt(3, amount);
+
             return pstmt.executeUpdate();
         }
     }
 
     /**
-     * 카카오페이 승인 완료 — PENDING 건을 PAID 로 갱신 (없으면 신규 INSERT)
+     * 🔥 카카오 결제 승인 (핵심 수정본)
+     * → INSERT fallback 제거
+     * → UPDATE 성공 여부만 사용
      */
     public int completeKakaoPayment(String bootNo, String tid, int amount) throws Exception {
-        String updateSql = "UPDATE PAYMENT SET TID = ?, PAYMENT_STATUS = 'PAID', APPROVED_AT = SYSDATE "
-                + "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS IN ('PENDING', 'AWAITING')";
+
+        String sql =
+            "UPDATE PAYMENT " +
+            "SET TID = ?, PAYMENT_STATUS = 'PAID', APPROVED_AT = SYSDATE " +
+            "WHERE RESERVATION_ID = ? " +
+            "AND PAYMENT_STATUS <> 'PAID'";
 
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, tid);
             bindReservationId(pstmt, 2, bootNo);
-            int updated = pstmt.executeUpdate();
-            if (updated > 0) {
-                return updated;
-            }
+
+            return pstmt.executeUpdate(); // 1 = 최초 결제 성공, 0 = 중복 호출
         }
-
-        PaymentDTO dto = new PaymentDTO();
-        dto.setBootNo(bootNo);
-        dto.setTid(tid);
-        dto.setPartnerOrderId(bootNo);
-        dto.setPaymentMethod("KAKAOPAY");
-        dto.setAmount(amount);
-        dto.setPaymentStatus("PAID");
-
-        return insertPayment(dto);
     }
 
     /**
-     * 2. [조회] 환불 처리를 위해 RESERVATION_ID를 기준으로 정상 결제('PAID')된 영수증 내역을 찾아옵니다.
+     * 환불용 PAID 조회
      */
     public PaymentDTO findPaidPaymentByBootNo(String bootNo) throws Exception {
-        String sql = "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT " +
-                "FROM PAYMENT " +
-                "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
+        String sql =
+            "SELECT PAYMENT_ID, RESERVATION_ID, TID, PARTNER_ORDER_ID, PAYMENT_METHOD, AMOUNT, PAYMENT_STATUS, APPROVED_AT " +
+            "FROM PAYMENT " +
+            "WHERE RESERVATION_ID = ? AND PAYMENT_STATUS = 'PAID'";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -183,10 +185,14 @@ public class PaymentDAO {
     }
 
     /**
-     * 3. [수정] 결제 상태 변경
+     * 상태 변경 (범용)
      */
     public int updatePaymentStatus(String bootNo, String status) throws Exception {
-        String sql = "UPDATE PAYMENT SET PAYMENT_STATUS = ?, APPROVED_AT = SYSDATE WHERE RESERVATION_ID = ?";
+
+        String sql =
+            "UPDATE PAYMENT " +
+            "SET PAYMENT_STATUS = ?, APPROVED_AT = SYSDATE " +
+            "WHERE RESERVATION_ID = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

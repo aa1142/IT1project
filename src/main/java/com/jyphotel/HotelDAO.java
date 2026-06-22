@@ -64,8 +64,8 @@ public class HotelDAO {
         throw new SQLException("DB connection failed");
     }
     public int updateMemberCountUp(String memberId) throws Exception {
-        String sql = "UPDATE MEMBER SET MEMBER_COUNT = NVL(MEMBER_COUNT, 0) + 1 WHERE MEMBER_ID = ?";
-
+        String sql = "update member set member_count = member_count + 1 where member_id = ?";
+        
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

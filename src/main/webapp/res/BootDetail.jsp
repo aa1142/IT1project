@@ -483,7 +483,6 @@
             </div>
         </section>
 
-        <a href="${pageContext.request.contextPath}/BootSearch.jsp" class="back-link">← 再照会하는</a>
     </main>
 </div>
 
@@ -586,10 +585,10 @@ function checkRefundAvailable(formObj) {
         let dd = String(today.getDate()).padStart(2, '0');
         let todayStr = yyyy + "-" + mm + "-" + dd;
         
-        console.log("[당일 환불 검증선] 오늘: " + todayStr + " / 체크인 데이트: " + checkinDateStr);
+      
         
         if (todayStr === checkinDateStr) {
-            alert("チェックイン当日のキャンセルおよび払い戻しは不可能です。");
+            alert("チェックイン当日のキャンセルおよび払い戻しは不可能です。管理者にお問い合わせください。");
             return false; 
         }
         
@@ -597,7 +596,7 @@ function checkRefundAvailable(formObj) {
         
     } catch (e) {
         console.error(e);
-        return confirm("本当に予約을キャンセルして返金しますか？");
+        return confirm("本当に予約をキャンセルして返金しますか？");
     }
 }
 </script>

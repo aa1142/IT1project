@@ -162,8 +162,7 @@
     </table>
 
     <div class="btn-group" style="display: flex; flex-direction: column;">
-        <a href="<%= request.getContextPath() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" class="btn btn-primary">予約受付内訳を見る</a>
-        <a href="<%= request.getContextPath() %>/res/BootSearch.jsp" class="btn btn-secondary">予約照会へ移動</a>
+        <a href="<%= request.getContextPath	() %>/testex2/reservationcomplete.jsp?boot_no=<%= bootNo %>" class="btn btn-primary">予約受付内訳を見る</a>
     </div>
 </main>
 </body>

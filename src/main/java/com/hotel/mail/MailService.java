@@ -15,12 +15,10 @@ public class MailService {
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
 
-    private static final String MAIL_ID = "rkfqo12@gmail.com";
-    private static final String MAIL_APP_PASSWORD = "ijnbbvlnrgwglpgs";
+    private static final String MAIL_ID = "送るメール;
+    private static final String MAIL_APP_PASSWORD = "コード";
 
-    /**
-     * 카카오페이 승인 완료 후 사용자의 이메일로 예약 확정 영수증 메일을 발송합니다.
-     */
+ 
     public void sendReservationCompleteMail(
             String toEmail,
             String bookerName,
@@ -48,19 +46,18 @@ public class MailService {
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(MAIL_ID, "JYP HOTEL", "UTF-8"));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-        message.setSubject("[JYP HOTEL] 예약(BOOT) 및 결제가 완료되었습니다.", "UTF-8");
+        message.setSubject("[JYP HOTEL] 決済が完了しました.", "UTF-8");
 
         String html =
             "<div style='font-family:Arial, sans-serif; padding:24px; color:#222;'>"
           + "  <h2 style='color:#9a772e;'>JYP HOTEL 예약 완료 안내</h2>"
-          + "  <p>안녕하세요, <strong>" + escape(bookerName) + "</strong>님.</p>"
-          + "  <p>호텔 객실 예약 및 결제가 정상적으로 완료되었습니다.</p>"
+          + "  <p>こんにちは, <strong>" + escape(bookerName) + "</strong>様.</p>"
+          + "  <p>ホテルの客室予約と支払いが正常に完了しました。</p>"
           + "  <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
-          + "  <p><strong>예약 식별번호(BOOT_NO):</strong> " + escape(partnerOrderId) + "</p>"
-          + "  <p><strong>통신용 고유코드:</strong> " + escape(reservationCode) + "</p>"
-          + "  <p><strong>최종 결제금액:</strong> " + String.format("%,d", amount) + "원</p>"
+          + "  <p><strong>予約コード:</strong> " + escape(reservationCode) + "</p>"
+          + "  <p><strong>最終決済金額：</strong> " + String.format("%,d", amount)+ "</p>"
           + "  <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
-          + "  <p>예약 내역 조회는 <strong>통신용 고유코드</strong>와 예약 시 입력하신 <strong>전화번호 또는 이메일</strong>로 확인하실 수 있습니다.</p>"
+          + " <p>予約内訳の照会は、<strong>通信用固有コード</strong>と予約時に入力された<strong>電話番号またはメールアドレス</strong>でご確認いただけます。</p>"
           + "  <p style='color:#777; margin-top:30px;'>JYP HOTEL RESIDENCE</p>"
           + "</div>";
 
@@ -111,7 +108,7 @@ public class MailService {
         });
 
         MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("rkfqo12@gmail.com", "JYP HOTEL", "UTF-8"));
+        message.setFrom(new InternetAddress("送るメール", "JYP HOTEL", "UTF-8"));
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
         
         // 제목 변경

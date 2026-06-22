@@ -48,7 +48,7 @@
 
     String reservationCode = vo.getReservation_code();
     String bootName = vo.getBoot_name();
-    String itemName = vo.getRoom_grade() + " 客室予約金";
+    String itemName = vo.getRoom_grade();
 %>
 <!DOCTYPE html>
 <html lang="ja">
@@ -67,7 +67,7 @@
     <div class="receipt-header">
         <div class="pay-icon">💳</div>
         <h2>ホテル予約決済</h2>
-        <p class="notice">カカオペイ決済を実行します。決済ボタンを押すとカカ오ペイ決済画面に移動します。</p>
+        <p class="notice">カカオペイ決済を実行します。決済ボタンを押すとカカオペイ決済画面に移動します。</p>
     </div>
 
     <div class="section-title">予約および決済情報</div>

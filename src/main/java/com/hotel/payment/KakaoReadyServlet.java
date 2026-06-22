@@ -22,7 +22,7 @@ public class KakaoReadyServlet extends HttpServlet {
 
     private static final String KAKAO_READY_URL = "https://open-api.kakaopay.com/online/v1/payment/ready";
     private static final String CID = "TC0ONETIME";
-    private static final String SECRET_KEY = "DEVC377EA1FE352A2FD439A893097F76D602E5D1";
+    private static final String SECRET_KEY = "api code";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

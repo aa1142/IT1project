@@ -31,7 +31,7 @@
     
     <form action="${pageContext.request.contextPath}/bootSearch" method="post">
         <div class="input-group">
-            <label for="reservationCode">予約コード（通信固有コード）</label>
+            <label for="reservationCode">予約コード</label>
             <input type="text" id="reservationCode" name="reservationCode" placeholder="KPC-で始まる固有コードを入力" required>
         </div>
         

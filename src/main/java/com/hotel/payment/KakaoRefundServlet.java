@@ -34,7 +34,7 @@ public class KakaoRefundServlet extends HttpServlet {
         String bootNo = request.getParameter("bootNo");
 
         if (bootNo == null || bootNo.trim().isEmpty()) {
-            out.println("<script>alert('예약 번호가 유실되었습니다.'); history.go(-1);</style>");
+            out.println("<script>alert('予約番号エラー'); history.go(-1);</style>");
             return;
         }
 
@@ -44,7 +44,7 @@ public class KakaoRefundServlet extends HttpServlet {
             PaymentDTO payDto = payDao.findPaidPaymentByBootNo(bootNo.trim());
 
             if (payDto == null) {
-                out.println("<script>alert('승인된 결제 내역(TID)을 찾을 수 없어 환불이 불가능합니다.'); history.go(-1);</script>");
+                out.println("<script>alert(承認された決済履歴（TID）が見つからないため、返金はできません); history.go(-1);</script>");
                 return;
             }
 
@@ -58,7 +58,7 @@ public class KakaoRefundServlet extends HttpServlet {
             
             conn.setRequestMethod("POST");
             // 우리 프로젝트 전용 카카오페이 정품 어드민 시크릿 키 장착
-            conn.setRequestProperty("Authorization", "SECRET_KEY DEVC377EA1FE352A2FD439A893097F76D602E5D1");
+            conn.setRequestProperty("Authorization", "SECRET_KEY apicode");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.setDoOutput(true);
 
@@ -115,7 +115,7 @@ public class KakaoRefundServlet extends HttpServlet {
      */
     private void updateBootTableToCancel(String bootNo) {
         String sql = "UPDATE BOOT SET BOOT_CONFIRM = 2, BOOT_PLEASE = BOOT_PLEASE || ? WHERE BOOT_NO = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "proid", "3431");
+        try (Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "scott", "tiger");
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, "|카카오환불완료");

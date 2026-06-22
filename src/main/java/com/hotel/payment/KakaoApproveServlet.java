@@ -24,7 +24,7 @@ public class KakaoApproveServlet extends HttpServlet {
 
     private static final String KAKAO_APPROVE_URL = "https://open-api.kakaopay.com/online/v1/payment/approve";
     private static final String CID = "TC0ONETIME";
-    private static final String SECRET_KEY = "DEVC377EA1FE352A2FD439A893097F76D602E5D1";
+    private static final String SECRET_KEY = "api code";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,7 +43,7 @@ public class KakaoApproveServlet extends HttpServlet {
         Object reservationCodeObj = session.getAttribute("reservationCode");
         Object bookerEmailObj = session.getAttribute("bootEmail");
         Object bookerNameObj = session.getAttribute("bootName");
-        String memberId = (String) session.getAttribute("memberId"); // 👈 추가 (중요)
+        String memberId = (String) session.getAttribute("memberId");
 
         if (pgToken == null || tid == null || partnerOrderId == null || partnerUserId == null) {
             request.setAttribute("errorMessage", "결제 승인 필수 정보가 유실되었습니다.");
@@ -89,19 +89,15 @@ public class KakaoApproveServlet extends HttpServlet {
             PaymentDAO paymentDAO = new PaymentDAO();
             HotelDAO hotelDAO = new HotelDAO();
 
-            // 🔥 1. 이전 상태 저장 (핵심)
-            String beforeStatus = paymentDAO.getPaymentStatus(bootNo);
+            // 🔥 핵심: UPDATE 성공 여부
+            int result = paymentDAO.completeKakaoPayment(bootNo, tid, amount);
 
-            // 🔥 2. 결제 승인 처리 (PAID)
-            paymentDAO.completeKakaoPayment(bootNo, tid, amount);
-
-            // 🔥 3. member_count 처리 (중복 방지 핵심)
-            if (memberId != null && !"PAID".equals(beforeStatus)) {
+            // 🔥 최초 결제일 때만 +1
+            if (result == 1 && memberId != null) {
                 hotelDAO.updateMemberCountUp(memberId);
                 System.out.println("[검증 로그] member_count +1 처리 완료");
             }
 
-            // 예약 확정 로그
             hotelDAO.appendBootPaymentNote(bootNo, "|카카오페이완료(TID:" + tid + ")");
 
         } catch (Exception e) {
