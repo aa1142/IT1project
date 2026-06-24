@@ -150,7 +150,7 @@
                      <div class="mb-2"><small class="text-muted d-block">予約者名</small><span id="modalGuestName" class="fw-bold text-dark"></span></div>
                      <div class="mb-2"><small class="text-muted d-block">連絡先</small><span id="modalPhone" class="fw-bold"></span></div>
                      <div class="row g-2 mt-2">
-                        <div class="col-6"><small class="text-muted d-block">チェック인</small><span id="modalCheckIn" class="small fw-bold"></span></div>
+                        <div class="col-6"><small class="text-muted d-block">チェックイン</small><span id="modalCheckIn" class="small fw-bold"></span></div>
                         <div class="col-6"><small class="text-muted d-block">チェックアウト</small><span id="modalCheckOut" class="small fw-bold"></span></div>
                      </div>
                   </div>

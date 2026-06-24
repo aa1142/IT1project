@@ -57,9 +57,10 @@ public class ChangeRoomNowServlet extends HttpServlet {
 	        String bootCheckout = request.getParameter("bootCheckout");
 	        String roomGrade = request.getParameter("roomGrade");
 	        int roomType = Integer.parseInt(request.getParameter("roomType"));
-	        
+	        System.out.println("roomNo="+roomNo);
 	        // 4. 수집한 데이터 DTO에 세팅하기
 	        BootDto bootDto = new BootDto();
+	        bootDto.setRoomNo(roomNo);
 	        bootDto.setBootNo("Hotel-"+System.currentTimeMillis());
 	        bootDto.setBootName(bootName);
 	        bootDto.setCompanyNo(companyNo);
