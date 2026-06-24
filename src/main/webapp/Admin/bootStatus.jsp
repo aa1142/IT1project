@@ -274,12 +274,7 @@ $(document).ready(function() {
         let rawTwin = twinStr.replace(/,/g, ''); 
         let rawFamily = familyStr.replace(/,/g, ''); 
         
-        // 🚀 테스트용 얼럿 문구 일본어화
-        alert("[" + gradeName + " 料金修正内訳]\n" +
-              "シングル: " + singleStr + "円 (サーバー用: " + rawSingle + ")\n" +
-              "ツイン: " + twinStr + "円 (サーバー用: " + rawTwin + ")\n" +
-              "ファミリー: " + familyStr + "円 (サーバー用: " + rawFamily + ")\n" +
-              "正常に取得されました！");
+     
     });
 
     // ================= 3. 동적 달력 스크립트 구성 =================
@@ -450,7 +445,11 @@ $(document).on('click', '.btn-save', function() {
         dataType: 'text', 
         success: function(response) {
             if (response.trim() === "success") {
-                alert(gradeName + "の料金が正常に修正されました！ 👍");
+            	   alert("[" + gradeName + " 料金修正内訳]\n" +
+            	              "シングル: " + singleStr + "\n" +
+            	              "ツイン: " + twinStr +  "\n" +
+            	              "ファミリー: " + familyStr + "\n" +
+            	              "正常に取得されました！");
             } else {
                 alert("料金の修正に失敗しました。もう一度お試しください。");
             }

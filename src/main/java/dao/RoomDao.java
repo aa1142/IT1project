@@ -72,23 +72,22 @@ public class RoomDao {
     	
     //예약이 되어있는 방 개수
     public Map<String, Integer> countBootingRoom(String searchDate, int companyNo) {
-        String sql = "SELECT r.room_grade, "
-                + "       COUNT(CASE WHEN r.room_type = 1 AND b.boot_no IS NOT NULL THEN 1 END) AS reserved_single, "
-                + "       COUNT(CASE WHEN r.room_type = 2 AND b.boot_no IS NOT NULL THEN 1 END) AS reserved_twin, "
-                + "       COUNT(CASE WHEN r.room_type = 5 AND b.boot_no IS NOT NULL THEN 1 END) AS reserved_family "
-                + "FROM room r "
-                + "LEFT JOIN boot b ON r.room_no = b.room_no "
-                + "                AND r.company_no = b.company_no"
-                + "                AND b.boot_checkin <= TO_DATE(?, 'YYYY-MM-DD') " // 첫 번째 ?
-                + "                AND b.boot_checkout > TO_DATE(?, 'YYYY-MM-DD') " // 두 번째 ?
-                + "                AND b.boot_confirm = 1 "
-                + "WHERE r.company_no = ? "                                         // 세 번째 ?
-                + "  AND r.room_grade IN ('STANDARD', 'DELUXE', 'SUITE')"
-                + "  AND r.room_type IN (1, 2, 5) "
-                + "GROUP BY r.room_grade";
-                
+        
+              String sql = "SELECT room_grade, "
+                + "       COUNT(CASE WHEN room_type = 1 AND boot_no IS NOT NULL THEN 1 END) AS reserved_single, "
+                + "       COUNT(CASE WHEN room_type = 2 AND boot_no IS NOT NULL THEN 1 END) AS reserved_twin, "
+                + "       COUNT(CASE WHEN room_type = 5 AND boot_no IS NOT NULL THEN 1 END) AS reserved_family "
+                + "FROM boot "
+                + "WHERE company_no = ? "                                         // 세 번째 ?
+                + "                AND boot_checkin <= TO_DATE(?, 'YYYY-MM-DD') " // 첫 번째 ?
+                + "                AND boot_checkout > TO_DATE(?, 'YYYY-MM-DD') " // 두 번째 ?
+                + "                AND boot_confirm = 1 "
+                + "  AND room_grade IN ('STANDARD', 'DELUXE', 'SUITE')"
+                + "  AND room_type IN (1, 2, 5) "
+                + "GROUP BY room_grade";
+         
         // ⚠️ SQL에 ?가 3개이므로 파라미터도 3개를 순서대로 넣어주어야 합니다.
-        Object[] params = {searchDate, searchDate, companyNo};
+        Object[] params = {companyNo, searchDate, searchDate};
         
         Map<String, Integer> list = new HashMap<>();
         

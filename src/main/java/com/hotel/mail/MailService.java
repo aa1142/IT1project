@@ -15,7 +15,7 @@ public class MailService {
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
 
-    private static final String MAIL_ID = "送るメール;
+    private static final String MAIL_ID = "送るメール";
     private static final String MAIL_APP_PASSWORD = "コード";
 
  
@@ -112,7 +112,7 @@ public class MailService {
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
         
         // 제목 변경
-        message.setSubject("[JYP HOTEL] 요청하신 객실 예약이 확정되었습니다. (현장결제 건)", "UTF-8");
+        message.setSubject("[JYP HOTEL] 客室のご予約が確定いたしました（現地決済）", "UTF-8");
 
         // 현장결제 및 방 배정 안내 컨셉의 HTML 템플릿
         String html =
